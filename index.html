@@ -198,7 +198,7 @@
             submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
 
             const now = new Date();
-            const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
+            const monthLabel = " Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
             const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
 
             const entryData = { 
