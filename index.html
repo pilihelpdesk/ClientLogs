@@ -20,15 +20,12 @@
             background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: -1;
         }
 
-        /* Compact Layout Adjustments */
         .input-row { display: flex; border-bottom: 2px solid black; align-items: stretch; width: 100%; }
         .input-row:last-child { border-bottom: none; }
-        /* Reduced padding from 12px to 6px */
         .label-cell { width: 33.33%; background-color: white; padding: 6px 12px; font-weight: bold; border-right: 2px solid black; display: flex; align-items: center; font-size: 1.25rem; }
         .input-cell { width: 66.67%; padding: 6px; outline: none; background-color: #FFFFFF; text-align: center; font-style: italic; font-size: 1.25rem; color: black; border: none; }
         .input-cell:focus { background-color: #eff6ff; }
         
-        /* Status & Dept Colors */
         .opt-student { background-color: #93C5FD !important; color: black !important; }
         .opt-teaching { background-color: #15803D !important; }
         .opt-non-teaching { background-color: #7E22CE !important; }
@@ -40,13 +37,12 @@
         .opt-cvm { background-color: #93C5FD !important; color: black !important; }
         .opt-gs { background-color: #9CA3AF !important; }
 
-        .thin-table { border: 1px solid #000 !important; border-collapse: collapse; }
-        /* Reduced p-2 to p-1 for tighter table */
+        .thin-table { border: 1px solid #000 !important; border-collapse: collapse; table-layout: fixed; }
         .thin-table th { border: 1px solid #000 !important; @apply p-1 bg-gray-100 font-bold; }
-        .thin-table td { border: 1px solid #000 !important; @apply p-1; }
-        .table-container { min-height: 300px; background: white; border: 1px solid #000; }
+        /* Added fixed height to cells to keep table size consistent */
+        .thin-table td { border: 1px solid #000 !important; @apply p-1; height: 40px; }
+        .table-container { background: white; border: 1px solid #000; }
         
-        /* Compact Tabs */
         .tab-btn { @apply px-3 py-1 border-2 border-black font-bold mr-1 mb-1 transition-all text-sm shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]; }
         .tab-active { @apply bg-black text-white; }
         .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
@@ -135,13 +131,13 @@
                 <table id="dataTable" class="w-full thin-table text-sm text-center">
                     <thead>
                         <tr>
-                            <th>Date</th>
+                            <th style="width: 100px;">Date</th>
                             <th>Complete Name</th>
-                            <th>Status</th>
-                            <th>ID Number</th>
-                            <th>Department</th>
+                            <th style="width: 120px;">Status</th>
+                            <th style="width: 120px;">ID Number</th>
+                            <th style="width: 80px;">Dept</th>
                             <th>Purpose:</th>
-                            <th>Actions</th>
+                            <th style="width: 100px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
@@ -164,7 +160,7 @@
         let currentFilter = 'All';
         let allData = [];
         let currentPage = 1;
-        const rowsPerPage = 7;
+        const rowsPerPage = 10; // Fixed to 10 rows
 
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
@@ -252,7 +248,19 @@
             const pageData = filteredData.slice(startIndex, startIndex + rowsPerPage);
 
             tableBody.innerHTML = '';
+            
+            // Render actual data rows
             pageData.forEach(data => addTableRowUI(data));
+            
+            // FILL REMAINING ROWS TO KEEP FIXED 10 ROWS
+            const emptyRowsNeeded = rowsPerPage - pageData.length;
+            for (let i = 0; i < emptyRowsNeeded; i++) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.className = "bg-white border-b border-black";
+                emptyRow.innerHTML = `<td colspan="7"></td>`;
+                tableBody.appendChild(emptyRow);
+            }
+
             renderPaginationControls(totalPages);
         }
 
@@ -264,11 +272,11 @@
             
             row.innerHTML = `
                 <td>${data.date}</td>
-                <td class="text-left font-bold">${data.name}</td>
-                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[10px]">${data.pos}</span></td>
+                <td class="text-left font-bold truncate">${data.name}</td>
+                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[10px] block truncate text-center">${data.pos}</span></td>
                 <td>${data.idNum}</td>
-                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[10px]">${data.dept}</span></td>
-                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-0.5 rounded-md text-[10px]">${data.purp}</span></td>
+                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[10px] block text-center">${data.dept}</span></td>
+                <td class="text-left truncate"><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-0.5 rounded-md text-[10px] block truncate">${data.purp}</span></td>
                 <td class="whitespace-nowrap">
                     <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline px-1">EDIT</button>
                     <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
@@ -279,7 +287,7 @@
 
         function renderPaginationControls(totalPages) {
             paginationControls.innerHTML = '';
-            if (totalPages <= 1) return;
+            if (totalPages <= 1 && allData.length <= rowsPerPage) return;
             const prevBtn = document.createElement('button');
             prevBtn.textContent = 'PREV';
             prevBtn.disabled = currentPage === 1;
