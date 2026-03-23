@@ -20,11 +20,14 @@
             background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: -1;
         }
 
-        /* Compact Form Styling */
+        /* Form Styling */
         .input-row { display: flex; border-bottom: 1px solid black; align-items: stretch; width: 100%; }
         .input-row:last-child { border-bottom: none; }
-        .label-cell { width: 30%; background-color: white; padding: 8px 12px; font-weight: bold; border-right: 2px solid black; display: flex; align-items: center; font-size: 1rem; }
-        .input-cell { width: 70%; padding: 8px; outline: none; background-color: #FFFFFF; text-align: center; font-style: italic; font-size: 1rem; color: black; border: none; }
+        
+        /* Labels are regular/normal weight */
+        .label-cell { width: 30%; background-color: white; padding: 10px 14px; font-weight: 400; border-right: 2px solid black; display: flex; align-items: center; font-size: 1.1rem; }
+        
+        .input-cell { width: 70%; padding: 10px; outline: none; background-color: #FFFFFF; text-align: center; font-style: italic; font-size: 1.1rem; color: black; border: none; font-weight: 400; }
         .input-cell:focus { background-color: #eff6ff; }
         
         select option { color: white !important; font-weight: bold !important; }
@@ -54,17 +57,17 @@
         .opt-all-reset { background-color: #B91C1C !important; }
         .opt-zoom { background-color: #2563EB !important; }
         
-        /* Fixed Table Height Styling */
+        /* Table Styling */
         .thin-table { border: 1px solid #000 !important; border-collapse: collapse; table-layout: fixed; }
-        .thin-table th { border: 1px solid #000 !important; padding: 6px; @apply bg-gray-100 font-bold text-xs uppercase; }
-        .thin-table td { border: 1px solid #000 !important; padding: 0 6px; font-size: 0.85rem; font-weight: normal; height: 32px; overflow: hidden; }
+        .thin-table th { border: 1px solid #000 !important; padding: 8px; @apply bg-gray-100 font-black text-[0.9rem] uppercase; }
+        .thin-table td { border: 1px solid #000 !important; padding: 0 8px; font-size: 0.95rem; font-weight: 400; height: 38px; overflow: hidden; }
         .table-container { background: white; border: 1px solid #000; }
         
-        .tab-btn { @apply px-3 py-1 border-2 border-black font-bold mr-1 mb-1 transition-all text-xs shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]; }
+        .tab-btn { @apply px-4 py-1.5 border-2 border-black font-black mr-2 mb-1 transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
         .tab-active { @apply bg-black text-white; }
         .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
 
-        .page-num { @apply px-2 py-0.5 border border-black font-bold mx-0.5 transition-all text-xs; }
+        .page-num { @apply px-3 py-1 border border-black font-bold mx-0.5 transition-all text-sm; }
         .page-num-active { @apply bg-black text-white; }
         .page-num-inactive { @apply bg-white text-black hover:bg-gray-200; }
     </style>
@@ -74,21 +77,21 @@
     <div class="bg-overlay"></div>
 
     <div id="customAlert" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-white border-4 border-black p-6 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-            <h2 class="text-xl font-black mb-2 uppercase text-red-600">Missing Info</h2>
-            <p class="text-md font-bold mb-4">Please complete all required fields.</p>
-            <button onclick="closeAlert()" class="bg-black text-white font-bold py-2 px-6 hover:bg-gray-800 transition-all uppercase">Got it</button>
+        <div class="bg-white border-4 border-black p-8 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+            <h2 class="text-2xl font-black mb-2 uppercase text-red-600">Missing Info</h2>
+            <p class="text-lg font-bold mb-4">Please complete all required fields.</p>
+            <button onclick="closeAlert()" class="bg-black text-white font-black py-2 px-8 hover:bg-gray-800 transition-all uppercase">Got it</button>
         </div>
     </div>
 
-    <div class="max-w-5xl mx-auto bg-white/95 shadow-2xl border-2 border-black overflow-hidden mb-4">
-        <div class="bg-yellow-400 p-2 text-center border-b-2 border-black">
-            <h1 class="text-2xl font-black italic tracking-tight text-black uppercase">Data Entry Portal</h1>
+    <div class="max-w-7xl mx-auto bg-white/95 shadow-2xl border-2 border-black overflow-hidden mb-4">
+        <div class="bg-yellow-400 p-3 text-center border-b-2 border-black">
+            <h1 class="text-3xl font-black italic tracking-tight text-black uppercase">Data Entry Portal</h1>
         </div>
 
         <form id="entryForm" class="p-4" novalidate autocomplete="off">
             <input type="hidden" id="editRowId" value="-1">
-            <div class="border-2 border-black mb-3 bg-white">
+            <div class="border-2 border-black mb-1 bg-white">
                 <div class="input-row"><div class="label-cell">Full Name:</div><input type="text" id="fullName" class="input-cell" placeholder="Enter name"></div>
                 <div class="input-row"><div class="label-cell">Position:</div>
                     <select id="position" class="input-cell">
@@ -101,7 +104,7 @@
                 <div class="input-row"><div id="idLabel" class="label-cell">Student ID:</div><input type="text" id="idInput" class="input-cell" placeholder="PIL-XX-XXXX"></div>
                 <div class="input-row"><div class="label-cell">Department:</div>
                     <select id="dept" class="input-cell">
-                        <option value="" class="text-gray-400 bg-white">Select dept</option>
+                        <option value="" class="text-gray-400 bg-white">Select department</option>
                         <option value="CANR" class="opt-canr">CANR</option>
                         <option value="CDE" class="opt-cde">CDE</option>
                         <option value="CAS" class="opt-cas">CAS</option>
@@ -109,7 +112,6 @@
                         <option value="CEFS" class="opt-cefs">CEFS</option>
                         <option value="CVM" class="opt-cvm">CVM</option>
                         <option value="GS" class="opt-gs">GS</option>
-                        <option value="Non-Teaching Personnel" class="opt-non-teaching">Non-Teaching Personnel</option>
                     </select>
                 </div>
                 <div class="input-row"><div class="label-cell border-b-0">Purpose:</div>
@@ -130,9 +132,9 @@
                 </div>
             </div>
 
-            <div class="flex justify-end gap-2 mb-2">
-                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-bold py-1.5 px-6 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all uppercase text-sm">Cancel</button>
-                <button type="submit" id="submitBtn" class="bg-[#00FF00] hover:bg-green-400 text-black font-bold py-1.5 px-8 rounded-lg border-2 border-black text-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 transition-all">SAVE</button>
+            <div class="flex justify-end gap-2 pt-1 pb-1">
+                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-black py-2 px-6 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all uppercase text-sm">Cancel</button>
+                <button type="submit" id="submitBtn" class="bg-[#00FF00] hover:bg-green-400 text-black font-black py-2 px-12 rounded-lg border-2 border-black text-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 transition-all">SAVE</button>
             </div>
         </form>
 
@@ -146,13 +148,13 @@
             <div class="table-container">
                 <table id="dataTable" class="w-full thin-table text-center">
                     <colgroup>
-                        <col style="width: 100px;">
-                        <col style="width: 200px;">
-                        <col style="width: 130px;">
+                        <col style="width: 110px;">
+                        <col style="width: 240px;">
+                        <col style="width: 150px;">
+                        <col style="width: 140px;">
                         <col style="width: 120px;">
-                        <col style="width: 80px;">
-                        <col style="width: 200px;">
-                        <col style="width: 90px;">
+                        <col style="width: 250px;">
+                        <col style="width: 110px;">
                     </colgroup>
                     <thead>
                         <tr>
@@ -160,7 +162,7 @@
                             <th class="text-left">Name</th>
                             <th>Status</th>
                             <th>ID Number</th>
-                            <th>Dept</th>
+                            <th>Department</th>
                             <th>Purpose</th>
                             <th>Actions</th>
                         </tr>
@@ -168,7 +170,7 @@
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div id="paginationControls" class="flex justify-center items-center gap-1 mt-3 pb-2"></div>
+            <div id="paginationControls" class="flex justify-center items-center gap-1 mt-4 pb-2"></div>
         </div>
     </div>
 
@@ -198,7 +200,7 @@
                 tableBody.innerHTML = '';
                 for(let i=0; i<10; i++) {
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td colspan="7" class="${i===0 ? 'text-blue-600 animate-pulse font-bold' : ''}">${i===0 ? 'SYNCING...' : ''}</td>`;
+                    tr.innerHTML = `<td colspan="7" class="${i===0 ? 'text-blue-600 animate-pulse font-black text-lg' : ''}">${i===0 ? 'SYNCING...' : ''}</td>`;
                     tableBody.appendChild(tr);
                 }
             }
@@ -206,11 +208,13 @@
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 allData = await response.json();
                 renderPortal();
-            } catch (error) {
-                console.error(error);
+            } catch (error) { 
+                console.error(error); 
+                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-500 font-bold">Failed to load data. Please check connection.</td></tr>';
             }
         }
 
+        // Logic to toggle Student/Employee ID labeling
         document.getElementById('position').addEventListener('change', function() {
             const isEmp = (this.value === "Teaching Personnel" || this.value === "Non-Teaching Personnel");
             document.getElementById('idLabel').textContent = isEmp ? "Employee ID:" : "Student ID:";
@@ -235,6 +239,7 @@
             
             const tempRecord = { rowId: action === "edit" ? rowId : "temp-" + Date.now(), date: formattedDate, monthLabel, name, pos, idNum, dept, purp };
 
+            // Optimistic update
             if (action === "addRow") { allData.push(tempRecord); currentPage = 1; } 
             else { const idx = allData.findIndex(d => d.rowId == rowId); if (idx !== -1) allData[idx] = tempRecord; }
 
@@ -258,12 +263,14 @@
             tabContainer.innerHTML = '';
             const months = [...new Set(allData.map(item => item.monthLabel))].filter(m => m && m.startsWith('Month of'));
             
+            // All Button
             const allBtn = document.createElement('button');
             allBtn.textContent = 'ALL';
             allBtn.className = `tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}`;
             allBtn.onclick = () => { currentFilter = 'All'; currentPage = 1; renderPortal(); };
             tabContainer.appendChild(allBtn);
             
+            // Dynamic Month Buttons
             months.forEach(m => {
                 const btn = document.createElement('button');
                 btn.textContent = m.replace("Month of ", "").toUpperCase();
@@ -279,18 +286,15 @@
             const pageData = filteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
             tableBody.innerHTML = '';
-            // Add actual data rows
             pageData.forEach(data => addTableRowUI(data));
             
-            // Add empty placeholder rows to maintain exactly 10 rows
-            const emptyRowsNeeded = rowsPerPage - pageData.length;
-            for (let i = 0; i < emptyRowsNeeded; i++) {
+            // Fill empty rows to maintain table height
+            for (let i = 0; i < (rowsPerPage - pageData.length); i++) {
                 const tr = document.createElement('tr');
                 tr.className = "bg-white border-b border-gray-100";
                 tr.innerHTML = `<td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td>`;
                 tableBody.appendChild(tr);
             }
-
             renderPaginationControls(totalPages);
         }
 
@@ -302,14 +306,14 @@
             
             row.innerHTML = `
                 <td class="truncate">${data.date}</td>
-                <td class="text-left truncate font-medium">${data.name}</td>
-                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[9px] font-normal inline-block w-full truncate">${data.pos}</span></td>
+                <td class="text-left truncate font-normal">${data.name}</td>
+                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-1 rounded-full text-[10px] font-bold inline-block w-full truncate">${data.pos}</span></td>
                 <td class="truncate">${data.idNum}</td>
-                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[9px] font-normal inline-block w-full truncate">${data.dept}</span></td>
-                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-0.5 rounded text-[9px] font-normal inline-block w-full truncate">${data.purp}</span></td>
+                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-1 rounded-full text-[10px] font-bold inline-block w-full truncate">${data.dept}</span></td>
+                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-1 rounded text-[10px] font-bold inline-block w-full truncate">${data.purp}</span></td>
                 <td class="whitespace-nowrap">
-                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 hover:underline text-[10px]">EDIT</button>
-                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 hover:underline text-[10px] ml-1">DEL</button>
+                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 hover:underline text-[11px] font-black">EDIT</button>
+                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 hover:underline text-[11px] font-black ml-2">DEL</button>
                 </td>
             `;
             tableBody.appendChild(row);
@@ -317,8 +321,7 @@
 
         function renderPaginationControls(totalPages) {
             paginationControls.innerHTML = '';
-            if (totalPages <= 1) return;
-            const btnClass = 'px-2 py-0.5 bg-black text-white font-bold disabled:opacity-30 uppercase text-[10px]';
+            const btnClass = 'px-3 py-1 bg-black text-white font-black disabled:opacity-30 uppercase text-[11px]';
             
             const prevBtn = document.createElement('button');
             prevBtn.textContent = 'PREV';
@@ -337,7 +340,7 @@
 
             const nextBtn = document.createElement('button');
             nextBtn.textContent = 'NEXT';
-            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
             nextBtn.className = btnClass;
             nextBtn.onclick = () => { currentPage++; renderPortal(); };
             paginationControls.appendChild(nextBtn);
@@ -381,12 +384,24 @@
         cancelEditBtn.onclick = () => { entryForm.reset(); resetEditState(); };
 
         function getDeptColor(dept) {
-            const colors = {'CANR': '#15803D', 'CDE': '#1D4ED8', 'CAS': '#EF4444', 'CEM': '#FACC15', 'CEFS': '#FB923C', 'CVM': '#93C5FD', 'GS': '#9CA3AF', 'Non-Teaching Personnel': '#7E22CE'};
+            const colors = {'CANR': '#15803D', 'CDE': '#1D4ED8', 'CAS': '#EF4444', 'CEM': '#FACC15', 'CEFS': '#FB923C', 'CVM': '#93C5FD', 'GS': '#9CA3AF'};
             return colors[dept] || '#374151';
         }
 
         function getPurpColor(purp) {
-            const colors = {'IE & VLP Password Reset': '#6D28D9', 'IE Password Reset': '#FACC15', 'VLP Password Reset': '#15803D', 'Update IE Account Details': '#FEF08A', 'Update VLP Account Details': '#86EFAC', 'Update IE & VLP Account Details': '#FCA5A5', 'Hotspot Password Reset': '#1D4ED8', 'IE & Hotspot Password Reset': '#F97316', 'VLP & Hotspot Password Reset': '#FFEDD5', 'IE, VLP, Hotspot Reset': '#B91C1C', 'Zoom Account': '#2563EB'};
+            const colors = {
+                'IE & VLP Password Reset': '#6D28D9', 
+                'IE Password Reset': '#FACC15', 
+                'VLP Password Reset': '#15803D', 
+                'Update IE Account Details': '#FEF08A', 
+                'Update VLP Account Details': '#86EFAC', 
+                'Update IE & VLP Account Details': '#FCA5A5', 
+                'Hotspot Password Reset': '#1D4ED8', 
+                'IE & Hotspot Password Reset': '#F97316', 
+                'VLP & Hotspot Password Reset': '#FFEDD5', 
+                'IE, VLP, Hotspot Reset': '#B91C1C', 
+                'Zoom Account': '#2563EB'
+            };
             return colors[purp] || '#374151';
         }
     </script>
