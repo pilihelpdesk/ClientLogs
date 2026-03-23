@@ -83,7 +83,7 @@
     </div>
 
     <div class="max-w-6xl mx-auto bg-white/95 shadow-2xl border-2 border-black overflow-hidden mb-12">
-        <div class="bg-cyan-400 p-4 text-center border-b-2 border-black">
+        <div class="bg-yellow-400 p-4 text-center border-b-2 border-black">
             <h1 class="text-4xl font-black italic tracking-tight text-black uppercase">Please enter your details completely</h1>
         </div>
 
@@ -177,18 +177,23 @@
 
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
-        window.onload = loadCloudData;
+        // Initial load with the pulse loader
+        window.onload = () => loadCloudData(false);
 
         function closeAlert() { alertBox.classList.add('hidden'); }
 
-        async function loadCloudData() {
-            tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse">SYNCING WITH CLOUD...</td></tr>';
+        async function loadCloudData(silent = false) {
+            if (!silent) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse">SYNCING WITH CLOUD...</td></tr>';
+            }
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 allData = await response.json();
                 renderPortal();
             } catch (error) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Sync Error. Check Internet.</td></tr>';
+                if (!silent) {
+                    tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Sync Error. Check Internet.</td></tr>';
+                }
             }
         }
 
@@ -211,49 +216,60 @@
             const rowId = editRowIdInput.value;
             const action = rowId === "-1" ? "addRow" : "edit";
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
-
+            // Prepare local temporary data
             const now = new Date();
             const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
             const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-
-            const entryData = { 
-                action, rowId, date: formattedDate, monthLabel: monthLabel, 
-                name, pos, idNum, dept, purp 
+            
+            const tempRecord = { 
+                rowId: action === "edit" ? rowId : "temp-" + Date.now(), 
+                date: formattedDate, monthLabel, name, pos, idNum, dept, purp 
             };
 
+            // OPTIMISTIC UPDATE: Update UI instantly
+            if (action === "addRow") {
+                addTableRowUI(tempRecord, true); // Add to top of table
+            } else {
+                const rowToUpdate = document.querySelector(`tr[data-id="${rowId}"]`);
+                if (rowToUpdate) updateRowCells(rowToUpdate, tempRecord);
+            }
+
+            // Lock button and reset form
+            submitBtn.disabled = true;
+            submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
+            
+            const entryData = { action, rowId, date: formattedDate, monthLabel, name, pos, idNum, dept, purp };
+            
             try {
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify(entryData)
                 });
+
+                // Clear form but don't show the big loader
                 entryForm.reset(); 
                 resetEditState();
-                setTimeout(loadCloudData, 1500); 
+                
+                // Silent background re-sync to ensure IDs are correct
+                setTimeout(() => loadCloudData(true), 2000); 
             } catch (error) {
-                alert("Error saving.");
+                alert("Cloud Sync Error. Please refresh.");
                 submitBtn.disabled = false;
             }
         });
 
         function renderPortal() {
-            // FIX: Always clear container before rebuilding buttons
             tabContainer.innerHTML = '';
-            
-            // FIX: Ensure only valid "Month of" strings are used and filter out raw timestamps
             const months = [...new Set(allData.map(item => item.monthLabel))]
                 .filter(m => m && typeof m === 'string' && m.startsWith('Month of'));
             
-            // Add "All Records" tab
             const allBtn = document.createElement('button');
             allBtn.textContent = 'All Records-';
             allBtn.className = `tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}`;
             allBtn.onclick = () => filterByMonth('All');
             tabContainer.appendChild(allBtn);
             
-            // Add specific month tabs
             months.forEach(m => {
                 const btn = document.createElement('button');
                 btn.textContent = m;
@@ -264,30 +280,44 @@
 
             tableBody.innerHTML = '';
             const displayedData = [...allData].reverse();
-            
             displayedData.forEach((data) => {
                 if (currentFilter !== 'All' && data.monthLabel !== currentFilter) return;
-
-                const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
-                const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
-                
-                const row = document.createElement('tr');
-                row.className = "bg-white border-b border-black";
-                row.innerHTML = `
-                    <td>${data.date}</td>
-                    <td class="text-left font-bold">${data.name}</td>
-                    <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-3 py-1 rounded-full text-[10px]">${data.pos}</span></td>
-                    <td>${data.idNum}</td>
-                    <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-3 py-1 rounded-full text-[10px]">${data.dept}</span></td>
-                    <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-3 py-1 rounded-md text-[10px]">${data.purp}</span></td>
-                    <td class="p-2 whitespace-nowrap">
-                        <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline px-1">EDIT</button>
-                        <span class="text-gray-300">|</span>
-                        <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
+                addTableRowUI(data);
             });
+        }
+
+        // Helper to add row to the DOM
+        function addTableRowUI(data, isNew = false) {
+            const row = document.createElement('tr');
+            row.setAttribute('data-id', data.rowId);
+            row.className = "bg-white border-b border-black";
+            updateRowCells(row, data);
+            
+            if (isNew) {
+                tableBody.prepend(row);
+            } else {
+                tableBody.appendChild(row);
+            }
+        }
+
+        // Helper to populate cells
+        function updateRowCells(row, data) {
+            const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
+            const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
+            
+            row.innerHTML = `
+                <td>${data.date}</td>
+                <td class="text-left font-bold">${data.name}</td>
+                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-3 py-1 rounded-full text-[10px]">${data.pos}</span></td>
+                <td>${data.idNum}</td>
+                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-3 py-1 rounded-full text-[10px]">${data.dept}</span></td>
+                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-3 py-1 rounded-md text-[10px]">${data.purp}</span></td>
+                <td class="p-2 whitespace-nowrap">
+                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline px-1">EDIT</button>
+                    <span class="text-gray-300">|</span>
+                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
+                </td>
+            `;
         }
 
         function editRow(rowId) {
@@ -310,14 +340,23 @@
 
         async function deleteRow(rowId) {
             if (!confirm("Delete this record permanently?")) return;
+            
+            // Optimistic Delete from UI
+            const row = document.querySelector(`tr[data-id="${rowId}"]`);
+            if (row) row.style.opacity = '0.3'; // Fade while deleting
+
             try {
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify({ action: 'delete', rowId })
                 });
-                setTimeout(loadCloudData, 1000);
-            } catch (e) { alert("Delete failed."); }
+                if (row) row.remove();
+                setTimeout(() => loadCloudData(true), 1000);
+            } catch (e) { 
+                alert("Delete failed."); 
+                if (row) row.style.opacity = '1';
+            }
         }
 
         function resetEditState() {
