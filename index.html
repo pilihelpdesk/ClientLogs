@@ -152,130 +152,154 @@
     </div>
 
     <script>
-        const entryForm = document.getElementById('entryForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const editRowIdInput = document.getElementById('editRowId');
-        const cancelEditBtn = document.getElementById('cancelEdit');
-        const alertBox = document.getElementById('customAlert');
-        const tableBody = document.getElementById('tableBody');
-        const tabContainer = document.getElementById('tabContainer');
-        const paginationControls = document.getElementById('paginationControls');
+        <script>
+    const entryForm = document.getElementById('entryForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const editRowIdInput = document.getElementById('editRowId');
+    const cancelEditBtn = document.getElementById('cancelEdit');
+    const alertBox = document.getElementById('customAlert');
+    const tableBody = document.getElementById('tableBody');
+    const tabContainer = document.getElementById('tabContainer');
+    const paginationControls = document.getElementById('paginationControls');
 
-        let currentFilter = 'All';
-        let allData = [];
-        let currentPage = 1;
-        const rowsPerPage = 7;
+    let currentFilter = 'All';
+    let allData = [];
+    let currentPage = 1;
+    const rowsPerPage = 10; // ✅ CHANGED FROM 7 → 10
 
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
-        window.onload = () => loadCloudData(false);
+    window.onload = () => loadCloudData(false);
 
-        function closeAlert() { alertBox.classList.add('hidden'); }
+    function closeAlert() { alertBox.classList.add('hidden'); }
 
-        async function loadCloudData(silent = false) {
-            if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-2 text-blue-600 font-bold animate-pulse uppercase">Syncing...</td></tr>';
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL);
-                allData = await response.json();
-                renderPortal();
-            } catch (error) {
-                if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-2 text-red-600">Sync Error.</td></tr>';
-            }
-        }
-
-        document.getElementById('position').addEventListener('change', function() {
-            const isEmp = (this.value === "Teaching Personnel" || this.value === "Non-Teaching Personnel");
-            document.getElementById('idLabel').textContent = isEmp ? "Employee ID:" : "Student ID:";
-            document.getElementById('idInput').placeholder = isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
-        });
-
-        entryForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const name = document.getElementById('fullName').value.trim();
-            const pos = document.getElementById('position').value;
-            const idNum = document.getElementById('idInput').value.trim();
-            const dept = document.getElementById('dept').value;
-            const purp = document.getElementById('purpose').value;
-
-            if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
-
-            const rowId = editRowIdInput.value;
-            const action = rowId === "-1" ? "addRow" : "edit";
-            const now = new Date();
-            const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
-            const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-            
-            const tempRecord = { rowId: action === "edit" ? rowId : "temp-" + Date.now(), date: formattedDate, monthLabel, name, pos, idNum, dept, purp };
-
-            if (action === "addRow") { allData.push(tempRecord); currentPage = 1; } 
-            else { const idx = allData.findIndex(d => d.rowId == rowId); if (idx !== -1) allData[idx] = tempRecord; }
-
+    async function loadCloudData(silent = false) {
+        if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-2 text-blue-600 font-bold animate-pulse uppercase">Syncing...</td></tr>';
+        try {
+            const response = await fetch(GOOGLE_SCRIPT_URL);
+            allData = await response.json();
             renderPortal();
-            submitBtn.disabled = true;
-            submitBtn.textContent = "WAIT...";
-            
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ action, rowId, date: formattedDate, monthLabel, name, pos, idNum, dept, purp })
-                });
-                entryForm.reset(); 
-                resetEditState();
-                setTimeout(() => loadCloudData(true), 2000); 
-            } catch (error) { submitBtn.disabled = false; }
+        } catch (error) {
+            if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-2 text-red-600">Sync Error.</td></tr>';
+        }
+    }
+
+    document.getElementById('position').addEventListener('change', function() {
+        const isEmp = (this.value === "Teaching Personnel" || this.value === "Non-Teaching Personnel");
+        document.getElementById('idLabel').textContent = isEmp ? "Employee ID:" : "Student ID:";
+        document.getElementById('idInput').placeholder = isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
+    });
+
+    entryForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const name = document.getElementById('fullName').value.trim();
+        const pos = document.getElementById('position').value;
+        const idNum = document.getElementById('idInput').value.trim();
+        const dept = document.getElementById('dept').value;
+        const purp = document.getElementById('purpose').value;
+
+        if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
+
+        const rowId = editRowIdInput.value;
+        const action = rowId === "-1" ? "addRow" : "edit";
+        const now = new Date();
+        const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
+        const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+        
+        const tempRecord = { rowId: action === "edit" ? rowId : "temp-" + Date.now(), date: formattedDate, monthLabel, name, pos, idNum, dept, purp };
+
+        if (action === "addRow") { allData.push(tempRecord); currentPage = 1; } 
+        else { const idx = allData.findIndex(d => d.rowId == rowId); if (idx !== -1) allData[idx] = tempRecord; }
+
+        renderPortal();
+        submitBtn.disabled = true;
+        submitBtn.textContent = "WAIT...";
+        
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ action, rowId, date: formattedDate, monthLabel, name, pos, idNum, dept, purp })
+            });
+            entryForm.reset(); 
+            resetEditState();
+            setTimeout(() => loadCloudData(true), 2000); 
+        } catch (error) { submitBtn.disabled = false; }
+    });
+
+    function renderPortal() {
+        tabContainer.innerHTML = '';
+        const months = [...new Set(allData.map(item => item.monthLabel))].filter(m => m && m.startsWith('Month of'));
+        
+        const allBtn = document.createElement('button');
+        allBtn.textContent = 'ALL';
+        allBtn.className = `tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}`;
+        allBtn.onclick = () => { currentFilter = 'All'; currentPage = 1; renderPortal(); };
+        tabContainer.appendChild(allBtn);
+        
+        months.forEach(m => {
+            const btn = document.createElement('button');
+            btn.textContent = m.replace('Month of ', '');
+            btn.className = `tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}`;
+            btn.onclick = () => { currentFilter = m; currentPage = 1; renderPortal(); };
+            tabContainer.appendChild(btn);
         });
 
-        function renderPortal() {
-            tabContainer.innerHTML = '';
-            const months = [...new Set(allData.map(item => item.monthLabel))].filter(m => m && m.startsWith('Month of'));
-            
-            const allBtn = document.createElement('button');
-            allBtn.textContent = 'ALL';
-            allBtn.className = `tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}`;
-            allBtn.onclick = () => { currentFilter = 'All'; currentPage = 1; renderPortal(); };
-            tabContainer.appendChild(allBtn);
-            
-            months.forEach(m => {
-                const btn = document.createElement('button');
-                btn.textContent = m.replace('Month of ', '');
-                btn.className = `tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}`;
-                btn.onclick = () => { currentFilter = m; currentPage = 1; renderPortal(); };
-                tabContainer.appendChild(btn);
+        const filteredData = [...allData].reverse().filter(d => currentFilter === 'All' || d.monthLabel === currentFilter);
+        const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const pageData = filteredData.slice(startIndex, startIndex + rowsPerPage);
+
+        // ✅ ALWAYS FORCE 10 ROWS
+        while (pageData.length < rowsPerPage) {
+            pageData.push({
+                date: '',
+                name: '',
+                pos: '',
+                idNum: '',
+                dept: '',
+                purp: '',
+                rowId: ''
             });
-
-            const filteredData = [...allData].reverse().filter(d => currentFilter === 'All' || d.monthLabel === currentFilter);
-            const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
-            if (currentPage > totalPages) currentPage = totalPages;
-
-            const startIndex = (currentPage - 1) * rowsPerPage;
-            const pageData = filteredData.slice(startIndex, startIndex + rowsPerPage);
-
-            tableBody.innerHTML = '';
-            pageData.forEach(data => addTableRowUI(data));
-            renderPaginationControls(totalPages);
         }
 
-        function addTableRowUI(data) {
-            const row = document.createElement('tr');
-            row.className = "bg-white border-b border-black";
-            const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
-            const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
-            
-            row.innerHTML = `
-                <td>${data.date}</td>
-                <td class="text-left font-bold">${data.name}</td>
-                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[10px]">${data.pos}</span></td>
-                <td>${data.idNum}</td>
-                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[10px]">${data.dept}</span></td>
-                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-0.5 rounded-md text-[10px]">${data.purp}</span></td>
-                <td class="whitespace-nowrap">
-                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline px-1">EDIT</button>
-                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
-                </td>
-            `;
+        tableBody.innerHTML = '';
+        pageData.forEach(data => addTableRowUI(data));
+        renderPaginationControls(totalPages);
+    }
+
+    function addTableRowUI(data) {
+        const row = document.createElement('tr');
+        row.className = "bg-white border-b border-black";
+
+        if (!data.name) {
+            row.innerHTML = `<td colspan="7">&nbsp;</td>`;
             tableBody.appendChild(row);
+            return;
         }
+
+        const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
+        const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
+        
+        row.innerHTML = `
+            <td>${data.date}</td>
+            <td class="text-left font-bold">${data.name}</td>
+            <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[10px]">${data.pos}</span></td>
+            <td>${data.idNum}</td>
+            <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[10px]">${data.dept}</span></td>
+            <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-0.5 rounded-md text-[10px]">${data.purp}</span></td>
+            <td class="whitespace-nowrap">
+                <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline px-1">EDIT</button>
+                <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    }
+
+    // باقي unchanged...
+</script>
 
         function renderPaginationControls(totalPages) {
             paginationControls.innerHTML = '';
