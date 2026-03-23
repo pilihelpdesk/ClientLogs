@@ -39,52 +39,43 @@
         .opt-cefs { background-color: #FB923C !important; }
         .opt-cvm { background-color: #93C5FD !important; color: black !important; }
         .opt-gs { background-color: #9CA3AF !important; }
-        .opt-vlp-ie-reset { background-color: #6D28D9 !important; }
-        .opt-ie-reset { background-color: #FACC15 !important; color: black !important; }
-        .opt-vlp-reset { background-color: #15803D !important; }
-        .opt-upd-ie { background-color: #FEF08A !important; color: black !important; }
-        .opt-upd-vlp { background-color: #86EFAC !important; color: black !important; }
-        .opt-upd-both { background-color: #FCA5A5 !important; color: black !important; }
-        .opt-hotspot { background-color: #1D4ED8 !important; }
-        .opt-ie-hot { background-color: #F97316 !important; }
-        .opt-vlp-hot { background-color: #FFEDD5 !important; color: black !important; }
-        .opt-all-reset { background-color: #B91C1C !important; }
-        .opt-zoom { background-color: #2563EB !important; }
         
-        .thin-table { border: 1px solid #000 !important; border-collapse: collapse; }
-        .thin-table th { border: 1px solid #000 !important; @apply p-2 bg-gray-100 font-bold; }
-        .thin-table td { border: 1px solid #000 !important; @apply p-2; }
-        .table-container { min-height: 350px; background: white; border: 1px solid #000; }
-        .tab-btn { @apply px-4 py-2 border-2 border-black font-bold mr-2 mb-2 transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
+        /* Table Styles - Compact & Readable */
+        .thin-table { border: 2px solid #000 !important; border-collapse: collapse; font-size: 1rem; } /* Increased Font Size */
+        .thin-table th { border: 1px solid #000 !important; @apply p-2 bg-gray-100 font-bold uppercase; }
+        .thin-table td { border: 1px solid #000 !important; @apply p-1.5; } /* Tighter padding */
+        .table-container { min-height: 380px; background: white; border: 1px solid #000; }
+        
+        .tab-btn { @apply px-3 py-1.5 border-2 border-black font-bold mr-2 mb-2 transition-all text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
         .tab-active { @apply bg-black text-white; }
         .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
 
         /* Pagination Styling */
-        .page-num { @apply px-3 py-1 border border-black font-bold mx-1 transition-all; }
+        .page-num { @apply px-3 py-1 border border-black font-bold mx-0.5 transition-all text-sm; }
         .page-num-active { @apply bg-black text-white; }
         .page-num-inactive { @apply bg-white text-black hover:bg-gray-200; }
     </style>
 </head>
-<body class="p-6 font-sans relative">
+<body class="p-4 font-sans relative">
 
     <div class="bg-overlay"></div>
 
     <div id="customAlert" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div class="bg-white border-4 border-black p-8 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
             <h2 class="text-2xl font-black mb-4 uppercase text-red-600">Missing Info</h2>
-            <p class="text-lg font-bold mb-6">Please complete all required fields before clicking SAVE.</p>
+            <p class="text-lg font-bold mb-6">Complete all fields before clicking SAVE.</p>
             <button onclick="closeAlert()" class="bg-black text-white font-bold py-2 px-8 hover:bg-gray-800 transition-all uppercase">Got it</button>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto bg-white/95 shadow-2xl border-2 border-black overflow-hidden mb-12">
-        <div class="bg-yellow-400 p-4 text-center border-b-2 border-black">
-            <h1 class="text-4xl font-black italic tracking-tight text-black uppercase">Please enter your details completely</h1>
+    <div class="max-w-6xl mx-auto bg-white/95 shadow-2xl border-2 border-black overflow-hidden mb-4">
+        <div class="bg-yellow-400 p-3 text-center border-b-2 border-black">
+            <h1 class="text-3xl font-black italic tracking-tight text-black uppercase">Please enter your details completely</h1>
         </div>
 
-        <form id="entryForm" class="p-6" novalidate autocomplete="off">
+        <form id="entryForm" class="p-4" novalidate autocomplete="off">
             <input type="hidden" id="editRowId" value="-1">
-            <div class="border-2 border-black mb-4 bg-white">
+            <div class="border-2 border-black mb-3 bg-white">
                 <div class="input-row"><div class="label-cell">Full Name:</div><input type="text" id="fullName" class="input-cell" placeholder="Enter full name"></div>
                 <div class="input-row"><div class="label-cell">Position:</div>
                     <select id="position" class="input-cell">
@@ -126,37 +117,40 @@
                 </div>
             </div>
 
-            <div class="flex justify-end gap-4 mb-6">
-                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-bold py-3 px-8 rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all uppercase">Cancel</button>
-                <button type="submit" id="submitBtn" class="bg-[#00FF00] hover:bg-green-400 text-black font-bold py-3 px-12 rounded-xl border-2 border-black text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 transition-all">SAVE</button>
+            <div class="flex justify-end gap-3 mb-2">
+                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-bold py-2 px-6 rounded-lg border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all uppercase text-sm">Cancel</button>
+                <button type="submit" id="submitBtn" class="bg-[#00FF00] hover:bg-green-400 text-black font-bold py-2 px-10 rounded-lg border-2 border-black text-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 transition-all">SAVE</button>
             </div>
         </form>
 
         <hr class="border-t-2 border-black">
 
-        <div class="p-6 pb-0">
-            <h3 class="font-bold mb-2 uppercase text-xs italic tracking-widest text-gray-600">Filter by Month:</h3>
-            <div id="tabContainer" class="flex flex-wrap"></div>
-        </div>
+        <div class="px-4 py-2">
+            <div class="flex items-center justify-between mb-2">
+                <div>
+                    <h3 class="font-bold uppercase text-[10px] italic tracking-widest text-gray-600">Filter by Month:</h3>
+                    <div id="tabContainer" class="flex flex-wrap mt-1"></div>
+                </div>
+            </div>
 
-        <div class="p-6 pt-2">
             <div class="table-container">
-                <table id="dataTable" class="w-full thin-table text-sm text-center">
+                <table id="dataTable" class="w-full thin-table text-center">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Complete Name</th>
-                            <th>Status</th>
-                            <th>ID Number</th>
-                            <th>Department</th>
-                            <th>Purpose:</th>
-                            <th>Actions</th>
+                            <th class="w-[10%]">Date</th>
+                            <th class="w-[20%]">Complete Name</th>
+                            <th class="w-[15%]">Status</th>
+                            <th class="w-[12%]">ID Number</th>
+                            <th class="w-[13%]">Department</th>
+                            <th class="w-[20%]">Purpose:</th>
+                            <th class="w-[10%]">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div id="paginationControls" class="flex justify-center items-center gap-2 mt-4 pb-4"></div>
+            
+            <div id="paginationControls" class="flex justify-center items-center gap-1 py-3"></div>
         </div>
     </div>
 
@@ -183,16 +177,14 @@
 
         async function loadCloudData(silent = false) {
             if (!silent) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse uppercase">Syncing with cloud...</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse uppercase">Syncing...</td></tr>';
             }
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 allData = await response.json();
                 renderPortal();
             } catch (error) {
-                if (!silent) {
-                    tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Sync Error. Check Internet.</td></tr>';
-                }
+                if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Check Connection.</td></tr>';
             }
         }
 
@@ -224,7 +216,6 @@
                 date: formattedDate, monthLabel, name, pos, idNum, dept, purp 
             };
 
-            // OPTIMISTIC UPDATE
             if (action === "addRow") {
                 allData.push(tempRecord);
                 currentPage = 1; 
@@ -233,8 +224,7 @@
                 if (idx !== -1) allData[idx] = tempRecord;
             }
 
-            renderPortal(); // Re-render instantly
-
+            renderPortal();
             submitBtn.disabled = true;
             submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
             
@@ -246,33 +236,31 @@
                 });
                 entryForm.reset(); 
                 resetEditState();
-                setTimeout(() => loadCloudData(true), 2000); 
+                setTimeout(() => loadCloudData(true), 1500); 
             } catch (error) {
                 submitBtn.disabled = false;
             }
         });
 
         function renderPortal() {
-            // Render Tabs
             tabContainer.innerHTML = '';
             const months = [...new Set(allData.map(item => item.monthLabel))]
                 .filter(m => m && typeof m === 'string' && m.startsWith('Month of'));
             
             const allBtn = document.createElement('button');
-            allBtn.textContent = 'All Records';
+            allBtn.textContent = 'ALL RECORDS-';
             allBtn.className = `tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}`;
             allBtn.onclick = () => { currentFilter = 'All'; currentPage = 1; renderPortal(); };
             tabContainer.appendChild(allBtn);
             
             months.forEach(m => {
                 const btn = document.createElement('button');
-                btn.textContent = m;
+                btn.textContent = m.toUpperCase();
                 btn.className = `tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}`;
                 btn.onclick = () => { currentFilter = m; currentPage = 1; renderPortal(); };
                 tabContainer.appendChild(btn);
             });
 
-            // Filter and Paginate
             const filteredData = [...allData].reverse().filter(d => 
                 currentFilter === 'All' || d.monthLabel === currentFilter
             );
@@ -285,7 +273,6 @@
 
             tableBody.innerHTML = '';
             pageData.forEach(data => addTableRowUI(data));
-
             renderPaginationControls(totalPages);
         }
 
@@ -296,16 +283,16 @@
             const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
             
             row.innerHTML = `
-                <td>${data.date}</td>
-                <td class="text-left font-bold">${data.name}</td>
-                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-3 py-1 rounded-full text-[10px]">${data.pos}</span></td>
-                <td>${data.idNum}</td>
-                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-3 py-1 rounded-full text-[10px]">${data.dept}</span></td>
-                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-3 py-1 rounded-md text-[10px]">${data.purp}</span></td>
-                <td class="p-2 whitespace-nowrap">
-                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline px-1">EDIT</button>
-                    <span class="text-gray-300">|</span>
-                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
+                <td class="font-bold">${data.date}</td>
+                <td class="text-left font-bold pl-3">${data.name}</td>
+                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase">${data.pos}</span></td>
+                <td class="font-mono text-xs">${data.idNum}</td>
+                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase">${data.dept}</span></td>
+                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase">${data.purp}</span></td>
+                <td class="whitespace-nowrap">
+                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline text-xs">EDIT</button>
+                    <span class="text-gray-300 mx-1">|</span>
+                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline text-xs">DEL</button>
                 </td>
             `;
             tableBody.appendChild(row);
@@ -315,30 +302,21 @@
             paginationControls.innerHTML = '';
             if (totalPages <= 1) return;
 
-            // Prev Button
-            const prevBtn = document.createElement('button');
-            prevBtn.textContent = 'PREV';
-            prevBtn.disabled = currentPage === 1;
-            prevBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 uppercase text-xs';
-            prevBtn.onclick = () => { currentPage--; renderPortal(); };
-            paginationControls.appendChild(prevBtn);
+            const createBtn = (text, page, active, disabled) => {
+                const b = document.createElement('button');
+                b.textContent = text;
+                b.disabled = disabled;
+                b.className = active ? 'page-num page-num-active' : 'page-num page-num-inactive';
+                if (disabled) b.style.opacity = '0.3';
+                b.onclick = () => { currentPage = page; renderPortal(); };
+                return b;
+            };
 
-            // Page Numbers
+            paginationControls.appendChild(createBtn('PREV', currentPage - 1, false, currentPage === 1));
             for (let i = 1; i <= totalPages; i++) {
-                const pBtn = document.createElement('button');
-                pBtn.textContent = i;
-                pBtn.className = `page-num ${i === currentPage ? 'page-num-active' : 'page-num-inactive'}`;
-                pBtn.onclick = () => { currentPage = i; renderPortal(); };
-                paginationControls.appendChild(pBtn);
+                paginationControls.appendChild(createBtn(i, i, i === currentPage, false));
             }
-
-            // Next Button
-            const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'NEXT';
-            nextBtn.disabled = currentPage === totalPages;
-            nextBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 uppercase text-xs';
-            nextBtn.onclick = () => { currentPage++; renderPortal(); };
-            paginationControls.appendChild(nextBtn);
+            paginationControls.appendChild(createBtn('NEXT', currentPage + 1, false, currentPage === totalPages));
         }
 
         function editRow(rowId) {
