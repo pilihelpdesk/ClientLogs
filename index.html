@@ -206,6 +206,9 @@
         const tabContainer = document.getElementById('tabContainer');
         let currentFilter = 'All';
 
+        // --- PASTE YOUR GOOGLE WEB APP URL HERE ---
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbztaW7q6E0hJuYmgbbAPItKEfy53QL1WyY9-vHjNBMIckJMe7K9mKBV9YC8TXhzgnCC/exec';
+
         window.onload = renderPortal;
 
         function closeAlert() { alertBox.classList.add('hidden'); }
@@ -237,7 +240,7 @@
             document.getElementById('idInput').placeholder = isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
         });
 
-        entryForm.addEventListener('submit', function(e) {
+        entryForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             const name = document.getElementById('fullName').value.trim();
             const pos = document.getElementById('position').value;
@@ -247,14 +250,36 @@
 
             if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
 
+            // Prepare Data
+            const now = new Date();
+            const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+            const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+            const entryData = { date: formattedDate, monthLabel: monthYear, name, pos, idNum, dept, purp };
+
+            // UI Loading State
+            submitBtn.disabled = true;
+            submitBtn.textContent = "SAVING...";
+            submitBtn.style.opacity = "0.5";
+
+            // --- ONLINE SYNC (Google Sheets) ---
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(entryData)
+                });
+            } catch (error) {
+                console.error("Online sync failed:", error);
+            }
+
+            // --- LOCAL STORAGE SYNC ---
             const savedData = JSON.parse(localStorage.getItem('portalEntries')) || [];
             const index = parseInt(editIndexInput.value);
 
             if (index === -1) {
-                const now = new Date();
-                const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-                const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-                savedData.unshift({ date: formattedDate, monthLabel: monthYear, name, pos, idNum, dept, purp });
+                savedData.unshift(entryData);
             } else {
                 savedData[index] = { ...savedData[index], name, pos, idNum, dept, purp };
                 resetEditState();
@@ -263,6 +288,11 @@
             localStorage.setItem('portalEntries', JSON.stringify(savedData));
             entryForm.reset();
             renderPortal();
+
+            // Reset UI Button
+            submitBtn.disabled = false;
+            submitBtn.textContent = "SAVE";
+            submitBtn.style.opacity = "1";
         });
 
         function renderPortal() {
