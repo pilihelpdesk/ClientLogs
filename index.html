@@ -156,7 +156,7 @@
         let currentFilter = 'All';
         let allData = [];
 
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxypxvUyRh-zaxH7B2-D9ncVX4h5thwplmTShyhWmr00FBt7RHZzEkquQWJ1od1z3N7/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmZyvHvjGwenkTDvlpRbJemEgaUnnQrtYTy8IerORcXI7knINqeHgcyj2dML3lsOz7/exec';
 
         window.onload = loadCloudData;
 
@@ -223,55 +223,62 @@
         });
 
         function renderPortal() {
-            const months = [...new Set(allData.map(item => item.monthLabel))];
-            tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
-            months.forEach(m => {
-                tabContainer.innerHTML += `<button onclick="filterByMonth('${m}')" class="tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}">${m}</button>`;
-            });
+    const months = [...new Set(allData.map(item => item.monthLabel))];
+    tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
+    months.forEach(m => {
+        tabContainer.innerHTML += `<button onclick="filterByMonth('${m}')" class="tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}">${m}</button>`;
+    });
 
-            tableBody.innerHTML = '';
-            const displayedData = [...allData].reverse();
-            
-            displayedData.forEach((data) => {
-                if (currentFilter !== 'All' && data.monthLabel !== currentFilter) return;
+    tableBody.innerHTML = '';
+    const displayedData = [...allData].reverse();
+    
+    displayedData.forEach((data) => {
+        if (currentFilter !== 'All' && data.monthLabel !== currentFilter) return;
 
-                const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
-                const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
-                
-                const row = document.createElement('tr');
-                row.className = "bg-white border-b border-black";
-                row.innerHTML = `
-                    <td>${data.date}</td>
-                    <td class="text-left font-bold">${data.name}</td>
-                    <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-3 py-1 rounded-full text-[10px]">${data.pos}</span></td>
-                    <td>${data.idNum}</td>
-                    <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-3 py-1 rounded-full text-[10px]">${data.dept}</span></td>
-                    <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-3 py-1 rounded-md text-[10px]">${data.purp}</span></td>
-                    <td class="flex gap-2 justify-center p-2">
-                        <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline">EDIT</button>
-                        <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline">DEL</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
+        const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
+        const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
+        
+        const row = document.createElement('tr');
+        row.className = "bg-white border-b border-black";
+        row.innerHTML = `
+            <td>${data.date}</td>
+            <td class="text-left font-bold">${data.name}</td>
+            <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-3 py-1 rounded-full text-[10px]">${data.pos}</span></td>
+            <td>${data.idNum}</td>
+            <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-3 py-1 rounded-full text-[10px]">${data.dept}</span></td>
+            <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-3 py-1 rounded-md text-[10px]">${data.purp}</span></td>
+            <td class="p-2">
+                <button onclick="editRow(${data.rowId})" class="bg-blue-500 text-white px-2 py-1 rounded font-bold text-[10px] mr-1">EDIT</button>
+                <button onclick="deleteRow(${data.rowId})" class="bg-red-500 text-white px-2 py-1 rounded font-bold text-[10px]">DEL</button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
 
-        // New function to fill the form for editing
-        function editRow(id) {
-            const record = allData.find(d => d.rowId == id);
-            if (!record) return;
+// THIS FUNCTION BRINGS DATA TO THE FORM
+function editRow(id) {
+    // Find the data using the rowId
+    const record = allData.find(d => d.rowId == id);
+    if (!record) return;
 
-            document.getElementById('fullName').value = record.name;
-            document.getElementById('position').value = record.pos;
-            document.getElementById('idInput').value = record.idNum;
-            document.getElementById('dept').value = record.dept;
-            document.getElementById('purpose').value = record.purp;
-            
-            editRowId.value = id;
-            submitBtn.textContent = "UPDATE RECORD";
-            cancelBtn.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+    // Fill the inputs
+    document.getElementById('fullName').value = record.name;
+    document.getElementById('position').value = record.pos;
+    document.getElementById('idInput').value = record.idNum;
+    document.getElementById('dept').value = record.dept;
+    document.getElementById('purpose').value = record.purp;
+    
+    // Set the hidden ID so the "Save" button knows to UPDATE instead of ADD NEW
+    document.getElementById('editRowId').value = id;
+    
+    // Change the button look
+    submitBtn.textContent = "UPDATE RECORD";
+    submitBtn.classList.replace('bg-[#00FF00]', 'bg-blue-400');
+    
+    // Scroll to top so the user sees the form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
         // New function to delete
         async function deleteRow(id) {
