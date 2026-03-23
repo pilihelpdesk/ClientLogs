@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Entry Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <style>
+        /* BOLD FORM STYLING - FORCED HORIZONTAL LAYOUT */
+        .input-row { 
+            display: flex; 
+            border-bottom: 2px solid black; 
+            align-items: stretch; 
+            width: 100%;
+        }
+        .input-row:last-child { border-bottom: none; }
+
+        .label-cell { 
+            width: 33.33%; 
+            background-color: white; 
+            padding: 12px; 
+            font-weight: bold; 
+            border-right: 2px solid black; 
+            display: flex; 
+            align-items: center; 
+            font-size: 1.25rem; 
+        }
+
+        .input-cell { 
+            width: 66.67%; 
+            padding: 12px; 
+            outline: none; 
+            background-color: #FFFFFF; 
+            text-align: center; 
+            font-style: italic; 
+            font-size: 1.25rem; 
+            color: black;
+            border: none;
+        }
+
+        .input-cell:focus { background-color: #eff6ff; }
+        
+        /* DROPDOWN COLOR STYLING */
+        select option { @apply text-white font-bold; background-color: #374151; }
+        option[value=""] { background-color: white; color: gray; }
+
+        /* Position Options */
+        .opt-student { background-color: #93C5FD; }
+        .opt-teaching { background-color: #15803D; }
+        .opt-non-teaching { background-color: #7E22CE; }
+
+        /* Dept Options */
+        .opt-canr { background-color: #15803D; }
+        .opt-cde { background-color: #1D4ED8; }
+        .opt-cas { background-color: #EF4444; }
+        .opt-cem { background-color: #FACC15; color: black !important; }
+        .opt-cefs { background-color: #FB923C; }
+        .opt-cvm { background-color: #93C5FD; color: black !important; }
+        .opt-gs { background-color: #9CA3AF; }
+
+        /* Purpose Options */
+        .opt-vlp-ie-reset { background-color: #6D28D9; }
+        .opt-ie-reset { background-color: #FACC15; color: black !important; }
+        .opt-vlp-reset { background-color: #15803D; }
+        .opt-upd-ie { background-color: #FEF08A; color: black !important; }
+        .opt-upd-vlp { background-color: #86EFAC; color: black !important; }
+        .opt-upd-both { background-color: #FCA5A5; color: black !important; }
+        .opt-hotspot { background-color: #1D4ED8; }
+        .opt-ie-hot { background-color: #F97316; }
+        .opt-vlp-hot { background-color: #FFEDD5; color: black !important; }
+        .opt-all-reset { background-color: #B91C1C; }
+        .opt-zoom { background-color: #2563EB; }
+        
+        /* THIN TABLE STYLING */
+        .thin-table { border: 1px solid #000 !important; border-collapse: collapse; }
+        .thin-table th { border: 1px solid #000 !important; @apply p-2 bg-gray-100 font-bold; }
+        .thin-table td { border: 1px solid #000 !important; @apply p-2; }
+
+        .table-container { max-height: 550px; overflow-y: auto; border: 1px solid #000; }
+        thead th { position: sticky; top: -1px; z-index: 10; }
+
+        .tab-btn { @apply px-4 py-2 border-2 border-black font-bold mr-2 mb-2 transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
+        .tab-active { @apply bg-black text-white; }
+        .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
+    </style>
+</head>
+<body class="bg-gray-100 p-6 font-sans relative min-h-screen">
+
+    <div id="customAlert" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white border-4 border-black p-8 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+            <h2 class="text-2xl font-black mb-4 uppercase text-red-600">Missing Info</h2>
+            <p class="text-lg font-bold mb-6">Please complete all required fields before clicking SAVE.</p>
+            <button onclick="closeAlert()" class="bg-black text-white font-bold py-2 px-8 hover:bg-gray-800 transition-all uppercase">Got it</button>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto bg-white shadow-lg border-2 border-black overflow-hidden mb-12">
+        <div class="bg-cyan-400 p-4 text-center border-b-2 border-black">
+            <h1 class="text-4xl font-black italic tracking-tight text-black uppercase">
+                Please enter your details completely
+            </h1>
+        </div>
+
+        <form id="entryForm" class="p-6" novalidate>
+            <input type="hidden" id="editIndex" value="-1">
+            <div class="border-2 border-black mb-4">
+                <div class="input-row">
+                    <div class="label-cell">Full Name:</div>
+                    <input type="text" id="fullName" class="input-cell" placeholder="Enter full name">
+                </div>
+                <div class="input-row">
+                    <div class="label-cell">Position:</div>
+                    <select id="position" class="input-cell">
+                        <option value="">Click to select</option>
+                        <option value="Student" class="opt-student">Student</option>
+                        <option value="Teaching Personnel" class="opt-teaching">Teaching Personnel</option>
+                        <option value="Non-Teaching Personnel" class="opt-non-teaching">Non-Teaching Personnel</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <div id="idLabel" class="label-cell">Student ID Number:</div>
+                    <input type="text" id="idInput" class="input-cell" placeholder="PIL-XX-XXXX">
+                </div>
+                <div class="input-row">
+                    <div class="label-cell">Department:</div>
+                    <select id="dept" class="input-cell">
+                        <option value="">Click to select</option>
+                        <option class="opt-canr">CANR</option>
+                        <option class="opt-cde">CDE</option>
+                        <option class="opt-cas">CAS</option>
+                        <option class="opt-cem">CEM</option>
+                        <option class="opt-cefs">CEFS</option>
+                        <option class="opt-cvm">CVM</option>
+                        <option class="opt-gs">GS</option>
+                        <option class="opt-non-teaching">Non-Teaching Personnel</option>
+                    </select>
+                </div>
+
+                <div class="input-row">
+                    <div class="label-cell border-b-0">Purpose:</div>
+                    <select id="purpose" class="input-cell border-b-0">
+                        <option value="">Click to select</option>
+                        <option class="opt-vlp-ie-reset">IE & VLP Password Reset</option>
+                        <option class="opt-ie-reset">IE Password Reset</option>
+                        <option class="opt-vlp-reset">VLP Password Reset</option>
+                        <option class="opt-upd-ie">Update IE Account Details</option>
+                        <option class="opt-upd-vlp">Update VLP Account Details</option>
+                        <option class="opt-upd-both">Update IE & VLP Account Details</option>
+                        <option class="opt-hotspot">Hotspot Password Reset</option>
+                        <option class="opt-ie-hot">IE & Hotspot Password Reset</option>
+                        <option class="opt-vlp-hot">VLP & Hotspot Password Reset</option>
+                        <option class="opt-all-reset">IE, VLP, Hotspot Reset</option>
+                        <option class="opt-zoom">Zoom Account</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-4 mb-6">
+                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-bold py-3 px-8 rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all uppercase">Cancel</button>
+                <button type="submit" id="submitBtn" class="bg-[#00FF00] hover:bg-green-400 text-black font-bold py-3 px-12 rounded-xl border-2 border-black text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 transition-all">SAVE</button>
+            </div>
+        </form>
+
+        <hr class="border-t-2 border-black">
+
+        <div class="p-6 pb-0">
+            <h3 class="font-bold mb-2 uppercase text-xs italic tracking-widest text-gray-600">Filter by Month:</h3>
+            <div id="tabContainer" class="flex flex-wrap"></div>
+        </div>
+
+        <div class="p-6 pt-2">
+            <div class="table-container">
+                <table id="dataTable" class="w-full thin-table text-sm text-center">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Complete Name</th>
+                            <th>Status</th>
+                            <th>ID Number</th>
+                            <th>Department</th>
+                            <th>Purpose:</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-4 right-4 z-40">
+        <button type="button" id="downloadExcel" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg border-2 border-black text-sm opacity-20 hover:opacity-100 transition-all">
+            Download Excel
+        </button>
+    </div>
+
+    <script>
+        const entryForm = document.getElementById('entryForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const editIndexInput = document.getElementById('editIndex');
+        const cancelEditBtn = document.getElementById('cancelEdit');
+        const alertBox = document.getElementById('customAlert');
+        const tableBody = document.getElementById('tableBody');
+        const tabContainer = document.getElementById('tabContainer');
+        let currentFilter = 'All';
+
+        // --- PASTE YOUR GOOGLE WEB APP URL HERE ---
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRrKKjcg_biBivCW_YekK0xC1dQuBkG-_CEDacO6ZSWZm9Yoy30yye9YcSZQ9RA5sc/exec';
+
+        window.onload = renderPortal;
+
+        function closeAlert() { alertBox.classList.add('hidden'); }
+
+        function getDeptColor(dept) {
+            const colors = {
+                'CANR': '#15803D', 'CDE': '#1D4ED8', 'CAS': '#EF4444', 
+                'CEM': '#FACC15', 'CEFS': '#FB923C', 'CVM': '#93C5FD', 
+                'GS': '#9CA3AF', 'Non-Teaching Personnel': '#7E22CE'
+            };
+            return colors[dept] || '#374151';
+        }
+
+        function getPurpColor(purp) {
+            const colors = {
+                'IE & VLP Password Reset': '#6D28D9', 'IE Password Reset': '#FACC15',
+                'VLP Password Reset': '#15803D', 'Update IE Account Details': '#FEF08A',
+                'Update VLP Account Details': '#86EFAC', 'Update IE & VLP Account Details': '#FCA5A5',
+                'Hotspot Password Reset': '#1D4ED8', 'IE & Hotspot Password Reset': '#F97316',
+                'VLP & Hotspot Password Reset': '#FFEDD5', 'IE, VLP, Hotspot Reset': '#B91C1C',
+                'Zoom Account': '#2563EB'
+            };
+            return colors[purp] || '#374151';
+        }
+
+        document.getElementById('position').addEventListener('change', function() {
+            const isEmp = (this.value === "Teaching Personnel" || this.value === "Non-Teaching Personnel");
+            document.getElementById('idLabel').textContent = isEmp ? "Employee ID Number:" : "Student ID Number:";
+            document.getElementById('idInput').placeholder = isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
+        });
+
+        entryForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('fullName').value.trim();
+            const pos = document.getElementById('position').value;
+            const idNum = document.getElementById('idInput').value.trim();
+            const dept = document.getElementById('dept').value;
+            const purp = document.getElementById('purpose').value;
+
+            if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
+
+            // Prepare Data
+            const now = new Date();
+            const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+            const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+            const entryData = { date: formattedDate, monthLabel: monthYear, name, pos, idNum, dept, purp };
+
+            // UI Loading State
+            submitBtn.disabled = true;
+            submitBtn.textContent = "SAVING...";
+            submitBtn.style.opacity = "0.5";
+
+            // --- ONLINE SYNC (Google Sheets) ---
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(entryData)
+                });
+            } catch (error) {
+                console.error("Online sync failed:", error);
+            }
+
+            // --- LOCAL STORAGE SYNC ---
+            const savedData = JSON.parse(localStorage.getItem('portalEntries')) || [];
+            const index = parseInt(editIndexInput.value);
+
+            if (index === -1) {
+                savedData.unshift(entryData);
+            } else {
+                savedData[index] = { ...savedData[index], name, pos, idNum, dept, purp };
+                resetEditState();
+            }
+
+            localStorage.setItem('portalEntries', JSON.stringify(savedData));
+            entryForm.reset();
+            renderPortal();
+
+            // Reset UI Button
+            submitBtn.disabled = false;
+            submitBtn.textContent = "SAVE";
+            submitBtn.style.opacity = "1";
+        });
+
+        function renderPortal() {
+            const savedData = JSON.parse(localStorage.getItem('portalEntries')) || [];
+            const months = [...new Set(savedData.map(item => item.monthLabel))];
+            
+            tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
+            months.forEach(m => {
+                tabContainer.innerHTML += `<button onclick="filterByMonth('${m}')" class="tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}">${m}</button>`;
+            });
+
+            tableBody.innerHTML = '';
+            savedData.forEach((data, index) => {
+                if (currentFilter !== 'All' && data.monthLabel !== currentFilter) return;
+
+                const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : '#15803D';
+                const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
+                
+                const row = document.createElement('tr');
+                row.className = "bg-white";
+                row.innerHTML = `
+                    <td>${data.date}</td>
+                    <td class="text-left">${data.name}</td>
+                    <td><span style="background-color: ${posColor}" class="text-white px-3 py-1 rounded-full text-[10px]">${data.pos}</span></td>
+                    <td>${data.idNum}</td>
+                    <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-3 py-1 rounded-full text-[10px]">${data.dept}</span></td>
+                    <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-3 py-1 rounded-md text-[10px]">${data.purp}</span></td>
+                    <td>
+                        <button onclick="editRow(${index})" class="text-blue-600 font-bold text-xs uppercase hover:underline">Edit</button>
+                        <span class="text-gray-300 mx-1">|</span>
+                        <button onclick="deleteRow(${index})" class="text-red-600 font-bold text-xs uppercase hover:underline">Del</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function editRow(index) {
+            const savedData = JSON.parse(localStorage.getItem('portalEntries'));
+            const data = savedData[index];
+            document.getElementById('fullName').value = data.name;
+            document.getElementById('position').value = data.pos;
+            document.getElementById('idInput').value = data.idNum;
+            document.getElementById('dept').value = data.dept;
+            document.getElementById('purpose').value = data.purp;
+            editIndexInput.value = index;
+            submitBtn.textContent = "UPDATE";
+            submitBtn.classList.replace('bg-[#00FF00]', 'bg-blue-500');
+            submitBtn.classList.add('text-white');
+            cancelEditBtn.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteRow(index) {
+            if (confirm("Delete this record permanently?")) {
+                const savedData = JSON.parse(localStorage.getItem('portalEntries'));
+                savedData.splice(index, 1);
+                localStorage.setItem('portalEntries', JSON.stringify(savedData));
+                renderPortal();
+            }
+        }
+
+        function resetEditState() {
+            editIndexInput.value = "-1";
+            submitBtn.textContent = "SAVE";
+            submitBtn.classList.replace('bg-blue-500', 'bg-[#00FF00]');
+            submitBtn.classList.remove('text-white');
+            cancelEditBtn.classList.add('hidden');
+        }
+
+        cancelEditBtn.onclick = () => { entryForm.reset(); resetEditState(); };
+        function filterByMonth(month) { currentFilter = month; renderPortal(); }
+
+        document.getElementById('downloadExcel').addEventListener('click', () => {
+            const table = document.getElementById("dataTable");
+            const wb = XLSX.utils.table_to_book(table, { sheet: "Data Log" });
+            XLSX.writeFile(wb, `Data_Log_${currentFilter.replace(' ', '_')}.xlsx`);
+        });
+    </script>
+</body>
+</html>
