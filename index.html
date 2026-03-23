@@ -241,59 +241,74 @@
         });
 
         entryForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const name = document.getElementById('fullName').value.trim();
-            const pos = document.getElementById('position').value;
-            const idNum = document.getElementById('idInput').value.trim();
-            const dept = document.getElementById('dept').value;
-            const purp = document.getElementById('purpose').value;
+    e.preventDefault();
+    const name = document.getElementById('fullName').value.trim();
+    const pos = document.getElementById('position').value;
+    const idNum = document.getElementById('idInput').value.trim();
+    const dept = document.getElementById('dept').value;
+    const purp = document.getElementById('purpose').value;
 
-            if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
+    if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
 
-            // Prepare Data
-            const now = new Date();
-            const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-            const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-            const entryData = { date: formattedDate, monthLabel: monthYear, name, pos, idNum, dept, purp };
+    const index = parseInt(editIndexInput.value);
+    const savedData = JSON.parse(localStorage.getItem('portalEntries')) || [];
+    
+    // Determine if we are editing an existing row in Google Sheets
+    // We get the rowId from the local data if it exists
+    let googleRowId = (index !== -1 && savedData[index]) ? savedData[index].rowId : -1;
 
-            // UI Loading State
-            submitBtn.disabled = true;
-            submitBtn.textContent = "SAVING...";
-            submitBtn.style.opacity = "0.5";
+    // Prepare Data
+    const now = new Date();
+    const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+    const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+    
+    const entryData = { 
+        date: formattedDate, 
+        monthLabel: monthYear, 
+        name, pos, idNum, dept, purp,
+        editRowId: googleRowId // SEND THIS TO GOOGLE
+    };
 
-            // --- ONLINE SYNC (Google Sheets) ---
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    cache: 'no-cache',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(entryData)
-                });
-            } catch (error) {
-                console.error("Online sync failed:", error);
-            }
+    submitBtn.disabled = true;
+    submitBtn.textContent = index === -1 ? "SAVING..." : "UPDATING...";
 
-            // --- LOCAL STORAGE SYNC ---
-            const savedData = JSON.parse(localStorage.getItem('portalEntries')) || [];
-            const index = parseInt(editIndexInput.value);
-
-            if (index === -1) {
-                savedData.unshift(entryData);
-            } else {
-                savedData[index] = { ...savedData[index], name, pos, idNum, dept, purp };
-                resetEditState();
-            }
-
-            localStorage.setItem('portalEntries', JSON.stringify(savedData));
-            entryForm.reset();
-            renderPortal();
-
-            // Reset UI Button
-            submitBtn.disabled = false;
-            submitBtn.textContent = "SAVE";
-            submitBtn.style.opacity = "1";
+    // --- ONLINE SYNC ---
+    try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(entryData)
         });
+    } catch (error) {
+        console.error("Online sync failed:", error);
+    }
+
+    // --- LOCAL STORAGE SYNC ---
+    async function syncFromCloud() {
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL);
+        const cloudData = await response.json();
+        // Save cloud data (which includes rowIds) to local storage
+        localStorage.setItem('portalEntries', JSON.stringify(cloudData.reverse()));
+        renderPortal();
+    } catch (e) {
+        console.log("Cloud fetch failed, using local data.");
+    }
+}
+
+// Change window.onload to this:
+window.onload = () => {
+    syncFromCloud(); // Pull the IDs from Google first
+    renderPortal();
+};
+
+    localStorage.setItem('portalEntries', JSON.stringify(savedData));
+    entryForm.reset();
+    renderPortal();
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = "SAVE";
+});
 
         function renderPortal() {
             const savedData = JSON.parse(localStorage.getItem('portalEntries')) || [];
