@@ -12,11 +12,12 @@
             margin: 0;
             padding: 0;
             min-height: 100vh;
-            background-image: url('https://photobucket.com/bucket/262286db-015c-4227-90e6-38484efb9c23/media/1ce17a43-9fb1-4d2b-8cda-13b6d943bf16=format&fit=crop');
+            background-image: url('background.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             background-repeat: no-repeat;
+	    background-color: #333;
         }
 
         /* ADDED: Dark overlay to make the form pop */
@@ -242,7 +243,7 @@
 
         function renderPortal() {
             const months = [...new Set(allData.map(item => item.monthLabel))].filter(Boolean);
-            tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
+            tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records-</button>`;
             
             months.forEach(m => {
                 tabContainer.innerHTML += `<button onclick="filterByMonth('${m}')" class="tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}">${m}</button>`;
