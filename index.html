@@ -151,6 +151,8 @@
         const alertBox = document.getElementById('customAlert');
         const tableBody = document.getElementById('tableBody');
         const tabContainer = document.getElementById('tabContainer');
+        const editRowId = document.getElementById('editRowId'); // New
+        const cancelBtn = document.getElementById('cancelBtn'); // New
         let currentFilter = 'All';
         let allData = [];
 
@@ -188,13 +190,21 @@
 
             if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
 
+            const action = editRowId.value ? 'edit' : 'addRow'; // Check if editing
             submitBtn.disabled = true;
-            submitBtn.textContent = "UPLOADING...";
+            submitBtn.textContent = action === 'edit' ? "UPDATING..." : "UPLOADING...";
 
             const now = new Date();
             const monthLabel = now.toLocaleString('default', { month: 'long', year: 'numeric' });
             const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-            const entryData = { date: formattedDate, monthLabel: monthLabel, name, pos, idNum, dept, purp };
+            
+            const entryData = { 
+                action: action,
+                rowId: editRowId.value,
+                date: formattedDate, 
+                monthLabel: monthLabel, 
+                name, pos, idNum, dept, purp 
+            };
 
             try {
                 await fetch(GOOGLE_SCRIPT_URL, {
@@ -202,8 +212,7 @@
                     mode: 'no-cors',
                     body: JSON.stringify(entryData)
                 });
-                entryForm.reset();
-                // Refresh for everyone after small delay for Google processing
+                resetForm();
                 setTimeout(loadCloudData, 1500); 
             } catch (error) {
                 alert("Error saving to cloud.");
@@ -215,13 +224,12 @@
 
         function renderPortal() {
             const months = [...new Set(allData.map(item => item.monthLabel))];
-            tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records </button>`;
+            tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
             months.forEach(m => {
                 tabContainer.innerHTML += `<button onclick="filterByMonth('${m}')" class="tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}">${m}</button>`;
             });
 
             tableBody.innerHTML = '';
-            // Newest entries at the top
             const displayedData = [...allData].reverse();
             
             displayedData.forEach((data) => {
@@ -239,11 +247,53 @@
                     <td>${data.idNum}</td>
                     <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-3 py-1 rounded-full text-[10px]">${data.dept}</span></td>
                     <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-3 py-1 rounded-md text-[10px]">${data.purp}</span></td>
-                    <td class="text-gray-400 italic text-[10px]">Cloud Synced</td>
+                    <td class="flex gap-2 justify-center p-2">
+                        <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline">EDIT</button>
+                        <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline">DEL</button>
+                    </td>
                 `;
                 tableBody.appendChild(row);
             });
         }
+
+        // New function to fill the form for editing
+        function editRow(id) {
+            const record = allData.find(d => d.rowId == id);
+            if (!record) return;
+
+            document.getElementById('fullName').value = record.name;
+            document.getElementById('position').value = record.pos;
+            document.getElementById('idInput').value = record.idNum;
+            document.getElementById('dept').value = record.dept;
+            document.getElementById('purpose').value = record.purp;
+            
+            editRowId.value = id;
+            submitBtn.textContent = "UPDATE RECORD";
+            cancelBtn.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // New function to delete
+        async function deleteRow(id) {
+            if (!confirm("Delete this record permanently?")) return;
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ action: 'delete', rowId: id })
+                });
+                setTimeout(loadCloudData, 1000);
+            } catch (e) { alert("Delete failed."); }
+        }
+
+        function resetForm() {
+            entryForm.reset();
+            editRowId.value = "";
+            submitBtn.textContent = "SAVE";
+            cancelBtn.classList.add('hidden');
+        }
+
+        cancelBtn.onclick = resetForm;
 
         function getDeptColor(dept) {
             const colors = {'CANR': '#15803D', 'CDE': '#1D4ED8', 'CAS': '#EF4444', 'CEM': '#FACC15', 'CEFS': '#FB923C', 'CVM': '#93C5FD', 'GS': '#9CA3AF', 'Non-Teaching Personnel': '#7E22CE'};
