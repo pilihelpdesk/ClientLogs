@@ -198,11 +198,20 @@
             submitBtn.disabled = true;
             submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
 
-            const now = new Date();
-            const monthLabel = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-            const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-            
-            const entryData = { action, rowId, date: formattedDate, monthLabel, name, pos, idNum, dept, purp };
+           // Corrected Date and Month Formatting
+const now = new Date();
+// Create a human-readable month label (e.g., "Month of March 2026")
+const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
+// Create the table date (e.g., 23/03/2026)
+const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+
+const entryData = { 
+    action, 
+    rowId, 
+    date: formattedDate, 
+    monthLabel: monthLabel, // This will now store "Month of March 2026"
+    name, pos, idNum, dept, purp 
+};
 
             try {
                 await fetch(GOOGLE_SCRIPT_URL, {
@@ -220,11 +229,19 @@
         });
 
         function renderPortal() {
-            const months = [...new Set(allData.map(item => item.monthLabel))];
-            tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
-            months.forEach(m => {
-                tabContainer.innerHTML += `<button onclick="filterByMonth('${m}')" class="tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}">${m}</button>`;
-            });
+            function renderPortal() {
+    // Get unique months and ensure they are sorted correctly
+    const months = [...new Set(allData.map(item => item.monthLabel))];
+    
+    // Clear and build the tabs
+    // Note the space after the colon for cleaner UI
+    tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
+    
+    months.forEach(m => {
+        // Use the month string directly
+        tabContainer.innerHTML += `<button onclick="filterByMonth('${m}')" class="tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}">${m}</button>`;
+    });
+
 
             tableBody.innerHTML = '';
             const displayedData = [...allData].reverse();
