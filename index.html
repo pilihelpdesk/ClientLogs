@@ -8,26 +8,16 @@
     
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
+            margin: 0; padding: 0; min-height: 100vh;
             background-image: url('background.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+            background-size: cover; background-position: center;
+            background-attachment: fixed; background-repeat: no-repeat;
             background-color: #333;
         }
 
         .bg-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: -1;
         }
 
         .input-row { display: flex; border-bottom: 2px solid black; align-items: stretch; width: 100%; }
@@ -38,6 +28,7 @@
         select option { color: white !important; font-weight: bold !important; }
         option[value=""] { background-color: white !important; color: gray !important; }
 
+        /* Status & Dept Colors */
         .opt-student { background-color: #93C5FD !important; color: black !important; }
         .opt-teaching { background-color: #15803D !important; }
         .opt-non-teaching { background-color: #7E22CE !important; }
@@ -63,11 +54,15 @@
         .thin-table { border: 1px solid #000 !important; border-collapse: collapse; }
         .thin-table th { border: 1px solid #000 !important; @apply p-2 bg-gray-100 font-bold; }
         .thin-table td { border: 1px solid #000 !important; @apply p-2; }
-        .table-container { max-height: 550px; overflow-y: auto; border: 1px solid #000; background: white; }
-        thead th { position: sticky; top: -1px; z-index: 10; }
+        .table-container { min-height: 350px; background: white; border: 1px solid #000; }
         .tab-btn { @apply px-4 py-2 border-2 border-black font-bold mr-2 mb-2 transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
         .tab-active { @apply bg-black text-white; }
         .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
+
+        /* Pagination Styling */
+        .page-num { @apply px-3 py-1 border border-black font-bold mx-1 transition-all; }
+        .page-num-active { @apply bg-black text-white; }
+        .page-num-inactive { @apply bg-white text-black hover:bg-gray-200; }
     </style>
 </head>
 <body class="p-6 font-sans relative">
@@ -161,6 +156,7 @@
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
+            <div id="paginationControls" class="flex justify-center items-center gap-2 mt-4 pb-4"></div>
         </div>
     </div>
 
@@ -172,19 +168,22 @@
         const alertBox = document.getElementById('customAlert');
         const tableBody = document.getElementById('tableBody');
         const tabContainer = document.getElementById('tabContainer');
+        const paginationControls = document.getElementById('paginationControls');
+
         let currentFilter = 'All';
         let allData = [];
+        let currentPage = 1;
+        const rowsPerPage = 7;
 
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
-        // Initial load with the pulse loader
         window.onload = () => loadCloudData(false);
 
         function closeAlert() { alertBox.classList.add('hidden'); }
 
         async function loadCloudData(silent = false) {
             if (!silent) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse">SYNCING WITH CLOUD...</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse uppercase">Syncing with cloud...</td></tr>';
             }
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
@@ -216,7 +215,6 @@
             const rowId = editRowIdInput.value;
             const action = rowId === "-1" ? "addRow" : "edit";
 
-            // Prepare local temporary data
             const now = new Date();
             const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
             const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
@@ -226,82 +224,74 @@
                 date: formattedDate, monthLabel, name, pos, idNum, dept, purp 
             };
 
-            // OPTIMISTIC UPDATE: Update UI instantly
+            // OPTIMISTIC UPDATE
             if (action === "addRow") {
-                addTableRowUI(tempRecord, true); // Add to top of table
+                allData.push(tempRecord);
+                currentPage = 1; 
             } else {
-                const rowToUpdate = document.querySelector(`tr[data-id="${rowId}"]`);
-                if (rowToUpdate) updateRowCells(rowToUpdate, tempRecord);
+                const idx = allData.findIndex(d => d.rowId == rowId);
+                if (idx !== -1) allData[idx] = tempRecord;
             }
 
-            // Lock button and reset form
+            renderPortal(); // Re-render instantly
+
             submitBtn.disabled = true;
             submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
-            
-            const entryData = { action, rowId, date: formattedDate, monthLabel, name, pos, idNum, dept, purp };
             
             try {
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: JSON.stringify(entryData)
+                    body: JSON.stringify({ action, rowId, date: formattedDate, monthLabel, name, pos, idNum, dept, purp })
                 });
-
-                // Clear form but don't show the big loader
                 entryForm.reset(); 
                 resetEditState();
-                
-                // Silent background re-sync to ensure IDs are correct
                 setTimeout(() => loadCloudData(true), 2000); 
             } catch (error) {
-                alert("Cloud Sync Error. Please refresh.");
                 submitBtn.disabled = false;
             }
         });
 
         function renderPortal() {
+            // Render Tabs
             tabContainer.innerHTML = '';
             const months = [...new Set(allData.map(item => item.monthLabel))]
                 .filter(m => m && typeof m === 'string' && m.startsWith('Month of'));
             
             const allBtn = document.createElement('button');
-            allBtn.textContent = 'All Records-';
+            allBtn.textContent = 'All Records';
             allBtn.className = `tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}`;
-            allBtn.onclick = () => filterByMonth('All');
+            allBtn.onclick = () => { currentFilter = 'All'; currentPage = 1; renderPortal(); };
             tabContainer.appendChild(allBtn);
             
             months.forEach(m => {
                 const btn = document.createElement('button');
                 btn.textContent = m;
                 btn.className = `tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}`;
-                btn.onclick = () => filterByMonth(m);
+                btn.onclick = () => { currentFilter = m; currentPage = 1; renderPortal(); };
                 tabContainer.appendChild(btn);
             });
 
+            // Filter and Paginate
+            const filteredData = [...allData].reverse().filter(d => 
+                currentFilter === 'All' || d.monthLabel === currentFilter
+            );
+
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const pageData = filteredData.slice(startIndex, startIndex + rowsPerPage);
+
             tableBody.innerHTML = '';
-            const displayedData = [...allData].reverse();
-            displayedData.forEach((data) => {
-                if (currentFilter !== 'All' && data.monthLabel !== currentFilter) return;
-                addTableRowUI(data);
-            });
+            pageData.forEach(data => addTableRowUI(data));
+
+            renderPaginationControls(totalPages);
         }
 
-        // Helper to add row to the DOM
-        function addTableRowUI(data, isNew = false) {
+        function addTableRowUI(data) {
             const row = document.createElement('tr');
-            row.setAttribute('data-id', data.rowId);
             row.className = "bg-white border-b border-black";
-            updateRowCells(row, data);
-            
-            if (isNew) {
-                tableBody.prepend(row);
-            } else {
-                tableBody.appendChild(row);
-            }
-        }
-
-        // Helper to populate cells
-        function updateRowCells(row, data) {
             const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
             const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
             
@@ -318,18 +308,47 @@
                     <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
                 </td>
             `;
+            tableBody.appendChild(row);
+        }
+
+        function renderPaginationControls(totalPages) {
+            paginationControls.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            // Prev Button
+            const prevBtn = document.createElement('button');
+            prevBtn.textContent = 'PREV';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 uppercase text-xs';
+            prevBtn.onclick = () => { currentPage--; renderPortal(); };
+            paginationControls.appendChild(prevBtn);
+
+            // Page Numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pBtn = document.createElement('button');
+                pBtn.textContent = i;
+                pBtn.className = `page-num ${i === currentPage ? 'page-num-active' : 'page-num-inactive'}`;
+                pBtn.onclick = () => { currentPage = i; renderPortal(); };
+                paginationControls.appendChild(pBtn);
+            }
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = 'NEXT';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 uppercase text-xs';
+            nextBtn.onclick = () => { currentPage++; renderPortal(); };
+            paginationControls.appendChild(nextBtn);
         }
 
         function editRow(rowId) {
             const record = allData.find(d => d.rowId == rowId);
             if (!record) return;
-
             document.getElementById('fullName').value = record.name;
             document.getElementById('position').value = record.pos;
             document.getElementById('idInput').value = record.idNum;
             document.getElementById('dept').value = record.dept;
             document.getElementById('purpose').value = record.purp;
-            
             editRowIdInput.value = rowId;
             submitBtn.textContent = "UPDATE";
             submitBtn.classList.replace('bg-[#00FF00]', 'bg-blue-500');
@@ -339,24 +358,17 @@
         }
 
         async function deleteRow(rowId) {
-            if (!confirm("Delete this record permanently?")) return;
-            
-            // Optimistic Delete from UI
-            const row = document.querySelector(`tr[data-id="${rowId}"]`);
-            if (row) row.style.opacity = '0.3'; // Fade while deleting
-
+            if (!confirm("Delete record?")) return;
+            allData = allData.filter(d => d.rowId != rowId);
+            renderPortal();
             try {
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify({ action: 'delete', rowId })
                 });
-                if (row) row.remove();
                 setTimeout(() => loadCloudData(true), 1000);
-            } catch (e) { 
-                alert("Delete failed."); 
-                if (row) row.style.opacity = '1';
-            }
+            } catch (e) { console.error(e); }
         }
 
         function resetEditState() {
@@ -379,8 +391,6 @@
             const colors = {'IE & VLP Password Reset': '#6D28D9', 'IE Password Reset': '#FACC15', 'VLP Password Reset': '#15803D', 'Update IE Account Details': '#FEF08A', 'Update VLP Account Details': '#86EFAC', 'Update IE & VLP Account Details': '#FCA5A5', 'Hotspot Password Reset': '#1D4ED8', 'IE & Hotspot Password Reset': '#F97316', 'VLP & Hotspot Password Reset': '#FFEDD5', 'IE, VLP, Hotspot Reset': '#B91C1C', 'Zoom Account': '#2563EB'};
             return colors[purp] || '#374151';
         }
-
-        function filterByMonth(month) { currentFilter = month; renderPortal(); }
     </script>
 </body>
 </html>
