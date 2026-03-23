@@ -20,14 +20,13 @@
             background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: -1;
         }
 
-        .input-row { display: flex; border-bottom: 2px solid black; align-items: stretch; width: 100%; }
+        /* Compact Layout Adjustments */
+        .input-row { display: flex; border-bottom: 1px solid black; align-items: stretch; width: 100%; }
         .input-row:last-child { border-bottom: none; }
-        .label-cell { width: 33.33%; background-color: white; padding: 12px; font-weight: bold; border-right: 2px solid black; display: flex; align-items: center; font-size: 1.25rem; }
-        .input-cell { width: 66.67%; padding: 12px; outline: none; background-color: #FFFFFF; text-align: center; font-style: italic; font-size: 1.25rem; color: black; border: none; }
+        .label-cell { width: 30%; background-color: white; padding: 8px 12px; font-weight: bold; border-right: 1px solid black; display: flex; align-items: center; font-size: 1.25rem; }
+        .input-cell { width: 70%; padding: 8px; outline: none; background-color: #FFFFFF; text-align: center; font-style: italic; font-size: 1.25rem; color: black; border: none; }
         .input-cell:focus { background-color: #eff6ff; }
-        select option { color: white !important; font-weight: bold !important; }
-        option[value=""] { background-color: white !important; color: gray !important; }
-
+        
         /* Status & Dept Colors */
         .opt-student { background-color: #93C5FD !important; color: black !important; }
         .opt-teaching { background-color: #15803D !important; }
@@ -51,40 +50,36 @@
         .opt-all-reset { background-color: #B91C1C !important; }
         .opt-zoom { background-color: #2563EB !important; }
         
-        .thin-table { border: 1px solid #000 !important; border-collapse: collapse; }
-        .thin-table th { border: 1px solid #000 !important; @apply p-2 bg-gray-100 font-bold; }
-        .thin-table td { border: 1px solid #000 !important; @apply p-2; }
-        .table-container { min-height: 350px; background: white; border: 1px solid #000; }
-        .tab-btn { @apply px-4 py-2 border-2 border-black font-bold mr-2 mb-2 transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
+        .thin-table { border: 1px solid #000 !important; border-collapse: collapse; table-layout: fixed; }
+        .thin-table th { border: 1px solid #000 !important; padding: 6px; background-color: #f3f4f6; font-weight: bold; }
+        .thin-table td { border: 1px solid #000 !important; padding: 4px 6px; height: 45px; overflow: hidden; }
+        .table-container { background: white; border: 1px solid #000; }
+        
+        .tab-btn { @apply px-3 py-1 border-2 border-black font-bold mr-1 mb-1 transition-all text-xs shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]; }
         .tab-active { @apply bg-black text-white; }
         .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
-
-        /* Pagination Styling */
-        .page-num { @apply px-3 py-1 border border-black font-bold mx-1 transition-all; }
-        .page-num-active { @apply bg-black text-white; }
-        .page-num-inactive { @apply bg-white text-black hover:bg-gray-200; }
     </style>
 </head>
-<body class="p-6 font-sans relative">
+<body class="p-4 font-sans relative">
 
     <div class="bg-overlay"></div>
 
     <div id="customAlert" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-white border-4 border-black p-8 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-            <h2 class="text-2xl font-black mb-4 uppercase text-red-600">Missing Info</h2>
-            <p class="text-lg font-bold mb-6">Please complete all required fields before clicking SAVE.</p>
+        <div class="bg-white border-4 border-black p-6 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+            <h2 class="text-2xl font-black mb-2 uppercase text-red-600">Missing Info</h2>
+            <p class="text-lg font-bold mb-4">Please complete all required fields.</p>
             <button onclick="closeAlert()" class="bg-black text-white font-bold py-2 px-8 hover:bg-gray-800 transition-all uppercase">Got it</button>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto bg-white/95 shadow-2xl border-2 border-black overflow-hidden mb-12">
-        <div class="bg-yellow-400 p-4 text-center border-b-2 border-black">
-            <h1 class="text-4xl font-black italic tracking-tight text-black uppercase">Please enter your details completely</h1>
+    <div class="max-w-6xl mx-auto bg-white/95 shadow-2xl border-2 border-black overflow-hidden mb-4">
+        <div class="bg-yellow-400 py-2 text-center border-b-2 border-black">
+            <h1 class="text-3xl font-black italic tracking-tight text-black uppercase">Data Entry Portal</h1>
         </div>
 
-        <form id="entryForm" class="p-6" novalidate autocomplete="off">
+        <form id="entryForm" class="p-4" novalidate autocomplete="off">
             <input type="hidden" id="editRowId" value="-1">
-            <div class="border-2 border-black mb-4 bg-white">
+            <div class="border-2 border-black mb-3 bg-white">
                 <div class="input-row"><div class="label-cell">Full Name:</div><input type="text" id="fullName" class="input-cell" placeholder="Enter full name"></div>
                 <div class="input-row"><div class="label-cell">Position:</div>
                     <select id="position" class="input-cell">
@@ -94,7 +89,7 @@
                         <option value="Non-Teaching Personnel" class="opt-non-teaching">Non-Teaching Personnel</option>
                     </select>
                 </div>
-                <div class="input-row"><div id="idLabel" class="label-cell">Student ID Number:</div><input type="text" id="idInput" class="input-cell" placeholder="PIL-XX-XXXX"></div>
+                <div class="input-row"><div id="idLabel" class="label-cell">Student ID:</div><input type="text" id="idInput" class="input-cell" placeholder="PIL-XX-XXXX"></div>
                 <div class="input-row"><div class="label-cell">Department:</div>
                     <select id="dept" class="input-cell">
                         <option value="">Click to select</option>
@@ -108,8 +103,8 @@
                         <option value="Non-Teaching Personnel" class="opt-non-teaching">Non-Teaching Personnel</option>
                     </select>
                 </div>
-                <div class="input-row"><div class="label-cell border-b-0">Purpose:</div>
-                    <select id="purpose" class="input-cell border-b-0">
+                <div class="input-row"><div class="label-cell">Purpose:</div>
+                    <select id="purpose" class="input-cell">
                         <option value="">Click to select</option>
                         <option value="IE & VLP Password Reset" class="opt-vlp-ie-reset">IE & VLP Password Reset</option>
                         <option value="IE Password Reset" class="opt-ie-reset">IE Password Reset</option>
@@ -126,37 +121,36 @@
                 </div>
             </div>
 
-            <div class="flex justify-end gap-4 mb-6">
-                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-bold py-3 px-8 rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all uppercase">Cancel</button>
-                <button type="submit" id="submitBtn" class="bg-[#00FF00] hover:bg-green-400 text-black font-bold py-3 px-12 rounded-xl border-2 border-black text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 transition-all">SAVE</button>
+            <div class="flex justify-end gap-2">
+                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-bold py-2 px-6 rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all uppercase">Cancel</button>
+                <button type="submit" id="submitBtn" class="bg-[#00FF00] hover:bg-green-400 text-black font-bold py-2 px-10 rounded border-2 border-black text-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 transition-all">SAVE</button>
             </div>
         </form>
 
         <hr class="border-t-2 border-black">
 
-        <div class="p-6 pb-0">
-            <h3 class="font-bold mb-2 uppercase text-xs italic tracking-widest text-gray-600">Filter by Month:</h3>
+        <div class="px-4 py-2">
             <div id="tabContainer" class="flex flex-wrap"></div>
         </div>
 
-        <div class="p-6 pt-2">
+        <div class="p-4 pt-0">
             <div class="table-container">
                 <table id="dataTable" class="w-full thin-table text-sm text-center">
                     <thead>
                         <tr>
-                            <th>Date</th>
+                            <th style="width: 100px;">Date</th>
                             <th>Complete Name</th>
-                            <th>Status</th>
-                            <th>ID Number</th>
-                            <th>Department</th>
-                            <th>Purpose:</th>
-                            <th>Actions</th>
+                            <th style="width: 130px;">Status</th>
+                            <th style="width: 120px;">ID Number</th>
+                            <th style="width: 100px;">Dept</th>
+                            <th>Purpose</th>
+                            <th style="width: 100px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div id="paginationControls" class="flex justify-center items-center gap-2 mt-4 pb-4"></div>
+            <div id="paginationControls" class="flex justify-center items-center gap-2 mt-2 pb-2"></div>
         </div>
     </div>
 
@@ -173,7 +167,7 @@
         let currentFilter = 'All';
         let allData = [];
         let currentPage = 1;
-        const rowsPerPage = 7;
+        const rowsPerPage = 10; // Fixed 10 inputs
 
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
@@ -182,23 +176,19 @@
         function closeAlert() { alertBox.classList.add('hidden'); }
 
         async function loadCloudData(silent = false) {
-            if (!silent) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse uppercase">Syncing with cloud...</td></tr>';
-            }
+            if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse uppercase text-center">Syncing...</td></tr>';
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 allData = await response.json();
                 renderPortal();
             } catch (error) {
-                if (!silent) {
-                    tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Sync Error. Check Internet.</td></tr>';
-                }
+                if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600 text-center">Sync Error.</td></tr>';
             }
         }
 
         document.getElementById('position').addEventListener('change', function() {
             const isEmp = (this.value === "Teaching Personnel" || this.value === "Non-Teaching Personnel");
-            document.getElementById('idLabel').textContent = isEmp ? "Employee ID Number:" : "Student ID Number:";
+            document.getElementById('idLabel').textContent = isEmp ? "Employee ID:" : "Student ID:";
             document.getElementById('idInput').placeholder = isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
         });
 
@@ -214,29 +204,18 @@
 
             const rowId = editRowIdInput.value;
             const action = rowId === "-1" ? "addRow" : "edit";
-
             const now = new Date();
             const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
             const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
             
-            const tempRecord = { 
-                rowId: action === "edit" ? rowId : "temp-" + Date.now(), 
-                date: formattedDate, monthLabel, name, pos, idNum, dept, purp 
-            };
+            const tempRecord = { rowId: action === "edit" ? rowId : "temp-" + Date.now(), date: formattedDate, monthLabel, name, pos, idNum, dept, purp };
 
-            // OPTIMISTIC UPDATE
-            if (action === "addRow") {
-                allData.push(tempRecord);
-                currentPage = 1; 
-            } else {
-                const idx = allData.findIndex(d => d.rowId == rowId);
-                if (idx !== -1) allData[idx] = tempRecord;
-            }
+            if (action === "addRow") { allData.push(tempRecord); currentPage = 1; } 
+            else { const idx = allData.findIndex(d => d.rowId == rowId); if (idx !== -1) allData[idx] = tempRecord; }
 
-            renderPortal(); // Re-render instantly
-
+            renderPortal();
             submitBtn.disabled = true;
-            submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
+            submitBtn.textContent = "WAIT...";
             
             try {
                 await fetch(GOOGLE_SCRIPT_URL, {
@@ -247,36 +226,28 @@
                 entryForm.reset(); 
                 resetEditState();
                 setTimeout(() => loadCloudData(true), 2000); 
-            } catch (error) {
-                submitBtn.disabled = false;
-            }
+            } catch (error) { submitBtn.disabled = false; }
         });
 
         function renderPortal() {
-            // Render Tabs
             tabContainer.innerHTML = '';
-            const months = [...new Set(allData.map(item => item.monthLabel))]
-                .filter(m => m && typeof m === 'string' && m.startsWith('Month of'));
+            const months = [...new Set(allData.map(item => item.monthLabel))].filter(m => m && m.startsWith('Month of'));
             
             const allBtn = document.createElement('button');
-            allBtn.textContent = 'All Records-';
+            allBtn.textContent = 'ALL';
             allBtn.className = `tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}`;
             allBtn.onclick = () => { currentFilter = 'All'; currentPage = 1; renderPortal(); };
             tabContainer.appendChild(allBtn);
             
             months.forEach(m => {
                 const btn = document.createElement('button');
-                btn.textContent = m;
+                btn.textContent = m.replace('Month of ', '');
                 btn.className = `tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}`;
                 btn.onclick = () => { currentFilter = m; currentPage = 1; renderPortal(); };
                 tabContainer.appendChild(btn);
             });
 
-            // Filter and Paginate
-            const filteredData = [...allData].reverse().filter(d => 
-                currentFilter === 'All' || d.monthLabel === currentFilter
-            );
-
+            const filteredData = [...allData].reverse().filter(d => currentFilter === 'All' || d.monthLabel === currentFilter);
             const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
             if (currentPage > totalPages) currentPage = totalPages;
 
@@ -284,28 +255,37 @@
             const pageData = filteredData.slice(startIndex, startIndex + rowsPerPage);
 
             tableBody.innerHTML = '';
+            // Add actual data
             pageData.forEach(data => addTableRowUI(data));
+
+            // ADD EMPTY ROWS TO REACH 10
+            const emptyRowsNeeded = rowsPerPage - pageData.length;
+            for (let i = 0; i < emptyRowsNeeded; i++) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.className = "bg-white border-b border-black";
+                emptyRow.innerHTML = `<td colspan="7" class="py-[22px]"></td>`;
+                tableBody.appendChild(emptyRow);
+            }
 
             renderPaginationControls(totalPages);
         }
 
         function addTableRowUI(data) {
             const row = document.createElement('tr');
-            row.className = "bg-white border-b border-black";
+            row.className = "bg-white border-b border-black hover:bg-gray-50";
             const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
             const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
             
             row.innerHTML = `
                 <td>${data.date}</td>
-                <td class="text-left font-bold">${data.name}</td>
-                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-3 py-1 rounded-full text-[10px]">${data.pos}</span></td>
-                <td>${data.idNum}</td>
-                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-3 py-1 rounded-full text-[10px]">${data.dept}</span></td>
-                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-3 py-1 rounded-md text-[10px]">${data.purp}</span></td>
-                <td class="p-2 whitespace-nowrap">
-                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline px-1">EDIT</button>
-                    <span class="text-gray-300">|</span>
-                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
+                <td class="text-left font-bold truncate">${data.name}</td>
+                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[10px] block truncate">${data.pos}</span></td>
+                <td class="font-mono text-xs">${data.idNum}</td>
+                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[10px] block truncate">${data.dept}</span></td>
+                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-0.5 rounded-md text-[10px] block truncate text-left">${data.purp}</span></td>
+                <td class="p-1">
+                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline text-xs">EDIT</button>
+                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline text-xs ml-2">DEL</button>
                 </td>
             `;
             tableBody.appendChild(row);
@@ -314,29 +294,25 @@
         function renderPaginationControls(totalPages) {
             paginationControls.innerHTML = '';
             if (totalPages <= 1) return;
-
-            // Prev Button
             const prevBtn = document.createElement('button');
             prevBtn.textContent = 'PREV';
             prevBtn.disabled = currentPage === 1;
-            prevBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 uppercase text-xs';
+            prevBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 text-xs';
             prevBtn.onclick = () => { currentPage--; renderPortal(); };
             paginationControls.appendChild(prevBtn);
 
-            // Page Numbers
             for (let i = 1; i <= totalPages; i++) {
                 const pBtn = document.createElement('button');
                 pBtn.textContent = i;
-                pBtn.className = `page-num ${i === currentPage ? 'page-num-active' : 'page-num-inactive'}`;
+                pBtn.className = `px-2 py-1 border border-black font-bold mx-0.5 text-xs ${i === currentPage ? 'bg-black text-white' : 'bg-white text-black'}`;
                 pBtn.onclick = () => { currentPage = i; renderPortal(); };
                 paginationControls.appendChild(pBtn);
             }
 
-            // Next Button
             const nextBtn = document.createElement('button');
             nextBtn.textContent = 'NEXT';
             nextBtn.disabled = currentPage === totalPages;
-            nextBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 uppercase text-xs';
+            nextBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 text-xs';
             nextBtn.onclick = () => { currentPage++; renderPortal(); };
             paginationControls.appendChild(nextBtn);
         }
@@ -362,11 +338,7 @@
             allData = allData.filter(d => d.rowId != rowId);
             renderPortal();
             try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ action: 'delete', rowId })
-                });
+                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', rowId }) });
                 setTimeout(() => loadCloudData(true), 1000);
             } catch (e) { console.error(e); }
         }
