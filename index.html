@@ -148,177 +148,184 @@
     </div>
 
     <script>
-        const entryForm = document.getElementById('entryForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const editRowIdInput = document.getElementById('editRowId');
-        const cancelEditBtn = document.getElementById('cancelEdit');
-        const alertBox = document.getElementById('customAlert');
-        const tableBody = document.getElementById('tableBody');
-        const tabContainer = document.getElementById('tabContainer');
-        let currentFilter = 'All';
-        let allData = [];
+        <script>
+    const entryForm = document.getElementById('entryForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const editRowIdInput = document.getElementById('editRowId');
+    const cancelEditBtn = document.getElementById('cancelEdit');
+    const alertBox = document.getElementById('customAlert');
+    const tableBody = document.getElementById('tableBody');
+    const tabContainer = document.getElementById('tabContainer');
+    let currentFilter = 'All';
+    let allData = [];
 
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
+    // --- PASTE YOUR GOOGLE WEB APP URL HERE ---
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
-        window.onload = loadCloudData;
+    window.onload = loadCloudData;
 
-        function closeAlert() { alertBox.classList.add('hidden'); }
+    function closeAlert() { alertBox.classList.add('hidden'); }
 
-        async function loadCloudData() {
-            tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse">SYNCING WITH CLOUD...</td></tr>';
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL);
-                allData = await response.json();
-                renderPortal();
-            } catch (error) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Sync Error. Check Internet.</td></tr>';
-            }
+    async function loadCloudData() {
+        tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse">SYNCING WITH CLOUD...</td></tr>';
+        try {
+            const response = await fetch(GOOGLE_SCRIPT_URL);
+            allData = await response.json();
+            renderPortal();
+        } catch (error) {
+            tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Sync Error. Check Internet.</td></tr>';
         }
+    }
 
-        document.getElementById('position').addEventListener('change', function() {
-            const isEmp = (this.value === "Teaching Personnel" || this.value === "Non-Teaching Personnel");
-            document.getElementById('idLabel').textContent = isEmp ? "Employee ID Number:" : "Student ID Number:";
-            document.getElementById('idInput').placeholder = isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
-        });
+    document.getElementById('position').addEventListener('change', function() {
+        const isEmp = (this.value === "Teaching Personnel" || this.value === "Non-Teaching Personnel");
+        document.getElementById('idLabel').textContent = isEmp ? "Employee ID Number:" : "Student ID Number:";
+        document.getElementById('idInput').placeholder = isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
+    });
 
-        entryForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const name = document.getElementById('fullName').value.trim();
-            const pos = document.getElementById('position').value;
-            const idNum = document.getElementById('idInput').value.trim();
-            const dept = document.getElementById('dept').value;
-            const purp = document.getElementById('purpose').value;
+    entryForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const name = document.getElementById('fullName').value.trim();
+        const pos = document.getElementById('position').value;
+        const idNum = document.getElementById('idInput').value.trim();
+        const dept = document.getElementById('dept').value;
+        const purp = document.getElementById('purpose').value;
 
-            if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
+        if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
 
-            const rowId = editRowIdInput.value;
-            const action = rowId === "-1" ? "addRow" : "edit";
+        const rowId = editRowIdInput.value;
+        const action = rowId === "-1" ? "addRow" : "edit";
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
+        submitBtn.disabled = true;
+        submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
 
-            const now = new Date();
-            const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
-            const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+        const now = new Date();
+        const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
+        const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
 
-            const entryData = { 
-                action, 
-                rowId, 
-                date: formattedDate, 
-                monthLabel: monthLabel, 
-                name, pos, idNum, dept, purp 
-            };
+        const entryData = { 
+            action, 
+            rowId, 
+            date: formattedDate, 
+            monthLabel: monthLabel, 
+            name, pos, idNum, dept, purp 
+        };
 
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify(entryData)
-                });
-                resetEditState();
-                entryForm.reset();
-                setTimeout(loadCloudData, 1500); 
-            } catch (error) {
-                alert("Error saving.");
-                submitBtn.disabled = false;
-            }
-        });
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(entryData)
+            });
+            resetEditState();
+            entryForm.reset();
+            setTimeout(loadCloudData, 1500); 
+        } catch (error) {
+            alert("Error saving.");
+            submitBtn.disabled = false;
+        }
+    });
 
-        function renderPortal() {
-            // FIXED: Removed nested function and used correct month strings
-            const months = [...new Set(allData.map(item => item.monthLabel))].filter(Boolean);
-            
-            tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
-            
-            months.forEach(m => {
+    // --- FIXED RENDER PORTAL FUNCTION ---
+    function renderPortal() {
+        // 1. Get unique months from the data
+        const months = [...new Set(allData.map(item => item.monthLabel))];
+        
+        // 2. Clear and build the tabs
+        tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
+        
+        months.forEach(m => {
+            if(m) { // Ensure month is not empty
                 tabContainer.innerHTML += `<button onclick="filterByMonth('${m}')" class="tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}">${m}</button>`;
-            });
-
-            tableBody.innerHTML = '';
-            const displayedData = [...allData].reverse();
-            
-            displayedData.forEach((data) => {
-                if (currentFilter !== 'All' && data.monthLabel !== currentFilter) return;
-
-                const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
-                const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
-                
-                const row = document.createElement('tr');
-                row.className = "bg-white border-b border-black";
-                row.innerHTML = `
-                    <td>${data.date}</td>
-                    <td class="text-left font-bold">${data.name}</td>
-                    <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-3 py-1 rounded-full text-[10px]">${data.pos}</span></td>
-                    <td>${data.idNum}</td>
-                    <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-3 py-1 rounded-full text-[10px]">${data.dept}</span></td>
-                    <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-3 py-1 rounded-md text-[10px]">${data.purp}</span></td>
-                    <td class="p-2 whitespace-nowrap">
-                        <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline px-1">EDIT</button>
-                        <span class="text-gray-300">|</span>
-                        <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-
-        function editRow(rowId) {
-            const record = allData.find(d => d.rowId == rowId);
-            if (!record) return;
-
-            document.getElementById('fullName').value = record.name;
-            document.getElementById('position').value = record.pos;
-            document.getElementById('idInput').value = record.idNum;
-            document.getElementById('dept').value = record.dept;
-            document.getElementById('purpose').value = record.purp;
-            
-            editRowIdInput.value = rowId;
-            submitBtn.textContent = "UPDATE";
-            submitBtn.classList.replace('bg-[#00FF00]', 'bg-blue-500');
-            submitBtn.classList.add('text-white');
-            cancelEditBtn.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        async function deleteRow(rowId) {
-            if (!confirm("Delete this record permanently?")) return;
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ action: 'delete', rowId })
-                });
-                setTimeout(loadCloudData, 1000);
-            } catch (e) { alert("Delete failed."); }
-        }
-
-        function resetEditState() {
-            editRowIdInput.value = "-1";
-            submitBtn.textContent = "SAVE";
-            submitBtn.classList.replace('bg-blue-500', 'bg-[#00FF00]');
-            submitBtn.classList.remove('text-white');
-            cancelEditBtn.classList.add('hidden');
-        }
-
-        cancelEditBtn.onclick = () => { entryForm.reset(); resetEditState(); };
-
-        function getDeptColor(dept) {
-            const colors = {'CANR': '#15803D', 'CDE': '#1D4ED8', 'CAS': '#EF4444', 'CEM': '#FACC15', 'CEFS': '#FB923C', 'CVM': '#93C5FD', 'GS': '#9CA3AF', 'Non-Teaching Personnel': '#7E22CE'};
-            return colors[dept] || '#374151';
-        }
-
-        function getPurpColor(purp) {
-            const colors = {'IE & VLP Password Reset': '#6D28D9', 'IE Password Reset': '#FACC15', 'VLP Password Reset': '#15803D', 'Update IE Account Details': '#FEF08A', 'Update VLP Account Details': '#86EFAC', 'Update IE & VLP Account Details': '#FCA5A5', 'Hotspot Password Reset': '#1D4ED8', 'IE & Hotspot Password Reset': '#F97316', 'VLP & Hotspot Password Reset': '#FFEDD5', 'IE, VLP, Hotspot Reset': '#B91C1C', 'Zoom Account': '#2563EB'};
-            return colors[purp] || '#374151';
-        }
-
-        function filterByMonth(month) { currentFilter = month; renderPortal(); }
-
-        document.getElementById('downloadExcel').addEventListener('click', () => {
-            const table = document.getElementById("dataTable");
-            const wb = XLSX.utils.table_to_book(table, { sheet: "Data Log" });
-            XLSX.writeFile(wb, `Portal_Data_${currentFilter}.xlsx`);
+            }
         });
+
+        // 3. Render Table Rows
+        tableBody.innerHTML = '';
+        const displayedData = [...allData].reverse();
+        
+        displayedData.forEach((data) => {
+            if (currentFilter !== 'All' && data.monthLabel !== currentFilter) return;
+
+            const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
+            const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
+            
+            const row = document.createElement('tr');
+            row.className = "bg-white border-b border-black";
+            row.innerHTML = `
+                <td>${data.date}</td>
+                <td class="text-left font-bold">${data.name}</td>
+                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-3 py-1 rounded-full text-[10px]">${data.pos}</span></td>
+                <td>${data.idNum}</td>
+                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-3 py-1 rounded-full text-[10px]">${data.dept}</span></td>
+                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-3 py-1 rounded-md text-[10px]">${data.purp}</span></td>
+                <td class="p-2 whitespace-nowrap">
+                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline px-1">EDIT</button>
+                    <span class="text-gray-300">|</span>
+                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function editRow(rowId) {
+        const record = allData.find(d => d.rowId == rowId);
+        if (!record) return;
+
+        document.getElementById('fullName').value = record.name;
+        document.getElementById('position').value = record.pos;
+        document.getElementById('idInput').value = record.idNum;
+        document.getElementById('dept').value = record.dept;
+        document.getElementById('purpose').value = record.purp;
+        
+        editRowIdInput.value = rowId;
+        submitBtn.textContent = "UPDATE";
+        submitBtn.classList.replace('bg-[#00FF00]', 'bg-blue-500');
+        submitBtn.classList.add('text-white');
+        cancelEditBtn.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function deleteRow(rowId) {
+        if (!confirm("Delete this record permanently?")) return;
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'delete', rowId })
+            });
+            setTimeout(loadCloudData, 1000);
+        } catch (e) { alert("Delete failed."); }
+    }
+
+    function resetEditState() {
+        editRowIdInput.value = "-1";
+        submitBtn.textContent = "SAVE";
+        submitBtn.classList.replace('bg-blue-500', 'bg-[#00FF00]');
+        submitBtn.classList.remove('text-white');
+        cancelEditBtn.classList.add('hidden');
+    }
+
+    cancelEditBtn.onclick = () => { entryForm.reset(); resetEditState(); };
+
+    function getDeptColor(dept) {
+        const colors = {'CANR': '#15803D', 'CDE': '#1D4ED8', 'CAS': '#EF4444', 'CEM': '#FACC15', 'CEFS': '#FB923C', 'CVM': '#93C5FD', 'GS': '#9CA3AF', 'Non-Teaching Personnel': '#7E22CE'};
+        return colors[dept] || '#374151';
+    }
+
+    function getPurpColor(purp) {
+        const colors = {'IE & VLP Password Reset': '#6D28D9', 'IE Password Reset': '#FACC15', 'VLP Password Reset': '#15803D', 'Update IE Account Details': '#FEF08A', 'Update VLP Account Details': '#86EFAC', 'Update IE & VLP Account Details': '#FCA5A5', 'Hotspot Password Reset': '#1D4ED8', 'IE & Hotspot Password Reset': '#F97316', 'VLP & Hotspot Password Reset': '#FFEDD5', 'IE, VLP, Hotspot Reset': '#B91C1C', 'Zoom Account': '#2563EB'};
+        return colors[purp] || '#374151';
+    }
+
+    function filterByMonth(month) { currentFilter = month; renderPortal(); }
+
+    document.getElementById('downloadExcel').addEventListener('click', () => {
+        const table = document.getElementById("dataTable");
+        const wb = XLSX.utils.table_to_book(table, { sheet: "Data Log" });
+        XLSX.writeFile(wb, `Portal_Data_${currentFilter}.xlsx`);
+    });
     </script>
 </body>
 </html>
