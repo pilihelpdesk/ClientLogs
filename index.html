@@ -248,7 +248,7 @@
             
             // Add "All Records" tab
             const allBtn = document.createElement('button');
-            allBtn.textContent = 'All Records';
+            allBtn.textContent = 'All Records-';
             allBtn.className = `tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}`;
             allBtn.onclick = () => filterByMonth('All');
             tabContainer.appendChild(allBtn);
