@@ -7,6 +7,30 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
+        /* ADDED: Background Image Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-image: url('https://photobucket.com/bucket/262286db-015c-4227-90e6-38484efb9c23/media/1ce17a43-9fb1-4d2b-8cda-13b6d943bf16=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        /* ADDED: Dark overlay to make the form pop */
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        /* Standard Styles */
         .input-row { display: flex; border-bottom: 2px solid black; align-items: stretch; width: 100%; }
         .input-row:last-child { border-bottom: none; }
         .label-cell { width: 33.33%; background-color: white; padding: 12px; font-weight: bold; border-right: 2px solid black; display: flex; align-items: center; font-size: 1.25rem; }
@@ -15,7 +39,7 @@
         select option { color: white !important; font-weight: bold !important; }
         option[value=""] { background-color: white !important; color: gray !important; }
 
-        /* Dropdown Colors */
+        /* Dropdown & Tag Colors */
         .opt-student { background-color: #93C5FD !important; color: black !important; }
         .opt-teaching { background-color: #15803D !important; }
         .opt-non-teaching { background-color: #7E22CE !important; }
@@ -41,14 +65,16 @@
         .thin-table { border: 1px solid #000 !important; border-collapse: collapse; }
         .thin-table th { border: 1px solid #000 !important; @apply p-2 bg-gray-100 font-bold; }
         .thin-table td { border: 1px solid #000 !important; @apply p-2; }
-        .table-container { max-height: 550px; overflow-y: auto; border: 1px solid #000; }
+        .table-container { max-height: 550px; overflow-y: auto; border: 1px solid #000; background: white; }
         thead th { position: sticky; top: -1px; z-index: 10; }
         .tab-btn { @apply px-4 py-2 border-2 border-black font-bold mr-2 mb-2 transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
         .tab-active { @apply bg-black text-white; }
         .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
     </style>
 </head>
-<body class="bg-gray-100 p-6 font-sans relative min-h-screen">
+<body class="p-6 font-sans relative">
+
+    <div class="bg-overlay"></div>
 
     <div id="customAlert" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div class="bg-white border-4 border-black p-8 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
@@ -58,14 +84,14 @@
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto bg-white shadow-lg border-2 border-black overflow-hidden mb-12">
+    <div class="max-w-6xl mx-auto bg-white/95 shadow-2xl border-2 border-black overflow-hidden mb-12">
         <div class="bg-cyan-400 p-4 text-center border-b-2 border-black">
             <h1 class="text-4xl font-black italic tracking-tight text-black uppercase">Please enter your details completely</h1>
         </div>
 
         <form id="entryForm" class="p-6" novalidate autocomplete="off">
             <input type="hidden" id="editRowId" value="-1">
-            <div class="border-2 border-black mb-4">
+            <div class="border-2 border-black mb-4 bg-white">
                 <div class="input-row"><div class="label-cell">Full Name:</div><input type="text" id="fullName" class="input-cell" placeholder="Enter full name"></div>
                 <div class="input-row"><div class="label-cell">Position:</div>
                     <select id="position" class="input-cell">
