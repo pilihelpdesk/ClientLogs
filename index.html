@@ -20,7 +20,6 @@
             background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: -1;
         }
 
-        /* Compact Input Rows */
         .input-row { display: flex; border-bottom: 2px solid black; align-items: stretch; width: 100%; }
         .input-row:last-child { border-bottom: none; }
         .label-cell { width: 33.33%; background-color: white; padding: 6px 12px; font-weight: bold; border-right: 2px solid black; display: flex; align-items: center; font-size: 1.25rem; }
@@ -30,13 +29,12 @@
         
         select option { color: white !important; font-weight: bold !important; }
 
-        /* Fixed 10-Row Table Logic */
+        /* Fixed 10-Row Table Styling */
         .thin-table { border: 2px solid #000 !important; border-collapse: collapse; font-size: 1.05rem; table-layout: fixed; }
-        .thin-table th { border: 2px solid #000 !important; padding: 4px; bg-gray-100 font-bold uppercase; height: 32px; }
-        .thin-table td { border: 1px solid #000 !important; padding: 2px 4px; font-weight: normal; height: 38px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .thin-table th { border: 2px solid #000 !important; padding: 4px; background-color: #f3f4f6; font-weight: bold; text-transform: uppercase; height: 35px; }
+        .thin-table td { border: 1px solid #000 !important; padding: 2px 4px; font-weight: normal; height: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .table-container { background: white; border: 1px solid #000; }
         
-        /* Compact Tabs */
         .tab-btn { @apply px-3 py-0.5 border-2 border-black font-bold mr-1 mb-1 transition-all text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
         .tab-active { @apply bg-black text-white; }
         .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
@@ -126,13 +124,14 @@
             <div class="table-container">
                 <table id="dataTable" class="w-full thin-table text-center">
                     <thead>
-                        <tr class="bg-gray-100">
-                            <th style="width: 12%;">Date</th>
-                            <th style="width: 25%;">Complete Name</th>
-                            <th style="width: 15%;">Status</th>
-                            <th style="width: 15%;">ID Number</th>
-                            <th style="width: 10%;">Dept</th>
-                            <th style="width: 23%;">Purpose:</th>
+                        <tr>
+                            <th style="width: 10%;">Date</th>
+                            <th style="width: 22%;">Complete Name</th>
+                            <th style="width: 13%;">Status</th>
+                            <th style="width: 13%;">ID Number</th>
+                            <th style="width: 10%;">Department</th>
+                            <th style="width: 20%;">Purpose</th>
+                            <th style="width: 12%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
@@ -165,13 +164,13 @@
         function closeAlert() { alertBox.classList.add('hidden'); }
 
         async function loadCloudData(silent = false) {
-            if (!silent) tableBody.innerHTML = '<tr><td colspan="6" class="p-2 text-blue-600 font-bold animate-pulse text-xs">SYNCING...</td></tr>';
+            if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-2 text-blue-600 font-bold animate-pulse text-xs">SYNCING...</td></tr>';
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 allData = await response.json();
                 renderPortal();
             } catch (error) {
-                if (!silent) tableBody.innerHTML = '<tr><td colspan="6" class="p-2 text-red-600">Sync Error.</td></tr>';
+                if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-2 text-red-600">Sync Error.</td></tr>';
             }
         }
 
@@ -244,7 +243,7 @@
             for (let i = 0; i < fillerRows; i++) {
                 const tr = document.createElement('tr');
                 tr.className = "bg-white border-b border-black";
-                tr.innerHTML = `<td colspan="6">&nbsp;</td>`;
+                tr.innerHTML = `<td colspan="7">&nbsp;</td>`;
                 tableBody.appendChild(tr);
             }
 
@@ -253,18 +252,22 @@
 
         function addTableRowUI(data) {
             const row = document.createElement('tr');
-            row.className = "bg-white border-b border-black cursor-pointer hover:bg-gray-50";
-            row.onclick = () => editRow(data.rowId);
+            row.className = "bg-white border-b border-black";
             const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
             const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
             
             row.innerHTML = `
                 <td>${data.date}</td>
-                <td class="text-left pl-2">${data.name}</td>
+                <td class="text-left pl-2 font-bold">${data.name}</td>
                 <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase">${data.pos}</span></td>
                 <td class="font-mono text-[10px]">${data.idNum}</td>
                 <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase">${data.dept}</span></td>
                 <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-1 py-0.5 rounded text-[9px] font-bold uppercase">${data.purp}</span></td>
+                <td class="whitespace-nowrap">
+                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline px-1 text-[10px]">EDIT</button>
+                    <span class="text-gray-300">|</span>
+                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1 text-[10px]">DEL</button>
+                </td>
             `;
             tableBody.appendChild(row);
         }
@@ -310,6 +313,20 @@
             submitBtn.classList.add('text-white');
             cancelEditBtn.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function deleteRow(rowId) {
+            if (!confirm("Delete this record permanently?")) return;
+            allData = allData.filter(d => d.rowId != rowId);
+            renderPortal();
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify({ action: 'delete', rowId }) 
+                });
+                setTimeout(() => loadCloudData(true), 1500);
+            } catch (e) { console.error(e); }
         }
 
         function resetEditState() {
