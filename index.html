@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
-        /* ADDED: Background Image Styling */
         body {
             margin: 0;
             padding: 0;
@@ -17,10 +16,9 @@
             background-position: center;
             background-attachment: fixed;
             background-repeat: no-repeat;
-	    background-color: #333;
+            background-color: #333;
         }
 
-        /* ADDED: Dark overlay to make the form pop */
         .bg-overlay {
             position: fixed;
             top: 0;
@@ -28,10 +26,10 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
             z-index: -1;
         }
 
-        /* Standard Styles */
         .input-row { display: flex; border-bottom: 2px solid black; align-items: stretch; width: 100%; }
         .input-row:last-child { border-bottom: none; }
         .label-cell { width: 33.33%; background-color: white; padding: 12px; font-weight: bold; border-right: 2px solid black; display: flex; align-items: center; font-size: 1.25rem; }
@@ -40,7 +38,6 @@
         select option { color: white !important; font-weight: bold !important; }
         option[value=""] { background-color: white !important; color: gray !important; }
 
-        /* Dropdown & Tag Colors */
         .opt-student { background-color: #93C5FD !important; color: black !important; }
         .opt-teaching { background-color: #15803D !important; }
         .opt-non-teaching { background-color: #7E22CE !important; }
@@ -242,11 +239,27 @@
         });
 
         function renderPortal() {
-            const months = [...new Set(allData.map(item => item.monthLabel))].filter(Boolean);
-            tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records-</button>`;
+            // FIX: Always clear container before rebuilding buttons
+            tabContainer.innerHTML = '';
             
+            // FIX: Ensure only valid "Month of" strings are used and filter out raw timestamps
+            const months = [...new Set(allData.map(item => item.monthLabel))]
+                .filter(m => m && typeof m === 'string' && m.startsWith('Month of'));
+            
+            // Add "All Records" tab
+            const allBtn = document.createElement('button');
+            allBtn.textContent = 'All Records';
+            allBtn.className = `tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}`;
+            allBtn.onclick = () => filterByMonth('All');
+            tabContainer.appendChild(allBtn);
+            
+            // Add specific month tabs
             months.forEach(m => {
-                tabContainer.innerHTML += `<button onclick="filterByMonth('${m}')" class="tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}">${m}</button>`;
+                const btn = document.createElement('button');
+                btn.textContent = m;
+                btn.className = `tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}`;
+                btn.onclick = () => filterByMonth(m);
+                tabContainer.appendChild(btn);
             });
 
             tableBody.innerHTML = '';
