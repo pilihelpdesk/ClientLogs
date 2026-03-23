@@ -8,79 +8,42 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <style>
-        /* BOLD FORM STYLING - FORCED HORIZONTAL LAYOUT */
-        .input-row { 
-            display: flex; 
-            border-bottom: 2px solid black; 
-            align-items: stretch; 
-            width: 100%;
-        }
+        .input-row { display: flex; border-bottom: 2px solid black; align-items: stretch; width: 100%; }
         .input-row:last-child { border-bottom: none; }
-
-        .label-cell { 
-            width: 33.33%; 
-            background-color: white; 
-            padding: 12px; 
-            font-weight: bold; 
-            border-right: 2px solid black; 
-            display: flex; 
-            align-items: center; 
-            font-size: 1.25rem; 
-        }
-
-        .input-cell { 
-            width: 66.67%; 
-            padding: 12px; 
-            outline: none; 
-            background-color: #FFFFFF; 
-            text-align: center; 
-            font-style: italic; 
-            font-size: 1.25rem; 
-            color: black;
-            border: none;
-        }
-
+        .label-cell { width: 33.33%; background-color: white; padding: 12px; font-weight: bold; border-right: 2px solid black; display: flex; align-items: center; font-size: 1.25rem; }
+        .input-cell { width: 66.67%; padding: 12px; outline: none; background-color: #FFFFFF; text-align: center; font-style: italic; font-size: 1.25rem; color: black; border: none; }
         .input-cell:focus { background-color: #eff6ff; }
+        select option { color: white !important; font-weight: bold !important; }
+        option[value=""] { background-color: white !important; color: gray !important; }
+
+        /* Dropdown Colors */
+        .opt-student { background-color: #93C5FD !important; color: black !important; }
+        .opt-teaching { background-color: #15803D !important; }
+        .opt-non-teaching { background-color: #7E22CE !important; }
+        .opt-canr { background-color: #15803D !important; }
+        .opt-cde { background-color: #1D4ED8 !important; }
+        .opt-cas { background-color: #EF4444 !important; }
+        .opt-cem { background-color: #FACC15 !important; color: black !important; }
+        .opt-cefs { background-color: #FB923C !important; }
+        .opt-cvm { background-color: #93C5FD !important; color: black !important; }
+        .opt-gs { background-color: #9CA3AF !important; }
+        .opt-vlp-ie-reset { background-color: #6D28D9 !important; }
+        .opt-ie-reset { background-color: #FACC15 !important; color: black !important; }
+        .opt-vlp-reset { background-color: #15803D !important; }
+        .opt-upd-ie { background-color: #FEF08A !important; color: black !important; }
+        .opt-upd-vlp { background-color: #86EFAC !important; color: black !important; }
+        .opt-upd-both { background-color: #FCA5A5 !important; color: black !important; }
+        .opt-hotspot { background-color: #1D4ED8 !important; }
+        .opt-ie-hot { background-color: #F97316 !important; }
+        .opt-vlp-hot { background-color: #FFEDD5 !important; color: black !important; }
+        .opt-all-reset { background-color: #B91C1C !important; }
+        .opt-zoom { background-color: #2563EB !important; }
         
-        /* DROPDOWN COLOR STYLING */
-        select option { @apply text-white font-bold; background-color: #374151; }
-        option[value=""] { background-color: white; color: gray; }
-
-        /* Position Options */
-        .opt-student { background-color: #93C5FD; }
-        .opt-teaching { background-color: #15803D; }
-        .opt-non-teaching { background-color: #7E22CE; }
-
-        /* Dept Options */
-        .opt-canr { background-color: #15803D; }
-        .opt-cde { background-color: #1D4ED8; }
-        .opt-cas { background-color: #EF4444; }
-        .opt-cem { background-color: #FACC15; color: black !important; }
-        .opt-cefs { background-color: #FB923C; }
-        .opt-cvm { background-color: #93C5FD; color: black !important; }
-        .opt-gs { background-color: #9CA3AF; }
-
-        /* Purpose Options */
-        .opt-vlp-ie-reset { background-color: #6D28D9; }
-        .opt-ie-reset { background-color: #FACC15; color: black !important; }
-        .opt-vlp-reset { background-color: #15803D; }
-        .opt-upd-ie { background-color: #FEF08A; color: black !important; }
-        .opt-upd-vlp { background-color: #86EFAC; color: black !important; }
-        .opt-upd-both { background-color: #FCA5A5; color: black !important; }
-        .opt-hotspot { background-color: #1D4ED8; }
-        .opt-ie-hot { background-color: #F97316; }
-        .opt-vlp-hot { background-color: #FFEDD5; color: black !important; }
-        .opt-all-reset { background-color: #B91C1C; }
-        .opt-zoom { background-color: #2563EB; }
-        
-        /* THIN TABLE STYLING */
         .thin-table { border: 1px solid #000 !important; border-collapse: collapse; }
         .thin-table th { border: 1px solid #000 !important; @apply p-2 bg-gray-100 font-bold; }
         .thin-table td { border: 1px solid #000 !important; @apply p-2; }
-
         .table-container { max-height: 550px; overflow-y: auto; border: 1px solid #000; }
         thead th { position: sticky; top: -1px; z-index: 10; }
-
         .tab-btn { @apply px-4 py-2 border-2 border-black font-bold mr-2 mb-2 transition-all text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
         .tab-active { @apply bg-black text-white; }
         .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
@@ -98,20 +61,14 @@
 
     <div class="max-w-6xl mx-auto bg-white shadow-lg border-2 border-black overflow-hidden mb-12">
         <div class="bg-cyan-400 p-4 text-center border-b-2 border-black">
-            <h1 class="text-4xl font-black italic tracking-tight text-black uppercase">
-                Please enter your details completely
-            </h1>
+            <h1 class="text-4xl font-black italic tracking-tight text-black uppercase">Please enter your details completely</h1>
         </div>
 
         <form id="entryForm" class="p-6" novalidate>
-            <input type="hidden" id="editIndex" value="-1">
+            <input type="hidden" id="editRowId" value="-1">
             <div class="border-2 border-black mb-4">
-                <div class="input-row">
-                    <div class="label-cell">Full Name:</div>
-                    <input type="text" id="fullName" class="input-cell" placeholder="Enter full name">
-                </div>
-                <div class="input-row">
-                    <div class="label-cell">Position:</div>
+                <div class="input-row"><div class="label-cell">Full Name:</div><input type="text" id="fullName" class="input-cell" placeholder="Enter full name"></div>
+                <div class="input-row"><div class="label-cell">Position:</div>
                     <select id="position" class="input-cell">
                         <option value="">Click to select</option>
                         <option value="Student" class="opt-student">Student</option>
@@ -119,40 +76,34 @@
                         <option value="Non-Teaching Personnel" class="opt-non-teaching">Non-Teaching Personnel</option>
                     </select>
                 </div>
-                <div class="input-row">
-                    <div id="idLabel" class="label-cell">Student ID Number:</div>
-                    <input type="text" id="idInput" class="input-cell" placeholder="PIL-XX-XXXX">
-                </div>
-                <div class="input-row">
-                    <div class="label-cell">Department:</div>
+                <div class="input-row"><div id="idLabel" class="label-cell">Student ID Number:</div><input type="text" id="idInput" class="input-cell" placeholder="PIL-XX-XXXX"></div>
+                <div class="input-row"><div class="label-cell">Department:</div>
                     <select id="dept" class="input-cell">
                         <option value="">Click to select</option>
-                        <option class="opt-canr">CANR</option>
-                        <option class="opt-cde">CDE</option>
-                        <option class="opt-cas">CAS</option>
-                        <option class="opt-cem">CEM</option>
-                        <option class="opt-cefs">CEFS</option>
-                        <option class="opt-cvm">CVM</option>
-                        <option class="opt-gs">GS</option>
-                        <option class="opt-non-teaching">Non-Teaching Personnel</option>
+                        <option value="CANR" class="opt-canr">CANR</option>
+                        <option value="CDE" class="opt-cde">CDE</option>
+                        <option value="CAS" class="opt-cas">CAS</option>
+                        <option value="CEM" class="opt-cem">CEM</option>
+                        <option value="CEFS" class="opt-cefs">CEFS</option>
+                        <option value="CVM" class="opt-cvm">CVM</option>
+                        <option value="GS" class="opt-gs">GS</option>
+                        <option value="Non-Teaching Personnel" class="opt-non-teaching">Non-Teaching Personnel</option>
                     </select>
                 </div>
-
-                <div class="input-row">
-                    <div class="label-cell border-b-0">Purpose:</div>
+                <div class="input-row"><div class="label-cell border-b-0">Purpose:</div>
                     <select id="purpose" class="input-cell border-b-0">
                         <option value="">Click to select</option>
-                        <option class="opt-vlp-ie-reset">IE & VLP Password Reset</option>
-                        <option class="opt-ie-reset">IE Password Reset</option>
-                        <option class="opt-vlp-reset">VLP Password Reset</option>
-                        <option class="opt-upd-ie">Update IE Account Details</option>
-                        <option class="opt-upd-vlp">Update VLP Account Details</option>
-                        <option class="opt-upd-both">Update IE & VLP Account Details</option>
-                        <option class="opt-hotspot">Hotspot Password Reset</option>
-                        <option class="opt-ie-hot">IE & Hotspot Password Reset</option>
-                        <option class="opt-vlp-hot">VLP & Hotspot Password Reset</option>
-                        <option class="opt-all-reset">IE, VLP, Hotspot Reset</option>
-                        <option class="opt-zoom">Zoom Account</option>
+                        <option value="IE & VLP Password Reset" class="opt-vlp-ie-reset">IE & VLP Password Reset</option>
+                        <option value="IE Password Reset" class="opt-ie-reset">IE Password Reset</option>
+                        <option value="VLP Password Reset" class="opt-vlp-reset">VLP Password Reset</option>
+                        <option value="Update IE Account Details" class="opt-upd-ie">Update IE Account Details</option>
+                        <option value="Update VLP Account Details" class="opt-upd-vlp">Update VLP Account Details</option>
+                        <option value="Update IE & VLP Account Details" class="opt-upd-both">Update IE & VLP Account Details</option>
+                        <option value="Hotspot Password Reset" class="opt-hotspot">Hotspot Password Reset</option>
+                        <option value="IE & Hotspot Password Reset" class="opt-ie-hot">IE & Hotspot Password Reset</option>
+                        <option value="VLP & Hotspot Password Reset" class="opt-vlp-hot">VLP & Hotspot Password Reset</option>
+                        <option value="IE, VLP, Hotspot Reset" class="opt-all-reset">IE, VLP, Hotspot Reset</option>
+                        <option value="Zoom Account" class="opt-zoom">Zoom Account</option>
                     </select>
                 </div>
             </div>
@@ -199,39 +150,30 @@
     <script>
         const entryForm = document.getElementById('entryForm');
         const submitBtn = document.getElementById('submitBtn');
-        const editIndexInput = document.getElementById('editIndex');
+        const editRowIdInput = document.getElementById('editRowId');
         const cancelEditBtn = document.getElementById('cancelEdit');
         const alertBox = document.getElementById('customAlert');
         const tableBody = document.getElementById('tableBody');
         const tabContainer = document.getElementById('tabContainer');
         let currentFilter = 'All';
+        let allData = [];
 
         // --- PASTE YOUR GOOGLE WEB APP URL HERE ---
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbztaW7q6E0hJuYmgbbAPItKEfy53QL1WyY9-vHjNBMIckJMe7K9mKBV9YC8TXhzgnCC/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
-        window.onload = renderPortal;
+        window.onload = loadCloudData;
 
         function closeAlert() { alertBox.classList.add('hidden'); }
 
-        function getDeptColor(dept) {
-            const colors = {
-                'CANR': '#15803D', 'CDE': '#1D4ED8', 'CAS': '#EF4444', 
-                'CEM': '#FACC15', 'CEFS': '#FB923C', 'CVM': '#93C5FD', 
-                'GS': '#9CA3AF', 'Non-Teaching Personnel': '#7E22CE'
-            };
-            return colors[dept] || '#374151';
-        }
-
-        function getPurpColor(purp) {
-            const colors = {
-                'IE & VLP Password Reset': '#6D28D9', 'IE Password Reset': '#FACC15',
-                'VLP Password Reset': '#15803D', 'Update IE Account Details': '#FEF08A',
-                'Update VLP Account Details': '#86EFAC', 'Update IE & VLP Account Details': '#FCA5A5',
-                'Hotspot Password Reset': '#1D4ED8', 'IE & Hotspot Password Reset': '#F97316',
-                'VLP & Hotspot Password Reset': '#FFEDD5', 'IE, VLP, Hotspot Reset': '#B91C1C',
-                'Zoom Account': '#2563EB'
-            };
-            return colors[purp] || '#374151';
+        async function loadCloudData() {
+            tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse">SYNCING WITH CLOUD...</td></tr>';
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                allData = await response.json();
+                renderPortal();
+            } catch (error) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Sync Error. Check Internet.</td></tr>';
+            }
         }
 
         document.getElementById('position').addEventListener('change', function() {
@@ -241,119 +183,88 @@
         });
 
         entryForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const name = document.getElementById('fullName').value.trim();
-    const pos = document.getElementById('position').value;
-    const idNum = document.getElementById('idInput').value.trim();
-    const dept = document.getElementById('dept').value;
-    const purp = document.getElementById('purpose').value;
+            e.preventDefault();
+            const name = document.getElementById('fullName').value.trim();
+            const pos = document.getElementById('position').value;
+            const idNum = document.getElementById('idInput').value.trim();
+            const dept = document.getElementById('dept').value;
+            const purp = document.getElementById('purpose').value;
 
-    if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
+            if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
 
-    const index = parseInt(editIndexInput.value);
-    const savedData = JSON.parse(localStorage.getItem('portalEntries')) || [];
-    
-    // Determine if we are editing an existing row in Google Sheets
-    // We get the rowId from the local data if it exists
-    let googleRowId = (index !== -1 && savedData[index]) ? savedData[index].rowId : -1;
+            const rowId = editRowIdInput.value;
+            const action = rowId === "-1" ? "addRow" : "edit";
 
-    // Prepare Data
-    const now = new Date();
-    const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-    const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-    
-    const entryData = { 
-        date: formattedDate, 
-        monthLabel: monthYear, 
-        name, pos, idNum, dept, purp,
-        editRowId: googleRowId // SEND THIS TO GOOGLE
-    };
+            submitBtn.disabled = true;
+            submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = index === -1 ? "SAVING..." : "UPDATING...";
+            const now = new Date();
+            const monthLabel = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+            const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+            
+            const entryData = { action, rowId, date: formattedDate, monthLabel, name, pos, idNum, dept, purp };
 
-    // --- ONLINE SYNC ---
-    try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(entryData)
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(entryData)
+                });
+                resetEditState();
+                entryForm.reset();
+                setTimeout(loadCloudData, 1500); 
+            } catch (error) {
+                alert("Error saving.");
+                submitBtn.disabled = false;
+            }
         });
-    } catch (error) {
-        console.error("Online sync failed:", error);
-    }
-
-    // --- LOCAL STORAGE SYNC ---
-    async function syncFromCloud() {
-    try {
-        const response = await fetch(GOOGLE_SCRIPT_URL);
-        const cloudData = await response.json();
-        // Save cloud data (which includes rowIds) to local storage
-        localStorage.setItem('portalEntries', JSON.stringify(cloudData.reverse()));
-        renderPortal();
-    } catch (e) {
-        console.log("Cloud fetch failed, using local data.");
-    }
-}
-
-// Change window.onload to this:
-window.onload = () => {
-    syncFromCloud(); // Pull the IDs from Google first
-    renderPortal();
-};
-
-    localStorage.setItem('portalEntries', JSON.stringify(savedData));
-    entryForm.reset();
-    renderPortal();
-
-    submitBtn.disabled = false;
-    submitBtn.textContent = "SAVE";
-});
 
         function renderPortal() {
-            const savedData = JSON.parse(localStorage.getItem('portalEntries')) || [];
-            const months = [...new Set(savedData.map(item => item.monthLabel))];
-            
+            const months = [...new Set(allData.map(item => item.monthLabel))];
             tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
             months.forEach(m => {
                 tabContainer.innerHTML += `<button onclick="filterByMonth('${m}')" class="tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}">${m}</button>`;
             });
 
             tableBody.innerHTML = '';
-            savedData.forEach((data, index) => {
+            const displayedData = [...allData].reverse();
+            
+            displayedData.forEach((data) => {
                 if (currentFilter !== 'All' && data.monthLabel !== currentFilter) return;
 
-                const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : '#15803D';
+                const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
                 const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
                 
                 const row = document.createElement('tr');
-                row.className = "bg-white";
+                row.className = "bg-white border-b border-black";
                 row.innerHTML = `
                     <td>${data.date}</td>
-                    <td class="text-left">${data.name}</td>
-                    <td><span style="background-color: ${posColor}" class="text-white px-3 py-1 rounded-full text-[10px]">${data.pos}</span></td>
+                    <td class="text-left font-bold">${data.name}</td>
+                    <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-3 py-1 rounded-full text-[10px]">${data.pos}</span></td>
                     <td>${data.idNum}</td>
                     <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-3 py-1 rounded-full text-[10px]">${data.dept}</span></td>
                     <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-3 py-1 rounded-md text-[10px]">${data.purp}</span></td>
-                    <td>
-                        <button onclick="editRow(${index})" class="text-blue-600 font-bold text-xs uppercase hover:underline">Edit</button>
-                        <span class="text-gray-300 mx-1">|</span>
-                        <button onclick="deleteRow(${index})" class="text-red-600 font-bold text-xs uppercase hover:underline">Del</button>
+                    <td class="p-2 whitespace-nowrap">
+                        <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline px-1">EDIT</button>
+                        <span class="text-gray-300">|</span>
+                        <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
                     </td>
                 `;
                 tableBody.appendChild(row);
             });
         }
 
-        function editRow(index) {
-            const savedData = JSON.parse(localStorage.getItem('portalEntries'));
-            const data = savedData[index];
-            document.getElementById('fullName').value = data.name;
-            document.getElementById('position').value = data.pos;
-            document.getElementById('idInput').value = data.idNum;
-            document.getElementById('dept').value = data.dept;
-            document.getElementById('purpose').value = data.purp;
-            editIndexInput.value = index;
+        function editRow(rowId) {
+            const record = allData.find(d => d.rowId == rowId);
+            if (!record) return;
+
+            document.getElementById('fullName').value = record.name;
+            document.getElementById('position').value = record.pos;
+            document.getElementById('idInput').value = record.idNum;
+            document.getElementById('dept').value = record.dept;
+            document.getElementById('purpose').value = record.purp;
+            
+            editRowIdInput.value = rowId;
             submitBtn.textContent = "UPDATE";
             submitBtn.classList.replace('bg-[#00FF00]', 'bg-blue-500');
             submitBtn.classList.add('text-white');
@@ -361,17 +272,20 @@ window.onload = () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function deleteRow(index) {
-            if (confirm("Delete this record permanently?")) {
-                const savedData = JSON.parse(localStorage.getItem('portalEntries'));
-                savedData.splice(index, 1);
-                localStorage.setItem('portalEntries', JSON.stringify(savedData));
-                renderPortal();
-            }
+        async function deleteRow(rowId) {
+            if (!confirm("Delete this record permanently?")) return;
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ action: 'delete', rowId })
+                });
+                setTimeout(loadCloudData, 1000);
+            } catch (e) { alert("Delete failed."); }
         }
 
         function resetEditState() {
-            editIndexInput.value = "-1";
+            editRowIdInput.value = "-1";
             submitBtn.textContent = "SAVE";
             submitBtn.classList.replace('bg-blue-500', 'bg-[#00FF00]');
             submitBtn.classList.remove('text-white');
@@ -379,12 +293,23 @@ window.onload = () => {
         }
 
         cancelEditBtn.onclick = () => { entryForm.reset(); resetEditState(); };
+
+        function getDeptColor(dept) {
+            const colors = {'CANR': '#15803D', 'CDE': '#1D4ED8', 'CAS': '#EF4444', 'CEM': '#FACC15', 'CEFS': '#FB923C', 'CVM': '#93C5FD', 'GS': '#9CA3AF', 'Non-Teaching Personnel': '#7E22CE'};
+            return colors[dept] || '#374151';
+        }
+
+        function getPurpColor(purp) {
+            const colors = {'IE & VLP Password Reset': '#6D28D9', 'IE Password Reset': '#FACC15', 'VLP Password Reset': '#15803D', 'Update IE Account Details': '#FEF08A', 'Update VLP Account Details': '#86EFAC', 'Update IE & VLP Account Details': '#FCA5A5', 'Hotspot Password Reset': '#1D4ED8', 'IE & Hotspot Password Reset': '#F97316', 'VLP & Hotspot Password Reset': '#FFEDD5', 'IE, VLP, Hotspot Reset': '#B91C1C', 'Zoom Account': '#2563EB'};
+            return colors[purp] || '#374151';
+        }
+
         function filterByMonth(month) { currentFilter = month; renderPortal(); }
 
         document.getElementById('downloadExcel').addEventListener('click', () => {
             const table = document.getElementById("dataTable");
             const wb = XLSX.utils.table_to_book(table, { sheet: "Data Log" });
-            XLSX.writeFile(wb, `Data_Log_${currentFilter.replace(' ', '_')}.xlsx`);
+            XLSX.writeFile(wb, `Portal_Data_${currentFilter}.xlsx`);
         });
     </script>
 </body>
