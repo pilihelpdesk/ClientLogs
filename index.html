@@ -21,25 +21,43 @@
         }
 
         /* Compact Layout Adjustments */
-        .input-row { display: flex; border-bottom: 2px solid black; align-items: stretch; width: 100%; }
+        .input-row { display: flex; border-bottom: 1px solid black; align-items: stretch; width: 100%; }
         .input-row:last-child { border-bottom: none; }
-        .label-cell { width: 33.33%; background-color: white; padding: 8px 12px; font-weight: bold; border-right: 2px solid black; display: flex; align-items: center; font-size: 1.25rem; }
-        .input-cell { width: 66.67%; padding: 8px; outline: none; background-color: #FFFFFF; text-align: center; font-style: italic; font-size: 1.25rem; color: black; border: none; }
+        .label-cell { width: 30%; background-color: white; padding: 8px 12px; font-weight: bold; border-right: 1px solid black; display: flex; align-items: center; font-size: 1.25rem; }
+        .input-cell { width: 70%; padding: 8px; outline: none; background-color: #FFFFFF; text-align: center; font-style: italic; font-size: 1.25rem; color: black; border: none; }
         .input-cell:focus { background-color: #eff6ff; }
         
+        /* Status & Dept Colors */
+        .opt-student { background-color: #93C5FD !important; color: black !important; }
+        .opt-teaching { background-color: #15803D !important; }
+        .opt-non-teaching { background-color: #7E22CE !important; }
+        .opt-canr { background-color: #15803D !important; }
+        .opt-cde { background-color: #1D4ED8 !important; }
+        .opt-cas { background-color: #EF4444 !important; }
+        .opt-cem { background-color: #FACC15 !important; color: black !important; }
+        .opt-cefs { background-color: #FB923C !important; }
+        .opt-cvm { background-color: #93C5FD !important; color: black !important; }
+        .opt-gs { background-color: #9CA3AF !important; }
+        .opt-vlp-ie-reset { background-color: #6D28D9 !important; }
+        .opt-ie-reset { background-color: #FACC15 !important; color: black !important; }
+        .opt-vlp-reset { background-color: #15803D !important; }
+        .opt-upd-ie { background-color: #FEF08A !important; color: black !important; }
+        .opt-upd-vlp { background-color: #86EFAC !important; color: black !important; }
+        .opt-upd-both { background-color: #FCA5A5 !important; color: black !important; }
+        .opt-hotspot { background-color: #1D4ED8 !important; }
+        .opt-ie-hot { background-color: #F97316 !important; }
+        .opt-vlp-hot { background-color: #FFEDD5 !important; color: black !important; }
+        .opt-all-reset { background-color: #B91C1C !important; }
+        .opt-zoom { background-color: #2563EB !important; }
+        
         .thin-table { border: 1px solid #000 !important; border-collapse: collapse; table-layout: fixed; }
-        .thin-table th { border: 1px solid #000 !important; padding: 4px; background-color: #f3f4f6; font-weight: bold; font-size: 0.8rem; }
-        /* Fixed height for 10 rows */
-        .thin-table td { border: 1px solid #000 !important; padding: 2px 4px; height: 38px; font-size: 0.85rem; }
-        .table-container { background: white; border: 1px solid #000; min-height: 420px; }
+        .thin-table th { border: 1px solid #000 !important; padding: 6px; background-color: #f3f4f6; font-weight: bold; }
+        .thin-table td { border: 1px solid #000 !important; padding: 4px 6px; height: 45px; overflow: hidden; }
+        .table-container { background: white; border: 1px solid #000; }
         
         .tab-btn { @apply px-3 py-1 border-2 border-black font-bold mr-1 mb-1 transition-all text-xs shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]; }
         .tab-active { @apply bg-black text-white; }
         .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
-
-        .page-num { @apply px-2 py-1 border border-black font-bold mx-0.5 transition-all text-xs; }
-        .page-num-active { @apply bg-black text-white; }
-        .page-num-inactive { @apply bg-white text-black hover:bg-gray-200; }
     </style>
 </head>
 <body class="p-4 font-sans relative">
@@ -66,45 +84,45 @@
                 <div class="input-row"><div class="label-cell">Position:</div>
                     <select id="position" class="input-cell">
                         <option value="">Click to select</option>
-                        <option value="Student">Student</option>
-                        <option value="Teaching Personnel">Teaching Personnel</option>
-                        <option value="Non-Teaching Personnel">Non-Teaching Personnel</option>
+                        <option value="Student" class="opt-student">Student</option>
+                        <option value="Teaching Personnel" class="opt-teaching">Teaching Personnel</option>
+                        <option value="Non-Teaching Personnel" class="opt-non-teaching">Non-Teaching Personnel</option>
                     </select>
                 </div>
                 <div class="input-row"><div id="idLabel" class="label-cell">Student ID:</div><input type="text" id="idInput" class="input-cell" placeholder="PIL-XX-XXXX"></div>
                 <div class="input-row"><div class="label-cell">Department:</div>
                     <select id="dept" class="input-cell">
                         <option value="">Click to select</option>
-                        <option value="CANR">CANR</option>
-                        <option value="CDE">CDE</option>
-                        <option value="CAS">CAS</option>
-                        <option value="CEM">CEM</option>
-                        <option value="CEFS">CEFS</option>
-                        <option value="CVM">CVM</option>
-                        <option value="GS">GS</option>
-                        <option value="Non-Teaching Personnel">Non-Teaching Personnel</option>
+                        <option value="CANR" class="opt-canr">CANR</option>
+                        <option value="CDE" class="opt-cde">CDE</option>
+                        <option value="CAS" class="opt-cas">CAS</option>
+                        <option value="CEM" class="opt-cem">CEM</option>
+                        <option value="CEFS" class="opt-cefs">CEFS</option>
+                        <option value="CVM" class="opt-cvm">CVM</option>
+                        <option value="GS" class="opt-gs">GS</option>
+                        <option value="Non-Teaching Personnel" class="opt-non-teaching">Non-Teaching Personnel</option>
                     </select>
                 </div>
                 <div class="input-row"><div class="label-cell">Purpose:</div>
                     <select id="purpose" class="input-cell">
                         <option value="">Click to select</option>
-                        <option value="IE & VLP Password Reset">IE & VLP Password Reset</option>
-                        <option value="IE Password Reset">IE Password Reset</option>
-                        <option value="VLP Password Reset">VLP Password Reset</option>
-                        <option value="Update IE Account Details">Update IE Account Details</option>
-                        <option value="Update VLP Account Details">Update VLP Account Details</option>
-                        <option value="Update IE & VLP Account Details">Update IE & VLP Account Details</option>
-                        <option value="Hotspot Password Reset">Hotspot Password Reset</option>
-                        <option value="IE & Hotspot Password Reset">IE & Hotspot Password Reset</option>
-                        <option value="VLP & Hotspot Password Reset">VLP & Hotspot Password Reset</option>
-                        <option value="IE, VLP, Hotspot Reset">IE, VLP, Hotspot Reset</option>
-                        <option value="Zoom Account">Zoom Account</option>
+                        <option value="IE & VLP Password Reset" class="opt-vlp-ie-reset">IE & VLP Password Reset</option>
+                        <option value="IE Password Reset" class="opt-ie-reset">IE Password Reset</option>
+                        <option value="VLP Password Reset" class="opt-vlp-reset">VLP Password Reset</option>
+                        <option value="Update IE Account Details" class="opt-upd-ie">Update IE Account Details</option>
+                        <option value="Update VLP Account Details" class="opt-upd-vlp">Update VLP Account Details</option>
+                        <option value="Update IE & VLP Account Details" class="opt-upd-both">Update IE & VLP Account Details</option>
+                        <option value="Hotspot Password Reset" class="opt-hotspot">Hotspot Password Reset</option>
+                        <option value="IE & Hotspot Password Reset" class="opt-ie-hot">IE & Hotspot Password Reset</option>
+                        <option value="VLP & Hotspot Password Reset" class="opt-vlp-hot">VLP & Hotspot Password Reset</option>
+                        <option value="IE, VLP, Hotspot Reset" class="opt-all-reset">IE, VLP, Hotspot Reset</option>
+                        <option value="Zoom Account" class="opt-zoom">Zoom Account</option>
                     </select>
                 </div>
             </div>
 
             <div class="flex justify-end gap-2">
-                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-bold py-2 px-6 rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase">Cancel</button>
+                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-bold py-2 px-6 rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all uppercase">Cancel</button>
                 <button type="submit" id="submitBtn" class="bg-[#00FF00] hover:bg-green-400 text-black font-bold py-2 px-10 rounded border-2 border-black text-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 transition-all">SAVE</button>
             </div>
         </form>
@@ -117,22 +135,22 @@
 
         <div class="p-4 pt-0">
             <div class="table-container">
-                <table id="dataTable" class="w-full thin-table text-center">
+                <table id="dataTable" class="w-full thin-table text-sm text-center">
                     <thead>
                         <tr>
-                            <th style="width: 85px;">Date</th>
+                            <th style="width: 100px;">Date</th>
                             <th>Complete Name</th>
-                            <th style="width: 120px;">Status</th>
-                            <th style="width: 110px;">ID Number</th>
-                            <th style="width: 80px;">Dept</th>
+                            <th style="width: 130px;">Status</th>
+                            <th style="width: 120px;">ID Number</th>
+                            <th style="width: 100px;">Dept</th>
                             <th>Purpose</th>
-                            <th style="width: 90px;">Actions</th>
+                            <th style="width: 100px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div id="paginationControls" class="flex justify-center items-center gap-2 mt-3 pb-2"></div>
+            <div id="paginationControls" class="flex justify-center items-center gap-2 mt-2 pb-2"></div>
         </div>
     </div>
 
@@ -146,10 +164,10 @@
         const tabContainer = document.getElementById('tabContainer');
         const paginationControls = document.getElementById('paginationControls');
 
-        let currentFilter = 'All-';
+        let currentFilter = 'All';
         let allData = [];
         let currentPage = 1;
-        const rowsPerPage = 10; // Fixed 10 Rows
+        const rowsPerPage = 10; // Fixed 10 inputs
 
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
@@ -158,13 +176,13 @@
         function closeAlert() { alertBox.classList.add('hidden'); }
 
         async function loadCloudData(silent = false) {
-            if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse uppercase">Syncing...</td></tr>';
+            if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse uppercase text-center">Syncing...</td></tr>';
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 allData = await response.json();
                 renderPortal();
             } catch (error) {
-                if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Sync Error.</td></tr>';
+                if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600 text-center">Sync Error.</td></tr>';
             }
         }
 
@@ -237,16 +255,16 @@
             const pageData = filteredData.slice(startIndex, startIndex + rowsPerPage);
 
             tableBody.innerHTML = '';
-            // 1. Add Data Rows
+            // Add actual data
             pageData.forEach(data => addTableRowUI(data));
 
-            // 2. Add Fixed Empty Rows (to always have 10)
+            // ADD EMPTY ROWS TO REACH 10
             const emptyRowsNeeded = rowsPerPage - pageData.length;
             for (let i = 0; i < emptyRowsNeeded; i++) {
-                const tr = document.createElement('tr');
-                tr.className = "bg-white border-b border-black";
-                tr.innerHTML = `<td colspan="7"></td>`;
-                tableBody.appendChild(tr);
+                const emptyRow = document.createElement('tr');
+                emptyRow.className = "bg-white border-b border-black";
+                emptyRow.innerHTML = `<td colspan="7" class="py-[22px]"></td>`;
+                tableBody.appendChild(emptyRow);
             }
 
             renderPaginationControls(totalPages);
@@ -261,14 +279,13 @@
             row.innerHTML = `
                 <td>${data.date}</td>
                 <td class="text-left font-bold truncate">${data.name}</td>
-                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[9px] block truncate">${data.pos}</span></td>
-                <td class="font-mono">${data.idNum}</td>
-                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[9px] block truncate">${data.dept}</span></td>
-                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-0.5 rounded-md text-[9px] block truncate text-left">${data.purp}</span></td>
-                <td>
+                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[10px] block truncate">${data.pos}</span></td>
+                <td class="font-mono text-xs">${data.idNum}</td>
+                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[10px] block truncate">${data.dept}</span></td>
+                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-0.5 rounded-md text-[10px] block truncate text-left">${data.purp}</span></td>
+                <td class="p-1">
                     <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline text-xs">EDIT</button>
-                    <span class="text-gray-300 mx-0.5">|</span>
-                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline text-xs">DEL</button>
+                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline text-xs ml-2">DEL</button>
                 </td>
             `;
             tableBody.appendChild(row);
@@ -276,29 +293,26 @@
 
         function renderPaginationControls(totalPages) {
             paginationControls.innerHTML = '';
-            
-            // PREV BUTTON
+            if (totalPages <= 1) return;
             const prevBtn = document.createElement('button');
             prevBtn.textContent = 'PREV';
             prevBtn.disabled = currentPage === 1;
-            prevBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]';
+            prevBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 text-xs';
             prevBtn.onclick = () => { currentPage--; renderPortal(); };
             paginationControls.appendChild(prevBtn);
 
-            // PAGE NUMBERS
             for (let i = 1; i <= totalPages; i++) {
                 const pBtn = document.createElement('button');
                 pBtn.textContent = i;
-                pBtn.className = `page-num ${i === currentPage ? 'page-num-active' : 'page-num-inactive'}`;
+                pBtn.className = `px-2 py-1 border border-black font-bold mx-0.5 text-xs ${i === currentPage ? 'bg-black text-white' : 'bg-white text-black'}`;
                 pBtn.onclick = () => { currentPage = i; renderPortal(); };
                 paginationControls.appendChild(pBtn);
             }
 
-            // NEXT BUTTON
             const nextBtn = document.createElement('button');
             nextBtn.textContent = 'NEXT';
             nextBtn.disabled = currentPage === totalPages;
-            nextBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]';
+            nextBtn.className = 'px-3 py-1 bg-black text-white font-bold disabled:opacity-30 text-xs';
             nextBtn.onclick = () => { currentPage++; renderPortal(); };
             paginationControls.appendChild(nextBtn);
         }
