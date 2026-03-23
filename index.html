@@ -20,52 +20,52 @@
             background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: -1;
         }
 
+        /* Compact Input Rows */
         .input-row { display: flex; border-bottom: 2px solid black; align-items: stretch; width: 100%; }
         .input-row:last-child { border-bottom: none; }
-        .label-cell { width: 33.33%; background-color: white; padding: 10px; font-weight: bold; border-right: 2px solid black; display: flex; align-items: center; font-size: 1.25rem; }
+        .label-cell { width: 33.33%; background-color: white; padding: 6px 12px; font-weight: bold; border-right: 2px solid black; display: flex; align-items: center; font-size: 1.25rem; }
         
-        /* Regular weight for inputs as requested */
-        .input-cell { width: 66.67%; padding: 10px; outline: none; background-color: #FFFFFF; text-align: center; font-style: italic; font-size: 1.25rem; color: black; border: none; font-weight: normal; }
+        .input-cell { width: 66.67%; padding: 6px 12px; outline: none; background-color: #FFFFFF; text-align: center; font-style: italic; font-size: 1.25rem; color: black; border: none; font-weight: normal; }
         .input-cell:focus { background-color: #eff6ff; }
         
         select option { color: white !important; font-weight: bold !important; }
-        option[value=""] { background-color: white !important; color: gray !important; }
 
-        /* Table Styles - Fixed 10 Rows & Compact */
+        /* Fixed 10-Row Table Logic */
         .thin-table { border: 2px solid #000 !important; border-collapse: collapse; font-size: 1.05rem; table-layout: fixed; }
-        .thin-table th { border: 2px solid #000 !important; @apply p-2 bg-gray-100 font-bold uppercase; height: 40px; }
-        .thin-table td { border: 1px solid #000 !important; @apply p-1; font-weight: normal; height: 42px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .thin-table th { border: 2px solid #000 !important; padding: 4px; bg-gray-100 font-bold uppercase; height: 32px; }
+        .thin-table td { border: 1px solid #000 !important; padding: 2px 4px; font-weight: normal; height: 38px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .table-container { background: white; border: 1px solid #000; }
         
-        .tab-btn { @apply px-3 py-1 border-2 border-black font-bold mr-2 mb-2 transition-all text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
+        /* Compact Tabs */
+        .tab-btn { @apply px-3 py-0.5 border-2 border-black font-bold mr-1 mb-1 transition-all text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
         .tab-active { @apply bg-black text-white; }
         .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
 
-        /* Square Pagination Buttons */
-        .page-ctrl-btn { @apply w-16 h-10 bg-black text-white font-bold disabled:opacity-30 flex items-center justify-center border-2 border-black transition-all hover:bg-gray-800 uppercase text-xs; }
-        .page-num { @apply w-10 h-10 border-2 border-black font-bold mx-0.5 flex items-center justify-center transition-all text-sm; }
+        /* Square Pagination */
+        .page-ctrl-btn { @apply w-14 h-8 bg-black text-white font-bold disabled:opacity-30 flex items-center justify-center border-2 border-black transition-all hover:bg-gray-800 uppercase text-[10px]; }
+        .page-num { @apply w-8 h-8 border-2 border-black font-bold mx-0.5 flex items-center justify-center transition-all text-sm; }
         .page-num-active { @apply bg-black text-white; }
         .page-num-inactive { @apply bg-white text-black hover:bg-gray-200; }
     </style>
 </head>
-<body class="p-4 font-sans relative">
+<body class="p-2 font-sans relative">
 
     <div class="bg-overlay"></div>
 
     <div id="customAlert" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-white border-4 border-black p-8 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-            <h2 class="text-2xl font-black mb-4 uppercase text-red-600">Missing Info</h2>
-            <p class="text-lg font-bold mb-6">Please complete all required fields.</p>
-            <button onclick="closeAlert()" class="bg-black text-white font-bold py-2 px-8 hover:bg-gray-800 transition-all uppercase">Got it</button>
+        <div class="bg-white border-4 border-black p-6 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+            <h2 class="text-xl font-black mb-2 uppercase text-red-600">Missing Info</h2>
+            <p class="text-md font-bold mb-4">Please complete all fields.</p>
+            <button onclick="closeAlert()" class="bg-black text-white font-bold py-2 px-6 hover:bg-gray-800 transition-all uppercase">Got it</button>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto bg-white/95 shadow-2xl border-2 border-black overflow-hidden mb-4">
-        <div class="bg-yellow-400 p-2 text-center border-b-2 border-black">
-            <h1 class="text-2xl font-black italic tracking-tight text-black uppercase">Please enter your details completely</h1>
+    <div class="max-w-6xl mx-auto bg-white/95 shadow-2xl border-2 border-black overflow-hidden">
+        <div class="bg-yellow-400 p-1 text-center border-b-2 border-black">
+            <h1 class="text-xl font-black italic tracking-tight text-black uppercase">Please enter your details completely</h1>
         </div>
 
-        <form id="entryForm" class="p-4 pb-2" novalidate autocomplete="off">
+        <form id="entryForm" class="p-3 pb-1" novalidate autocomplete="off">
             <input type="hidden" id="editRowId" value="-1">
             <div class="border-2 border-black mb-2 bg-white">
                 <div class="input-row"><div class="label-cell">Full Name:</div><input type="text" id="fullName" class="input-cell" placeholder="Enter full name"></div>
@@ -109,24 +109,24 @@
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3 mb-1">
-                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-bold py-1 px-4 rounded border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase text-xs">Cancel</button>
-                <button type="submit" id="submitBtn" class="bg-[#00FF00] hover:bg-green-400 text-black font-bold py-2 px-12 rounded-lg border-2 border-black text-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 transition-all">SAVE</button>
+            <div class="flex justify-end gap-2 mb-1">
+                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-bold py-1 px-3 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase text-[10px]">Cancel</button>
+                <button type="submit" id="submitBtn" class="bg-[#00FF00] hover:bg-green-400 text-black font-bold py-1 px-10 rounded-lg border-2 border-black text-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 transition-all">SAVE</button>
             </div>
         </form>
 
         <hr class="border-t-2 border-black">
 
-        <div class="px-4 py-2">
+        <div class="px-3 py-1">
             <div class="flex flex-col mb-1">
-                <h3 class="font-bold uppercase text-[10px] italic tracking-widest text-gray-500">Filter by Month:</h3>
-                <div id="tabContainer" class="flex flex-wrap mt-1"></div>
+                <h3 class="font-bold uppercase text-[9px] italic tracking-widest text-gray-500">Filter by Month:</h3>
+                <div id="tabContainer" class="flex flex-wrap mt-0.5"></div>
             </div>
 
             <div class="table-container">
                 <table id="dataTable" class="w-full thin-table text-center">
                     <thead>
-                        <tr>
+                        <tr class="bg-gray-100">
                             <th style="width: 12%;">Date</th>
                             <th style="width: 25%;">Complete Name</th>
                             <th style="width: 15%;">Status</th>
@@ -139,7 +139,7 @@
                 </table>
             </div>
             
-            <div id="paginationControls" class="flex justify-center items-center gap-1 py-3"></div>
+            <div id="paginationControls" class="flex justify-center items-center gap-1 py-2"></div>
         </div>
     </div>
 
@@ -156,7 +156,7 @@
         let currentFilter = 'All';
         let allData = [];
         let currentPage = 1;
-        const rowsPerPage = 10; // Fixed to 10 rows
+        const rowsPerPage = 10;
 
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
@@ -165,13 +165,13 @@
         function closeAlert() { alertBox.classList.add('hidden'); }
 
         async function loadCloudData(silent = false) {
-            if (!silent) tableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-blue-600 font-bold animate-pulse">SYNCING...</td></tr>';
+            if (!silent) tableBody.innerHTML = '<tr><td colspan="6" class="p-2 text-blue-600 font-bold animate-pulse text-xs">SYNCING...</td></tr>';
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 allData = await response.json();
                 renderPortal();
             } catch (error) {
-                if (!silent) tableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-red-600">Connection Error.</td></tr>';
+                if (!silent) tableBody.innerHTML = '<tr><td colspan="6" class="p-2 text-red-600">Sync Error.</td></tr>';
             }
         }
 
@@ -238,11 +238,8 @@
             const pageData = filteredData.slice(startIndex, startIndex + rowsPerPage);
 
             tableBody.innerHTML = '';
-            
-            // Render Data Rows
             pageData.forEach(data => addTableRowUI(data));
 
-            // Logic to keep 10 rows fixed even if empty
             const fillerRows = rowsPerPage - pageData.length;
             for (let i = 0; i < fillerRows; i++) {
                 const tr = document.createElement('tr');
@@ -264,10 +261,10 @@
             row.innerHTML = `
                 <td>${data.date}</td>
                 <td class="text-left pl-2">${data.name}</td>
-                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">${data.pos}</span></td>
-                <td class="font-mono text-xs">${data.idNum}</td>
-                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">${data.dept}</span></td>
-                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase">${data.purp}</span></td>
+                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase">${data.pos}</span></td>
+                <td class="font-mono text-[10px]">${data.idNum}</td>
+                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase">${data.dept}</span></td>
+                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-1 py-0.5 rounded text-[9px] font-bold uppercase">${data.purp}</span></td>
             `;
             tableBody.appendChild(row);
         }
