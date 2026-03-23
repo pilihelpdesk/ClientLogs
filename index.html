@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Entry Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <style>
         .input-row { display: flex; border-bottom: 2px solid black; align-items: stretch; width: 100%; }
@@ -141,12 +140,6 @@
         </div>
     </div>
 
-    <div class="fixed bottom-4 right-4 z-40">
-        <button type="button" id="downloadExcel" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg border-2 border-black text-sm opacity-20 hover:opacity-100 transition-all">
-            Download Excel
-        </button>
-    </div>
-
     <script>
         const entryForm = document.getElementById('entryForm');
         const submitBtn = document.getElementById('submitBtn');
@@ -202,10 +195,7 @@
             const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
 
             const entryData = { 
-                action, 
-                rowId, 
-                date: formattedDate, 
-                monthLabel: monthLabel, 
+                action, rowId, date: formattedDate, monthLabel: monthLabel, 
                 name, pos, idNum, dept, purp 
             };
 
@@ -215,7 +205,6 @@
                     mode: 'no-cors',
                     body: JSON.stringify(entryData)
                 });
-                // Complete clean-up after success
                 entryForm.reset(); 
                 resetEditState();
                 setTimeout(loadCloudData, 1500); 
@@ -227,7 +216,6 @@
 
         function renderPortal() {
             const months = [...new Set(allData.map(item => item.monthLabel))].filter(Boolean);
-            
             tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
             
             months.forEach(m => {
@@ -314,12 +302,6 @@
         }
 
         function filterByMonth(month) { currentFilter = month; renderPortal(); }
-
-        document.getElementById('downloadExcel').addEventListener('click', () => {
-            const table = document.getElementById("dataTable");
-            const wb = XLSX.utils.table_to_book(table, { sheet: "Data Log" });
-            XLSX.writeFile(wb, `Portal_Data_${currentFilter}.xlsx`);
-        });
     </script>
 </body>
 </html>
