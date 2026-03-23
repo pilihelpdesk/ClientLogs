@@ -64,7 +64,7 @@
             <h1 class="text-4xl font-black italic tracking-tight text-black uppercase">Please enter your details completely</h1>
         </div>
 
-        <form id="entryForm" class="p-6" novalidate>
+        <form id="entryForm" class="p-6" novalidate autocomplete="off">
             <input type="hidden" id="editRowId" value="-1">
             <div class="border-2 border-black mb-4">
                 <div class="input-row"><div class="label-cell">Full Name:</div><input type="text" id="fullName" class="input-cell" placeholder="Enter full name"></div>
@@ -198,7 +198,7 @@
             submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
 
             const now = new Date();
-            const monthLabel = " Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
+            const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
             const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
 
             const entryData = { 
@@ -215,8 +215,9 @@
                     mode: 'no-cors',
                     body: JSON.stringify(entryData)
                 });
+                // Complete clean-up after success
+                entryForm.reset(); 
                 resetEditState();
-                entryForm.reset();
                 setTimeout(loadCloudData, 1500); 
             } catch (error) {
                 alert("Error saving.");
@@ -225,10 +226,9 @@
         });
 
         function renderPortal() {
-            // FIXED: Removed nested function and used correct month strings
             const months = [...new Set(allData.map(item => item.monthLabel))].filter(Boolean);
             
-            tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records-</button>`;
+            tabContainer.innerHTML = `<button onclick="filterByMonth('All')" class="tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}">All Records</button>`;
             
             months.forEach(m => {
                 tabContainer.innerHTML += `<button onclick="filterByMonth('${m}')" class="tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}">${m}</button>`;
@@ -294,6 +294,7 @@
 
         function resetEditState() {
             editRowIdInput.value = "-1";
+            submitBtn.disabled = false;
             submitBtn.textContent = "SAVE";
             submitBtn.classList.replace('bg-blue-500', 'bg-[#00FF00]');
             submitBtn.classList.remove('text-white');
