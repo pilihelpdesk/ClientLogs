@@ -24,26 +24,22 @@
         .input-row:last-child { border-bottom: none; }
         .label-cell { width: 33.33%; background-color: white; padding: 12px; font-weight: bold; border-right: 2px solid black; display: flex; align-items: center; font-size: 1.25rem; }
         
-        /* Inputs - Regular weight as requested */
         .input-cell { width: 66.67%; padding: 12px; outline: none; background-color: #FFFFFF; text-align: center; font-style: italic; font-size: 1.25rem; color: black; border: none; font-weight: normal; }
         .input-cell:focus { background-color: #eff6ff; }
         
-        select option { color: white !important; font-weight: bold !important; }
-        option[value=""] { background-color: white !important; color: gray !important; }
-
-        /* Table Styles - Compact & Larger Font */
-        .thin-table { border: 2px solid #000 !important; border-collapse: collapse; font-size: 1.1rem; }
-        .thin-table th { border: 1px solid #000 !important; @apply p-2 bg-gray-100 font-bold uppercase; }
-        .thin-table td { border: 1px solid #000 !important; @apply p-1; font-weight: normal; }
+        /* Table Styles - Fixed Height for 10 Rows */
+        .thin-table { border: 2px solid #000 !important; border-collapse: collapse; font-size: 1.1rem; table-layout: fixed; }
+        .thin-table th { border: 2px solid #000 !important; @apply p-2 bg-gray-100 font-bold uppercase; height: 45px; }
+        .thin-table td { border: 1px solid #000 !important; @apply p-1; font-weight: normal; height: 45px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .table-container { background: white; border: 1px solid #000; }
         
         .tab-btn { @apply px-3 py-1 border-2 border-black font-bold mr-2 mb-2 transition-all text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]; }
         .tab-active { @apply bg-black text-white; }
         .tab-inactive { @apply bg-white text-black hover:bg-gray-100; }
 
-        /* Pagination Buttons - Preserving Original Style */
-        .page-ctrl-btn { @apply px-3 py-1 bg-black text-white font-bold disabled:opacity-30 uppercase text-xs border border-black; }
-        .page-num { @apply px-3 py-1 border border-black font-bold mx-0.5 transition-all text-sm; }
+        /* Pagination - Square Button Style */
+        .page-ctrl-btn { @apply w-12 h-10 bg-black text-white font-bold disabled:opacity-30 flex items-center justify-center border-2 border-black transition-all hover:bg-gray-800; }
+        .page-num { @apply w-10 h-10 border-2 border-black font-bold mx-0.5 flex items-center justify-center transition-all text-sm; }
         .page-num-active { @apply bg-black text-white; }
         .page-num-inactive { @apply bg-white text-black hover:bg-gray-200; }
     </style>
@@ -123,17 +119,16 @@
                 <div id="tabContainer" class="flex flex-wrap mt-1"></div>
             </div>
 
-            <div class="table-container overflow-x-auto">
+            <div class="table-container">
                 <table id="dataTable" class="w-full thin-table text-center">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Complete Name</th>
-                            <th>Status</th>
-                            <th>ID Number</th>
-                            <th>Department</th>
-                            <th>Purpose:</th>
-                            <th>Actions</th>
+                            <th style="width: 12%;">Date</th>
+                            <th style="width: 25%;">Complete Name</th>
+                            <th style="width: 15%;">Status</th>
+                            <th style="width: 15%;">ID Number</th>
+                            <th style="width: 10%;">Dept</th>
+                            <th style="width: 23%;">Purpose:</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
@@ -157,7 +152,7 @@
         let currentFilter = 'All';
         let allData = [];
         let currentPage = 1;
-        const rowsPerPage = 7;
+        const rowsPerPage = 10;
 
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
@@ -166,13 +161,13 @@
         function closeAlert() { alertBox.classList.add('hidden'); }
 
         async function loadCloudData(silent = false) {
-            if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse">SYNCING...</td></tr>';
+            if (!silent) tableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-blue-600 font-bold animate-pulse">SYNCING...</td></tr>';
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 allData = await response.json();
                 renderPortal();
             } catch (error) {
-                if (!silent) tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Connection Error.</td></tr>';
+                if (!silent) tableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-red-600">Connection Error.</td></tr>';
             }
         }
 
@@ -239,13 +234,26 @@
             const pageData = filteredData.slice(startIndex, startIndex + rowsPerPage);
 
             tableBody.innerHTML = '';
+            
+            // Render actual data rows
             pageData.forEach(data => addTableRowUI(data));
+
+            // Render empty rows to maintain fixed height (10 rows total)
+            const emptyRowsNeeded = rowsPerPage - pageData.length;
+            for (let i = 0; i < emptyRowsNeeded; i++) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.className = "bg-white border-b border-black";
+                emptyRow.innerHTML = `<td colspan="6" style="height: 45px;">&nbsp;</td>`;
+                tableBody.appendChild(emptyRow);
+            }
+
             renderPaginationControls(totalPages);
         }
 
         function addTableRowUI(data) {
             const row = document.createElement('tr');
-            row.className = "bg-white border-b border-black";
+            row.className = "bg-white border-b border-black cursor-pointer hover:bg-blue-50";
+            row.onclick = () => editRow(data.rowId); // Quick edit on row click
             const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
             const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
             
@@ -256,11 +264,6 @@
                 <td class="font-mono text-xs">${data.idNum}</td>
                 <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${textColor}" class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">${data.dept}</span></td>
                 <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${textColor}" class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase">${data.purp}</span></td>
-                <td class="whitespace-nowrap">
-                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 font-bold hover:underline text-xs">EDIT</button>
-                    <span class="text-gray-300 mx-1">|</span>
-                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline text-xs">DEL</button>
-                </td>
             `;
             tableBody.appendChild(row);
         }
@@ -270,7 +273,7 @@
             if (totalPages <= 1) return;
 
             const prevBtn = document.createElement('button');
-            prevBtn.textContent = 'PREV';
+            prevBtn.innerHTML = '&#171;'; // Left arrow
             prevBtn.disabled = currentPage === 1;
             prevBtn.className = 'page-ctrl-btn';
             prevBtn.onclick = () => { currentPage--; renderPortal(); };
@@ -285,7 +288,7 @@
             }
 
             const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'NEXT';
+            nextBtn.innerHTML = '&#187;'; // Right arrow
             nextBtn.disabled = currentPage === totalPages;
             nextBtn.className = 'page-ctrl-btn';
             nextBtn.onclick = () => { currentPage++; renderPortal(); };
@@ -306,13 +309,6 @@
             submitBtn.classList.add('text-white');
             cancelEditBtn.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        async function deleteRow(rowId) {
-            if (!confirm("Delete record?")) return;
-            allData = allData.filter(d => d.rowId != rowId);
-            renderPortal();
-            try { await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', rowId }) }); setTimeout(() => loadCloudData(true), 1000); } catch (e) { }
         }
 
         function resetEditState() {
