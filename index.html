@@ -165,146 +165,145 @@
     </div>
 
     <script>
-        const entryForm = document.getElementById('entryForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const editRowIdInput = document.getElementById('editRowId');
-        const cancelEditBtn = document.getElementById('cancelEdit');
-        const alertBox = document.getElementById('customAlert');
-        const tableBody = document.getElementById('tableBody');
-        const tabContainer = document.getElementById('tabContainer');
-        let currentFilter = 'All';
-        let allData = [];
+       <script>
+    const entryForm = document.getElementById('entryForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const editRowIdInput = document.getElementById('editRowId');
+    const cancelEditBtn = document.getElementById('cancelEdit');
+    const alertBox = document.getElementById('customAlert');
+    const tableBody = document.getElementById('tableBody');
+    const tabContainer = document.getElementById('tabContainer');
+    let currentFilter = 'All';
+    let allData = [];
 
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
-        // Initial load with the pulse loader
-        window.onload = () => loadCloudData(false);
+    // On initial page load, show the loader
+    window.onload = () => loadCloudData(false);
 
-        function closeAlert() { alertBox.classList.add('hidden'); }
+    function closeAlert() { alertBox.classList.add('hidden'); }
 
-        async function loadCloudData(silent = false) {
-            if (!silent) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse">SYNCING WITH CLOUD...</td></tr>';
-            }
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL);
-                allData = await response.json();
-                renderPortal();
-            } catch (error) {
-                if (!silent) {
-                    tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Sync Error. Check Internet.</td></tr>';
-                }
+    async function loadCloudData(skipLoader = false) {
+        // ONLY show "Syncing" if we aren't skipping the loader
+        if (!skipLoader) {
+            tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-blue-600 font-bold animate-pulse">SYNCING WITH CLOUD...</td></tr>';
+        }
+        
+        try {
+            const response = await fetch(GOOGLE_SCRIPT_URL);
+            const newData = await response.json();
+            
+            // Update our local variable
+            allData = newData;
+            
+            // Re-render the UI
+            renderPortal();
+        } catch (error) {
+            if (!skipLoader) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-600">Sync Error. Check Internet.</td></tr>';
             }
         }
+    }
 
-        document.getElementById('position').addEventListener('change', function() {
-            const isEmp = (this.value === "Teaching Personnel" || this.value === "Non-Teaching Personnel");
-            document.getElementById('idLabel').textContent = isEmp ? "Employee ID Number:" : "Student ID Number:";
-            document.getElementById('idInput').placeholder = isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
-        });
+    document.getElementById('position').addEventListener('change', function() {
+        const isEmp = (this.value === "Teaching Personnel" || this.value === "Non-Teaching Personnel");
+        document.getElementById('idLabel').textContent = isEmp ? "Employee ID Number:" : "Student ID Number:";
+        document.getElementById('idInput').placeholder = isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
+    });
 
-        entryForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const name = document.getElementById('fullName').value.trim();
-            const pos = document.getElementById('position').value;
-            const idNum = document.getElementById('idInput').value.trim();
-            const dept = document.getElementById('dept').value;
-            const purp = document.getElementById('purpose').value;
+    entryForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const name = document.getElementById('fullName').value.trim();
+        const pos = document.getElementById('position').value;
+        const idNum = document.getElementById('idInput').value.trim();
+        const dept = document.getElementById('dept').value;
+        const purp = document.getElementById('purpose').value;
 
-            if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
+        if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
 
-            const rowId = editRowIdInput.value;
-            const action = rowId === "-1" ? "addRow" : "edit";
+        const rowId = editRowIdInput.value;
+        const action = rowId === "-1" ? "addRow" : "edit";
 
-            // Prepare local temporary data
-            const now = new Date();
-            const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
-            const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-            
-            const tempRecord = { 
-                rowId: action === "edit" ? rowId : "temp-" + Date.now(), 
-                date: formattedDate, monthLabel, name, pos, idNum, dept, purp 
-            };
+        // 1. Create the data object
+        const now = new Date();
+        const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
+        const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+        
+        const record = { 
+            rowId: action === "edit" ? rowId : "temp-" + Date.now(), 
+            date: formattedDate, monthLabel, name, pos, idNum, dept, purp 
+        };
 
-            // OPTIMISTIC UPDATE: Update UI instantly
-            if (action === "addRow") {
-                addTableRowUI(tempRecord, true); // Add to top of table
-            } else {
-                const rowToUpdate = document.querySelector(`tr[data-id="${rowId}"]`);
-                if (rowToUpdate) updateRowCells(rowToUpdate, tempRecord);
-            }
+        // 2. OPTIMISTIC UPDATE: Update local array and UI immediately
+        if (action === "addRow") {
+            allData.push(record); // Add to local data
+        } else {
+            const index = allData.findIndex(d => d.rowId == rowId);
+            if (index !== -1) allData[index] = record;
+        }
 
-            // Lock button and reset form
-            submitBtn.disabled = true;
-            submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
-            
-            const entryData = { action, rowId, date: formattedDate, monthLabel, name, pos, idNum, dept, purp };
-            
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify(entryData)
-                });
+        // Render immediately (this will be flicker-free because allData is already updated)
+        renderPortal();
 
-                // Clear form but don't show the big loader
-                entryForm.reset(); 
-                resetEditState();
-                
-                // Silent background re-sync to ensure IDs are correct
-                setTimeout(() => loadCloudData(true), 2000); 
-            } catch (error) {
-                alert("Cloud Sync Error. Please refresh.");
-                submitBtn.disabled = false;
-            }
-        });
-
-        function renderPortal() {
-            tabContainer.innerHTML = '';
-            const months = [...new Set(allData.map(item => item.monthLabel))]
-                .filter(m => m && typeof m === 'string' && m.startsWith('Month of'));
-            
-            const allBtn = document.createElement('button');
-            allBtn.textContent = 'All Records-';
-            allBtn.className = `tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}`;
-            allBtn.onclick = () => filterByMonth('All');
-            tabContainer.appendChild(allBtn);
-            
-            months.forEach(m => {
-                const btn = document.createElement('button');
-                btn.textContent = m;
-                btn.className = `tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}`;
-                btn.onclick = () => filterByMonth(m);
-                tabContainer.appendChild(btn);
+        // 3. Reset form and button status
+        submitBtn.disabled = true;
+        submitBtn.textContent = action === "edit" ? "UPDATING..." : "SAVING...";
+        
+        const entryData = { action, rowId, date: formattedDate, monthLabel, name, pos, idNum, dept, purp };
+        
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(entryData)
             });
 
-            tableBody.innerHTML = '';
-            const displayedData = [...allData].reverse();
-            displayedData.forEach((data) => {
-                if (currentFilter !== 'All' && data.monthLabel !== currentFilter) return;
-                addTableRowUI(data);
-            });
-        }
-
-        // Helper to add row to the DOM
-        function addTableRowUI(data, isNew = false) {
-            const row = document.createElement('tr');
-            row.setAttribute('data-id', data.rowId);
-            row.className = "bg-white border-b border-black";
-            updateRowCells(row, data);
+            // 4. Success cleanup
+            entryForm.reset(); 
+            resetEditState();
             
-            if (isNew) {
-                tableBody.prepend(row);
-            } else {
-                tableBody.appendChild(row);
-            }
+            // 5. Silent background sync to get real IDs from Google Sheets
+            // This happens without the user seeing any "Syncing" message
+            setTimeout(() => loadCloudData(true), 2000); 
+        } catch (error) {
+            console.error("Cloud Save Error:", error);
+            submitBtn.disabled = false;
+            submitBtn.textContent = "RETRY SAVE";
         }
+    });
 
-        // Helper to populate cells
-        function updateRowCells(row, data) {
+    function renderPortal() {
+        // Build Tabs
+        tabContainer.innerHTML = '';
+        const months = [...new Set(allData.map(item => item.monthLabel))]
+            .filter(m => m && typeof m === 'string' && m.startsWith('Month of'));
+        
+        const allBtn = document.createElement('button');
+        allBtn.textContent = 'All Records-';
+        allBtn.className = `tab-btn ${currentFilter === 'All' ? 'tab-active' : 'tab-inactive'}`;
+        allBtn.onclick = () => filterByMonth('All');
+        tabContainer.appendChild(allBtn);
+        
+        months.forEach(m => {
+            const btn = document.createElement('button');
+            btn.textContent = m;
+            btn.className = `tab-btn ${currentFilter === m ? 'tab-active' : 'tab-inactive'}`;
+            btn.onclick = () => filterByMonth(m);
+            tabContainer.appendChild(btn);
+        });
+
+        // Build Table - No "Syncing" text here
+        tableBody.innerHTML = '';
+        const displayedData = [...allData].reverse();
+        
+        displayedData.forEach((data) => {
+            if (currentFilter !== 'All' && data.monthLabel !== currentFilter) return;
+
             const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
             const textColor = (data.dept === 'CEM' || data.dept === 'CVM' || data.purp.includes('Update') || data.purp === 'IE Password Reset') ? 'black' : 'white';
             
+            const row = document.createElement('tr');
+            row.className = "bg-white border-b border-black";
             row.innerHTML = `
                 <td>${data.date}</td>
                 <td class="text-left font-bold">${data.name}</td>
@@ -318,69 +317,65 @@
                     <button onclick="deleteRow('${data.rowId}')" class="text-red-600 font-bold hover:underline px-1">DEL</button>
                 </td>
             `;
-        }
+            tableBody.appendChild(row);
+        });
+    }
 
-        function editRow(rowId) {
-            const record = allData.find(d => d.rowId == rowId);
-            if (!record) return;
+    function editRow(rowId) {
+        const record = allData.find(d => d.rowId == rowId);
+        if (!record) return;
+        document.getElementById('fullName').value = record.name;
+        document.getElementById('position').value = record.pos;
+        document.getElementById('idInput').value = record.idNum;
+        document.getElementById('dept').value = record.dept;
+        document.getElementById('purpose').value = record.purp;
+        editRowIdInput.value = rowId;
+        submitBtn.textContent = "UPDATE";
+        submitBtn.classList.replace('bg-[#00FF00]', 'bg-blue-500');
+        submitBtn.classList.add('text-white');
+        cancelEditBtn.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-            document.getElementById('fullName').value = record.name;
-            document.getElementById('position').value = record.pos;
-            document.getElementById('idInput').value = record.idNum;
-            document.getElementById('dept').value = record.dept;
-            document.getElementById('purpose').value = record.purp;
-            
-            editRowIdInput.value = rowId;
-            submitBtn.textContent = "UPDATE";
-            submitBtn.classList.replace('bg-[#00FF00]', 'bg-blue-500');
-            submitBtn.classList.add('text-white');
-            cancelEditBtn.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+    async function deleteRow(rowId) {
+        if (!confirm("Delete this record permanently?")) return;
+        
+        // Optimistic Delete: Remove from local data and re-render instantly
+        allData = allData.filter(d => d.rowId != rowId);
+        renderPortal();
+        
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'delete', rowId })
+            });
+            setTimeout(() => loadCloudData(true), 1000);
+        } catch (e) { console.error("Delete error:", e); }
+    }
 
-        async function deleteRow(rowId) {
-            if (!confirm("Delete this record permanently?")) return;
-            
-            // Optimistic Delete from UI
-            const row = document.querySelector(`tr[data-id="${rowId}"]`);
-            if (row) row.style.opacity = '0.3'; // Fade while deleting
+    function resetEditState() {
+        editRowIdInput.value = "-1";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "SAVE";
+        submitBtn.classList.replace('bg-blue-500', 'bg-[#00FF00]');
+        submitBtn.classList.remove('text-white');
+        cancelEditBtn.classList.add('hidden');
+    }
 
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ action: 'delete', rowId })
-                });
-                if (row) row.remove();
-                setTimeout(() => loadCloudData(true), 1000);
-            } catch (e) { 
-                alert("Delete failed."); 
-                if (row) row.style.opacity = '1';
-            }
-        }
+    cancelEditBtn.onclick = () => { entryForm.reset(); resetEditState(); };
 
-        function resetEditState() {
-            editRowIdInput.value = "-1";
-            submitBtn.disabled = false;
-            submitBtn.textContent = "SAVE";
-            submitBtn.classList.replace('bg-blue-500', 'bg-[#00FF00]');
-            submitBtn.classList.remove('text-white');
-            cancelEditBtn.classList.add('hidden');
-        }
+    function getDeptColor(dept) {
+        const colors = {'CANR': '#15803D', 'CDE': '#1D4ED8', 'CAS': '#EF4444', 'CEM': '#FACC15', 'CEFS': '#FB923C', 'CVM': '#93C5FD', 'GS': '#9CA3AF', 'Non-Teaching Personnel': '#7E22CE'};
+        return colors[dept] || '#374151';
+    }
 
-        cancelEditBtn.onclick = () => { entryForm.reset(); resetEditState(); };
+    function getPurpColor(purp) {
+        const colors = {'IE & VLP Password Reset': '#6D28D9', 'IE Password Reset': '#FACC15', 'VLP Password Reset': '#15803D', 'Update IE Account Details': '#FEF08A', 'Update VLP Account Details': '#86EFAC', 'Update IE & VLP Account Details': '#FCA5A5', 'Hotspot Password Reset': '#1D4ED8', 'IE & Hotspot Password Reset': '#F97316', 'VLP & Hotspot Password Reset': '#FFEDD5', 'IE, VLP, Hotspot Reset': '#B91C1C', 'Zoom Account': '#2563EB'};
+        return colors[purp] || '#374151';
+    }
 
-        function getDeptColor(dept) {
-            const colors = {'CANR': '#15803D', 'CDE': '#1D4ED8', 'CAS': '#EF4444', 'CEM': '#FACC15', 'CEFS': '#FB923C', 'CVM': '#93C5FD', 'GS': '#9CA3AF', 'Non-Teaching Personnel': '#7E22CE'};
-            return colors[dept] || '#374151';
-        }
-
-        function getPurpColor(purp) {
-            const colors = {'IE & VLP Password Reset': '#6D28D9', 'IE Password Reset': '#FACC15', 'VLP Password Reset': '#15803D', 'Update IE Account Details': '#FEF08A', 'Update VLP Account Details': '#86EFAC', 'Update IE & VLP Account Details': '#FCA5A5', 'Hotspot Password Reset': '#1D4ED8', 'IE & Hotspot Password Reset': '#F97316', 'VLP & Hotspot Password Reset': '#FFEDD5', 'IE, VLP, Hotspot Reset': '#B91C1C', 'Zoom Account': '#2563EB'};
-            return colors[purp] || '#374151';
-        }
-
-        function filterByMonth(month) { currentFilter = month; renderPortal(); }
-    </script>
+    function filterByMonth(month) { currentFilter = month; renderPortal(); }
+</script>
 </body>
 </html>
