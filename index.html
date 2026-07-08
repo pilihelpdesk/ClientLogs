@@ -13,12 +13,9 @@
             margin: 0;
             padding: 0;
             min-height: 100vh;
-            background-image: url('background.jpg');
-            background-size: cover;
-            background-position: center;
+            background: linear-gradient(135deg, #0b3d1f 0%, #145c2c 22%, #2d7a3d 45%, #b8901f 70%, #8a6a12 100%);
             background-attachment: fixed;
             background-repeat: no-repeat;
-            background-color: #333;
         }
 
         .bg-overlay {
@@ -27,8 +24,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
+            background: radial-gradient(circle at 20% 10%, rgba(255, 215, 0, 0.10), transparent 55%),
+                        radial-gradient(circle at 80% 90%, rgba(21, 128, 61, 0.25), transparent 55%),
+                        rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(3px);
             z-index: -1;
         }
 
@@ -213,7 +212,7 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto bg-white/95 shadow-2xl border-2 border-black overflow-hidden mb-4">
+    <div class="max-w-7xl mx-auto bg-white/95 shadow-2xl border-4 border-white overflow-hidden mb-4" style="box-shadow: 0 0 0 2px rgba(0,0,0,0.6), 0 10px 40px rgba(0,0,0,0.5);">
         <div class="bg-yellow-400 p-3 text-center border-b-2 border-black">
             <h1 class="text-3xl font-black italic tracking-tight text-black uppercase">CBSUA Client Support Entry Portal</h1>
         </div>
@@ -318,10 +317,29 @@
                 </table>
             </div>
             <div class="flex flex-wrap justify-between items-center gap-2 mt-1 pb-1">
-                <div class="flex items-center gap-2">
-                    <label for="monthFilter" class="font-black text-xs uppercase">Month:</label>
-                    <input type="month" id="monthFilter" class="border-2 border-black px-2 py-1 font-bold text-sm bg-white">
+                <div class="flex flex-wrap items-center gap-2">
+                    <label class="font-black text-xs uppercase">Month:</label>
+                    <select id="monthSelect" class="border-2 border-black px-2 py-1 font-bold text-sm bg-white">
+                        <option value="">All</option>
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                    <label class="font-black text-xs uppercase">Year:</label>
+                    <select id="yearSelect" class="border-2 border-black px-2 py-1 font-bold text-sm bg-white">
+                        <option value="">All</option>
+                    </select>
                     <button type="button" id="clearMonthFilter" class="hidden text-[11px] font-black uppercase underline text-red-600">Clear</button>
+                    <span id="totalClientsLabel" class="text-[11px] font-black uppercase bg-yellow-400 border-2 border-black px-2 py-1 rounded">Total: 0</span>
                 </div>
                 <div id="paginationControls" class="flex flex-wrap justify-center items-center gap-1"></div>
             </div>
@@ -336,32 +354,58 @@
         const alertBox = document.getElementById('customAlert');
         const tableBody = document.getElementById('tableBody');
         const paginationControls = document.getElementById('paginationControls');
-        const monthFilterInput = document.getElementById('monthFilter');
+        const monthSelect = document.getElementById('monthSelect');
+        const yearSelect = document.getElementById('yearSelect');
         const clearMonthFilterBtn = document.getElementById('clearMonthFilter');
+        const totalClientsLabel = document.getElementById('totalClientsLabel');
 
         let allData = [];
         let currentPage = 1;
-        let selectedMonth = ''; // format: YYYY-MM
+        let selectedMonth = ''; // format: MM
+        let selectedYear = '';  // format: YYYY
         const rowsPerPage = 10;
 
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
         window.onload = () => loadCloudData(false);
 
-        monthFilterInput.addEventListener('change', (e) => {
+        monthSelect.addEventListener('change', (e) => {
             selectedMonth = e.target.value;
-            clearMonthFilterBtn.classList.toggle('hidden', !selectedMonth);
+            clearMonthFilterBtn.classList.toggle('hidden', !selectedMonth && !selectedYear);
+            currentPage = 1;
+            renderPortal();
+        });
+
+        yearSelect.addEventListener('change', (e) => {
+            selectedYear = e.target.value;
+            clearMonthFilterBtn.classList.toggle('hidden', !selectedMonth && !selectedYear);
             currentPage = 1;
             renderPortal();
         });
 
         clearMonthFilterBtn.addEventListener('click', () => {
             selectedMonth = '';
-            monthFilterInput.value = '';
+            selectedYear = '';
+            monthSelect.value = '';
+            yearSelect.value = '';
             clearMonthFilterBtn.classList.add('hidden');
             currentPage = 1;
             renderPortal();
         });
+
+        function populateYearOptions() {
+            const years = new Set();
+            allData.forEach(d => {
+                const dt = parseRecordDate(d.date);
+                if (dt) years.add(dt.getFullYear());
+            });
+            years.add(new Date().getFullYear());
+            const sortedYears = Array.from(years).sort((a, b) => b - a);
+            const currentValue = yearSelect.value;
+            yearSelect.innerHTML = '<option value="">All</option>' +
+                sortedYears.map(y => `<option value="${y}">${y}</option>`).join('');
+            yearSelect.value = currentValue;
+        }
 
         function closeAlert() { alertBox.classList.add('hidden'); }
 
@@ -400,6 +444,7 @@
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 allData = await response.json();
+                populateYearOptions();
                 renderPortal();
             } catch (error) {
                 tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-500 font-bold">Error loading data.</td></tr>';
@@ -452,9 +497,18 @@
 
         function renderPortal() {
             let filteredData = [...allData].reverse();
-            if (selectedMonth) {
-                filteredData = filteredData.filter(d => getRecordMonthKey(d.date) === selectedMonth);
+            if (selectedMonth || selectedYear) {
+                filteredData = filteredData.filter(d => {
+                    const dt = parseRecordDate(d.date);
+                    if (!dt) return false;
+                    const m = String(dt.getMonth() + 1).padStart(2, '0');
+                    const y = String(dt.getFullYear());
+                    if (selectedYear && y !== selectedYear) return false;
+                    if (selectedMonth && m !== selectedMonth) return false;
+                    return true;
+                });
             }
+            totalClientsLabel.textContent = `Total: ${filteredData.length}`;
             const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
             const pageData = filteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
