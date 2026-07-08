@@ -317,7 +317,7 @@
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div id="paginationControls" class="flex justify-center items-center gap-1 mt-1 pb-1"></div>
+            <div id="paginationControls" class="flex flex-wrap justify-center items-center gap-1 mt-1 pb-1"></div>
         </div>
     </div>
 
@@ -442,12 +442,27 @@
             renderPaginationControls(totalPages);
         }
 
+        function formatDisplayDate(dateStr) {
+            if (!dateStr) return '';
+            let d;
+            if (typeof dateStr === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+                // Stored as DD/MM/YYYY
+                const [day, month, year] = dateStr.split('/');
+                d = new Date(`${year}-${month}-${day}T00:00:00`);
+            } else {
+                // ISO string or anything else parseable directly
+                d = new Date(dateStr);
+            }
+            if (isNaN(d.getTime())) return dateStr; // fallback if unparseable
+            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+        }
+
         function addTableRowUI(data) {
             const row = document.createElement('tr');
             row.className = "bg-white border-b border-black";
             const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
             row.innerHTML = `
-                <td class="truncate">${data.date}</td>
+                <td class="truncate">${formatDisplayDate(data.date)}</td>
                 <td class="text-left truncate px-2">${data.name}</td>
                 <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-block w-full truncate">${data.pos}</span></td>
                 <td class="truncate">${data.idNum}</td>
@@ -464,6 +479,22 @@
         function renderPaginationControls(totalPages) {
             paginationControls.innerHTML = '';
             const btnClass = 'px-3 py-1 bg-black text-white font-black disabled:opacity-30 uppercase text-[11px]';
+
+            function appendPageBtn(i) {
+                const pBtn = document.createElement('button');
+                pBtn.textContent = i;
+                pBtn.className = `page-num ${i === currentPage ? 'page-num-active' : 'page-num-inactive'}`;
+                pBtn.onclick = () => { currentPage = i; renderPortal(); };
+                paginationControls.appendChild(pBtn);
+            }
+
+            function appendEllipsis() {
+                const span = document.createElement('span');
+                span.textContent = '...';
+                span.className = 'px-1 font-black text-sm';
+                paginationControls.appendChild(span);
+            }
+
             const prevBtn = document.createElement('button');
             prevBtn.textContent = 'PREV';
             prevBtn.disabled = currentPage === 1;
@@ -471,12 +502,27 @@
             prevBtn.onclick = () => { currentPage--; renderPortal(); };
             paginationControls.appendChild(prevBtn);
 
-            for (let i = 1; i <= totalPages; i++) {
-                const pBtn = document.createElement('button');
-                pBtn.textContent = i;
-                pBtn.className = `page-num ${i === currentPage ? 'page-num-active' : 'page-num-inactive'}`;
-                pBtn.onclick = () => { currentPage = i; renderPortal(); };
-                paginationControls.appendChild(pBtn);
+            // Windowed page numbers so PREV/NEXT never get pushed off-screen
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = startPage + maxButtons - 1;
+            if (endPage > totalPages) {
+                endPage = totalPages;
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+
+            if (startPage > 1) {
+                appendPageBtn(1);
+                if (startPage > 2) appendEllipsis();
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                appendPageBtn(i);
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) appendEllipsis();
+                appendPageBtn(totalPages);
             }
 
             const nextBtn = document.createElement('button');
