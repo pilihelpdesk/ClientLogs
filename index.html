@@ -317,7 +317,14 @@
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div id="paginationControls" class="flex flex-wrap justify-center items-center gap-1 mt-1 pb-1"></div>
+            <div class="flex flex-wrap justify-between items-center gap-2 mt-1 pb-1">
+                <div class="flex items-center gap-2">
+                    <label for="monthFilter" class="font-black text-xs uppercase">Month:</label>
+                    <input type="month" id="monthFilter" class="border-2 border-black px-2 py-1 font-bold text-sm bg-white">
+                    <button type="button" id="clearMonthFilter" class="hidden text-[11px] font-black uppercase underline text-red-600">Clear</button>
+                </div>
+                <div id="paginationControls" class="flex flex-wrap justify-center items-center gap-1"></div>
+            </div>
         </div>
     </div>
 
@@ -329,14 +336,32 @@
         const alertBox = document.getElementById('customAlert');
         const tableBody = document.getElementById('tableBody');
         const paginationControls = document.getElementById('paginationControls');
+        const monthFilterInput = document.getElementById('monthFilter');
+        const clearMonthFilterBtn = document.getElementById('clearMonthFilter');
 
         let allData = [];
         let currentPage = 1;
+        let selectedMonth = ''; // format: YYYY-MM
         const rowsPerPage = 10;
 
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
         window.onload = () => loadCloudData(false);
+
+        monthFilterInput.addEventListener('change', (e) => {
+            selectedMonth = e.target.value;
+            clearMonthFilterBtn.classList.toggle('hidden', !selectedMonth);
+            currentPage = 1;
+            renderPortal();
+        });
+
+        clearMonthFilterBtn.addEventListener('click', () => {
+            selectedMonth = '';
+            monthFilterInput.value = '';
+            clearMonthFilterBtn.classList.add('hidden');
+            currentPage = 1;
+            renderPortal();
+        });
 
         function closeAlert() { alertBox.classList.add('hidden'); }
 
@@ -426,7 +451,10 @@
         }
 
         function renderPortal() {
-            const filteredData = [...allData].reverse();
+            let filteredData = [...allData].reverse();
+            if (selectedMonth) {
+                filteredData = filteredData.filter(d => getRecordMonthKey(d.date) === selectedMonth);
+            }
             const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
             const pageData = filteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
@@ -442,8 +470,8 @@
             renderPaginationControls(totalPages);
         }
 
-        function formatDisplayDate(dateStr) {
-            if (!dateStr) return '';
+        function parseRecordDate(dateStr) {
+            if (!dateStr) return null;
             let d;
             if (typeof dateStr === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
                 // Stored as DD/MM/YYYY
@@ -453,8 +481,19 @@
                 // ISO string or anything else parseable directly
                 d = new Date(dateStr);
             }
-            if (isNaN(d.getTime())) return dateStr; // fallback if unparseable
+            return isNaN(d.getTime()) ? null : d;
+        }
+
+        function formatDisplayDate(dateStr) {
+            const d = parseRecordDate(dateStr);
+            if (!d) return dateStr || ''; // fallback if unparseable
             return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+        }
+
+        function getRecordMonthKey(dateStr) {
+            const d = parseRecordDate(dateStr);
+            if (!d) return null;
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
         }
 
         function addTableRowUI(data) {
