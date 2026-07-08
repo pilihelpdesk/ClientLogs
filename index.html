@@ -188,15 +188,30 @@
 
         /* PAGINATION */
         .page-num {
-            padding: 0.25rem 0.75rem;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             border: 1px solid black;
             font-weight: 700;
             margin: 0 2px;
             font-size: 0.875rem;
+            box-sizing: border-box;
         }
         .page-num-active { background-color: black; color: white; }
         .page-num-inactive { background-color: white; color: black; }
         .page-num-inactive:hover { background-color: #e5e7eb; }
+        .page-ellipsis {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.875rem;
+            margin: 0 2px;
+        }
     </style>
 </head>
 
@@ -584,7 +599,7 @@
             function appendEllipsis() {
                 const span = document.createElement('span');
                 span.textContent = '...';
-                span.className = 'px-1 font-black text-sm';
+                span.className = 'page-ellipsis';
                 paginationControls.appendChild(span);
             }
 
@@ -592,29 +607,35 @@
             prevBtn.textContent = 'PREV';
             prevBtn.disabled = currentPage === 1;
             prevBtn.className = btnClass;
-            prevBtn.onclick = () => { currentPage--; renderPortal(); };
+            prevBtn.onclick = () => { currentPage = Math.max(1, currentPage - 2); renderPortal(); };
             paginationControls.appendChild(prevBtn);
 
-            // Windowed page numbers so PREV/NEXT never get pushed off-screen
-            const maxButtons = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
-            let endPage = startPage + maxButtons - 1;
-            if (endPage > totalPages) {
-                endPage = totalPages;
-                startPage = Math.max(1, endPage - maxButtons + 1);
-            }
+            // Reserve up to 12 slots total for [1 ...] + sliding numbers + [... last]
+            const totalSlots = 12;
+            let startPage = Math.max(1, Math.min(currentPage - 4, totalPages - 9));
+            let endPage = Math.min(startPage + 9, totalPages);
 
-            if (startPage > 1) {
+            const showLeading = startPage > 1;
+            const showTrailing = endPage < totalPages;
+
+            // Shrink the sliding window when both leading and trailing markers are shown,
+            // so the total box count never exceeds totalSlots
+            let windowSize = totalSlots - (showLeading ? 2 : 0) - (showTrailing ? 2 : 0);
+            endPage = Math.min(startPage + windowSize - 1, totalPages);
+            startPage = Math.max(1, Math.min(startPage, endPage - windowSize + 1));
+            startPage = Math.max(startPage, 1);
+
+            if (showLeading) {
                 appendPageBtn(1);
-                if (startPage > 2) appendEllipsis();
+                appendEllipsis();
             }
 
             for (let i = startPage; i <= endPage; i++) {
                 appendPageBtn(i);
             }
 
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) appendEllipsis();
+            if (showTrailing) {
+                appendEllipsis();
                 appendPageBtn(totalPages);
             }
 
@@ -622,7 +643,7 @@
             nextBtn.textContent = 'NEXT';
             nextBtn.disabled = currentPage === totalPages || totalPages === 0;
             nextBtn.className = btnClass;
-            nextBtn.onclick = () => { currentPage++; renderPortal(); };
+            nextBtn.onclick = () => { currentPage = Math.min(totalPages, currentPage + 2); renderPortal(); };
             paginationControls.appendChild(nextBtn);
         }
 
