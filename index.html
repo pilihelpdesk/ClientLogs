@@ -9,13 +9,18 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        html, body {
+            height: 100%;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            overflow: hidden;
             background: linear-gradient(135deg, #0b3d1f 0%, #145c2c 22%, #2d7a3d 45%, #b8901f 70%, #8a6a12 100%);
             background-attachment: fixed;
             background-repeat: no-repeat;
+            box-sizing: border-box;
         }
 
         .bg-overlay {
@@ -156,10 +161,9 @@
 
         .thin-table td {
             border: 1px solid #000 !important;
-            padding: 0 8px;
+            padding: 4px 8px;
             font-size: 0.95rem;
             font-weight: 400;
-            height: 38px;
             overflow: hidden;
         }
 
@@ -212,6 +216,42 @@
             font-size: 0.875rem;
             margin: 0 2px;
         }
+        /* --- AUTO-FIT LAYOUT (fills the screen, no scroll, no bottom gap) --- */
+        .portal-card {
+            height: calc(100vh - 2rem);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .portal-header,
+        .portal-form {
+            flex-shrink: 0;
+        }
+
+        .portal-table-wrap {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 0.5rem;
+            padding-top: 0.5rem;
+        }
+
+        .table-container {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: auto; /* safety fallback only; normally fills exactly, no scroll needed */
+        }
+
+        #dataTable {
+            height: 100%;
+        }
+
+        .portal-pagination {
+            flex-shrink: 0;
+        }
     </style>
 </head>
 
@@ -227,12 +267,12 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto bg-white/95 shadow-2xl border-4 border-white overflow-hidden mb-4" style="box-shadow: 0 0 0 2px rgba(0,0,0,0.6), 0 10px 40px rgba(0,0,0,0.5);">
-        <div class="bg-yellow-400 p-3 text-center border-b-2 border-black">
+    <div class="portal-card max-w-7xl mx-auto bg-white/95 shadow-2xl border-4 border-white overflow-hidden" style="box-shadow: 0 0 0 2px rgba(0,0,0,0.6), 0 10px 40px rgba(0,0,0,0.5);">
+        <div class="portal-header bg-yellow-400 p-3 text-center border-b-2 border-black">
             <h1 class="text-3xl font-black italic tracking-tight text-black uppercase">CBSUA Client Support Entry Portal</h1>
         </div>
 
-        <form id="entryForm" class="p-4" novalidate autocomplete="off">
+        <form id="entryForm" class="portal-form p-4" novalidate autocomplete="off">
             <input type="hidden" id="editRowId" value="-1">
             <div class="border-2 border-black mb-1 bg-white">
 
@@ -305,7 +345,7 @@
             </div>
         </form>
 
-        <div class="p-2 pt-2">
+        <div class="portal-table-wrap">
             <div class="table-container">
                 <table id="dataTable" class="w-full thin-table text-center">
                     <colgroup>
@@ -331,7 +371,7 @@
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div class="flex flex-wrap justify-between items-center gap-2 mt-1 pb-1">
+            <div class="portal-pagination flex flex-wrap justify-between items-center gap-2 mt-1 pb-1">
                 <div class="flex flex-wrap items-center gap-2">
                     <label class="font-black text-xs uppercase">Month:</label>
                     <select id="monthSelect" class="border-2 border-black px-2 py-1 font-bold text-sm bg-white">
@@ -480,7 +520,7 @@
             const action = rowId === "-1" ? "addRow" : "edit";
             const now = new Date();
             const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
-            const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+            const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
             submitBtn.disabled = true;
             submitBtn.textContent = "...";
@@ -546,8 +586,12 @@
                 // Stored as DD/MM/YYYY
                 const [day, month, year] = dateStr.split('/');
                 d = new Date(`${year}-${month}-${day}T00:00:00`);
+            } else if (typeof dateStr === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                // Stored as plain ISO date (YYYY-MM-DD) — force local midnight so it never
+                // rolls into the previous/next day due to UTC timezone conversion
+                d = new Date(`${dateStr}T00:00:00`);
             } else {
-                // ISO string or anything else parseable directly
+                // Full ISO datetime string or anything else parseable directly
                 d = new Date(dateStr);
             }
             return isNaN(d.getTime()) ? null : d;
