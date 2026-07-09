@@ -161,9 +161,10 @@
 
         .thin-table td {
             border: 1px solid #000 !important;
-            padding: 4px 8px;
+            padding: 0 8px;
             font-size: 0.95rem;
             font-weight: 400;
+            height: 38px;
             overflow: hidden;
         }
 
@@ -242,11 +243,7 @@
             min-height: 0;
             display: flex;
             flex-direction: column;
-            overflow: auto; /* safety fallback only; normally fills exactly, no scroll needed */
-        }
-
-        #dataTable {
-            height: 100%;
+            overflow: hidden;
         }
 
         .portal-pagination {
@@ -414,15 +411,46 @@
         const clearMonthFilterBtn = document.getElementById('clearMonthFilter');
         const totalClientsLabel = document.getElementById('totalClientsLabel');
 
+        const tableContainerEl = document.querySelector('.table-container');
+        const dataTableEl = document.getElementById('dataTable');
+
         let allData = [];
         let currentPage = 1;
         let selectedMonth = ''; // format: MM
         let selectedYear = '';  // format: YYYY
-        const rowsPerPage = 10;
+        let rowsPerPage = 10; // recalculated dynamically to fit the available screen height
+        const ROW_HEIGHT_PX = 38; // must match .thin-table td height in CSS
 
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
 
-        window.onload = () => loadCloudData(false);
+        function calculateRowsPerPage() {
+            const thead = dataTableEl.querySelector('thead');
+            const theadHeight = thead ? thead.offsetHeight : 0;
+            const available = tableContainerEl.clientHeight - theadHeight;
+            const rows = Math.floor(available / ROW_HEIGHT_PX);
+            return Math.max(3, rows); // never go below 3 rows, even on tiny screens
+        }
+
+        let resizeDebounce = null;
+        function handleResize() {
+            clearTimeout(resizeDebounce);
+            resizeDebounce = setTimeout(() => {
+                const newRowsPerPage = calculateRowsPerPage();
+                if (newRowsPerPage !== rowsPerPage) {
+                    rowsPerPage = newRowsPerPage;
+                    currentPage = 1;
+                    renderPortal();
+                }
+            }, 150);
+        }
+        window.addEventListener('resize', handleResize);
+
+        window.onload = () => {
+            rowsPerPage = calculateRowsPerPage();
+            loadCloudData(false);
+            // Recalculate shortly after in case late-loading styles/fonts shifted row heights
+            setTimeout(handleResize, 300);
+        };
 
         monthSelect.addEventListener('change', (e) => {
             selectedMonth = e.target.value;
