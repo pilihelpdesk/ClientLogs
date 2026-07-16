@@ -249,6 +249,38 @@
         .portal-pagination {
             flex-shrink: 0;
         }
+
+        /* --- WIFI QR SIDEBAR --- */
+        #wifiQrSidebar {
+            position: fixed;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 3px solid black;
+            border-radius: 10px;
+            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+            padding: 12px;
+            box-sizing: border-box;
+        }
+
+        #wifiQrSidebar img {
+            width: 100%;
+            max-width: 190px;
+            height: auto;
+        }
+
+        #wifiQrSidebar span {
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+            color: black;
+            line-height: 1.2;
+            margin-top: 8px;
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 
@@ -263,6 +295,41 @@
             <button onclick="closeAlert()" class="bg-black text-white font-black py-2 px-8 hover:bg-gray-800 transition-all uppercase">Got it</button>
         </div>
     </div>
+
+    <div id="wifiQrSidebar">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=WIFI%3AT%3AWPA%3BS%3AOnline%20Registration%3BP%3Aicto2024%3B%3B" alt="Wifi QR Code">
+        <span>Scan to connect<br>to wifi</span>
+    </div>
+
+    <script>
+        function positionWifiQrSidebar() {
+            const card = document.querySelector('.portal-card');
+            const header = document.querySelector('.portal-header');
+            const form = document.querySelector('.portal-form');
+            const box = document.getElementById('wifiQrSidebar');
+            if (!card || !header || !form || !box) return;
+
+            const cardRect = card.getBoundingClientRect();
+            const gap = 16;
+            const left = cardRect.right + gap;
+            const availableWidth = window.innerWidth - left - gap;
+
+            // Not enough room beside the card (small/narrow screens) — hide it
+            if (availableWidth < 100) {
+                box.style.display = 'none';
+                return;
+            }
+
+            box.style.display = 'flex';
+            box.style.top = cardRect.top + 'px';
+            box.style.left = left + 'px';
+            box.style.height = (header.offsetHeight + form.offsetHeight) + 'px';
+            box.style.width = Math.min(availableWidth, 260) + 'px';
+        }
+
+        window.addEventListener('load', positionWifiQrSidebar);
+        window.addEventListener('resize', positionWifiQrSidebar);
+    </script>
 
     <div class="portal-card max-w-7xl mx-auto bg-white/95 shadow-2xl border-4 border-white overflow-hidden" style="box-shadow: 0 0 0 2px rgba(0,0,0,0.6), 0 10px 40px rgba(0,0,0,0.5);">
         <div class="portal-header bg-yellow-400 p-3 text-center border-b-2 border-black">
