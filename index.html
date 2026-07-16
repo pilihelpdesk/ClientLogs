@@ -301,7 +301,7 @@
         <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=WIFI%3AT%3AWPA%3BS%3AOnline%20Registration%3BP%3Aicto2024%3B%3B" alt="Wifi QR Code">
         <span>Scan to connect<br>to wifi</span>
         <div style="margin-top: 10px; padding-top: 8px; border-top: 2px dashed black; width: 100%; text-align: center;">
-            <span style="font-family: 'Elms Sans', sans-serif; font-weight: 600; text-transform: none; font-size: 1.35rem; letter-spacing: 0.5px; display: block; white-space: nowrap;">WiFi: Online Registration<br>Password: icto2024</span>
+            <span id="wifiDetailsText" style="font-family: 'Elms Sans', sans-serif; font-weight: 600; text-transform: none; font-size: 1.35rem; letter-spacing: 0.2px; display: block; white-space: nowrap;">WiFi: Online Registration<br>Password: icto2024</span>
         </div>
     </div>
 
@@ -330,6 +330,24 @@
             box.style.minHeight = (header.offsetHeight + form.offsetHeight) + 'px';
             box.style.height = 'auto';
             box.style.width = Math.min(availableWidth, 340) + 'px';
+
+            fitWifiDetailsText();
+        }
+
+        function fitWifiDetailsText() {
+            const box = document.getElementById('wifiQrSidebar');
+            const text = document.getElementById('wifiDetailsText');
+            if (!box || !text) return;
+
+            let fontSize = 22; // starting point in px (~1.35rem)
+            const minFontSize = 11;
+            const maxWidth = box.clientWidth - 24; // account for padding
+
+            text.style.fontSize = fontSize + 'px';
+            while (text.scrollWidth > maxWidth && fontSize > minFontSize) {
+                fontSize -= 1;
+                text.style.fontSize = fontSize + 'px';
+            }
         }
 
         window.addEventListener('load', positionWifiQrSidebar);
