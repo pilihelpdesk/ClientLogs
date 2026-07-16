@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Logs Entry Form</title>
     <link rel="icon" type="image/png" href="favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -299,6 +300,9 @@
     <div id="wifiQrSidebar">
         <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=WIFI%3AT%3AWPA%3BS%3AOnline%20Registration%3BP%3Aicto2024%3B%3B" alt="Wifi QR Code">
         <span>Scan to connect<br>to wifi</span>
+        <div style="margin-top: 10px; padding-top: 8px; border-top: 2px dashed black; width: 100%; text-align: center;">
+            <span style="font-family: 'Elms Sans', sans-serif; font-weight: 600; text-transform: none; font-size: 1rem; letter-spacing: 0.5px; display: block;">WiFi Name: Online Registration Password: icto2024</span>
+        </div>
     </div>
 
     <script>
@@ -323,7 +327,8 @@
             box.style.display = 'flex';
             box.style.top = cardRect.top + 'px';
             box.style.left = left + 'px';
-            box.style.height = (header.offsetHeight + form.offsetHeight) + 'px';
+            box.style.minHeight = (header.offsetHeight + form.offsetHeight) + 'px';
+            box.style.height = 'auto';
             box.style.width = Math.min(availableWidth, 260) + 'px';
         }
 
