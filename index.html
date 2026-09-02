@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -8,855 +9,1158 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        html, body {
-            height: 100%;
-        }
+```
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    html, body {
+        height: 100%;
+    }
 
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: linear-gradient(135deg, #0b3d1f 0%, #145c2c 22%, #2d7a3d 45%, #b8901f 70%, #8a6a12 100%);
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            box-sizing: border-box;
-        }
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: linear-gradient(135deg, #0b3d1f 0%, #145c2c 22%, #2d7a3d 45%, #b8901f 70%, #8a6a12 100%);
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        box-sizing: border-box;
+    }
 
-        .bg-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 10%, rgba(255, 215, 0, 0.10), transparent 55%),
-                        radial-gradient(circle at 80% 90%, rgba(21, 128, 61, 0.25), transparent 55%),
-                        rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(3px);
-            z-index: -1;
-        }
+    .bg-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 20% 10%, rgba(255, 215, 0, 0.10), transparent 55%),
+                    radial-gradient(circle at 80% 90%, rgba(21, 128, 61, 0.25), transparent 55%),
+                    rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(3px);
+        z-index: -1;
+    }
 
-        /* --- FORM STYLING --- */
-        .input-row {
-            display: flex;
-            border-bottom: 1px solid black;
-            align-items: stretch;
-            width: 100%;
-        }
+    /* --- FORM STYLING --- */
+    .input-row {
+        display: flex;
+        border-bottom: 1px solid black;
+        align-items: stretch;
+        width: 100%;
+    }
 
-        .input-row:last-child {
-            border-bottom: none;
-        }
+    .input-row:last-child {
+        border-bottom: none;
+    }
 
-        .label-cell {
-            width: 30%;
-            background-color: white;
-            padding: 10px 14px;
-            font-weight: 400;
-            border-right: 2px solid black;
-            display: flex;
-            align-items: center;
-            font-size: 1.1rem;
-        }
+    .label-cell {
+        width: 30%;
+        background-color: white;
+        padding: 10px 14px;
+        font-weight: 400;
+        border-right: 2px solid black;
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+    }
 
-        .input-cell {
-            width: 70%;
-            padding: 10px;
-            outline: none;
-            background-color: #FFFFFF;
-            text-align: center;
-            font-style: italic;
-            font-size: 1.1rem;
-            color: black;
-            border: none;
-            font-weight: 400;
-        }
+    .input-cell {
+        width: 70%;
+        padding: 10px;
+        outline: none;
+        background-color: #FFFFFF;
+        text-align: center;
+        font-style: italic;
+        font-size: 1.1rem;
+        color: black;
+        border: none;
+        font-weight: 400;
+    }
 
-        /* --- CUSTOM LISTBOX --- */
-        .custom-select-container {
-            position: relative;
-            width: 70%;
-        }
+    /* --- CUSTOM LISTBOX --- */
+    .custom-select-container {
+        position: relative;
+        width: 70%;
+    }
 
-        .select-trigger {
-            width: 100%;
-            padding: 10px;
-            background: white;
-            text-align: center;
-            font-style: italic;
-            font-size: 1.1rem;
-            cursor: pointer;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .select-trigger {
+        width: 100%;
+        padding: 10px;
+        background: white;
+        text-align: center;
+        font-style: italic;
+        font-size: 1.1rem;
+        cursor: pointer;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .options-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: white;
-            border: 2px solid black;
-            z-index: 50;
-            display: none;
-            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
-        }
+    .options-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: white;
+        border: 2px solid black;
+        z-index: 50;
+        display: none;
+        box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+    }
 
-        .option-item {
-            padding: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            color: white;
-            transition: background 0.1s;
-            text-align: center;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
+    .option-item {
+        padding: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        color: white;
+        transition: background 0.1s;
+        text-align: center;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
 
-        .option-item:hover { filter: brightness(1.1) contrast(1.1); }
-        .show { display: block !important; }
+    .option-item:hover {
+        filter: brightness(1.1) contrast(1.1);
+    }
 
-        /* Status & Dept Colors */
-        .bg-student { background-color: #93C5FD !important; color: black !important; }
-        .bg-teaching { background-color: #15803D !important; }
-        .bg-non-teaching { background-color: #7E22CE !important; }
-        .bg-canr { background-color: #15803D !important; }
-        .bg-cde { background-color: #1D4ED8 !important; }
-        .bg-cas { background-color: #EF4444 !important; }
-        .bg-cem { background-color: #FACC15 !important; color: black !important; }
-        .bg-cefs { background-color: #FB923C !important; }
-        .bg-cvm { background-color: #93C5FD !important; color: black !important; }
-        .bg-gs { background-color: #9CA3AF !important; }
-        .bg-non { background-color: #7E22CE !important; color: white !important; }
+    .show {
+        display: block !important;
+    }
 
-        /* Purpose Colors */
-        .bg-purp-purple { background-color: #6D28D9 !important; }
-        .bg-purp-yellow { background-color: #FACC15 !important; color: black !important; }
-        .bg-purp-green { background-color: #15803D !important; }
-        .bg-purp-light-yellow { background-color: #FEF08A !important; color: black !important; }
-        .bg-purp-light-green { background-color: #86EFAC !important; color: black !important; }
-        .bg-purp-pink { background-color: #FCA5A5 !important; color: black !important; }
-        .bg-purp-blue { background-color: #1D4ED8 !important; }
-        .bg-purp-orange { background-color: #F97316 !important; }
-        .bg-purp-cream { background-color: #FFEDD5 !important; color: black !important; }
-        .bg-purp-red { background-color: #B91C1C !important; }
-        .bg-purp-zoom { background-color: #2563EB !important; }
+    /* Status & Dept Colors */
+    .bg-student { background-color: #93C5FD !important; color: black !important; }
+    .bg-teaching { background-color: #15803D !important; }
+    .bg-non-teaching { background-color: #7E22CE !important; }
+    .bg-canr { background-color: #15803D !important; }
+    .bg-cde { background-color: #1D4ED8 !important; }
+    .bg-cas { background-color: #EF4444 !important; }
+    .bg-cem { background-color: #FACC15 !important; color: black !important; }
+    .bg-cefs { background-color: #FB923C !important; }
+    .bg-cvm { background-color: #93C5FD !important; color: black !important; }
+    .bg-gs { background-color: #9CA3AF !important; }
+    .bg-non { background-color: #7E22CE !important; color: white !important; }
 
-        /* --- TABLE STYLING --- */
-        .thin-table {
-            border: 1px solid #000 !important;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
+    /* Purpose Colors */
+    .bg-purp-purple { background-color: #6D28D9 !important; }
+    .bg-purp-yellow { background-color: #FACC15 !important; color: black !important; }
+    .bg-purp-green { background-color: #15803D !important; }
+    .bg-purp-light-yellow { background-color: #FEF08A !important; color: black !important; }
+    .bg-purp-light-green { background-color: #86EFAC !important; color: black !important; }
+    .bg-purp-pink { background-color: #FCA5A5 !important; color: black !important; }
+    .bg-purp-blue { background-color: #1D4ED8 !important; }
+    .bg-purp-orange { background-color: #F97316 !important; }
+    .bg-purp-cream { background-color: #FFEDD5 !important; color: black !important; }
+    .bg-purp-red { background-color: #B91C1C !important; }
+    .bg-purp-zoom { background-color: #2563EB !important; }
 
-        .thin-table th {
-            border: 1px solid #000 !important;
-            padding: 8px;
-            background-color: #f3f4f6;
-            font-weight: 900;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-        }
+    /* --- TABLE STYLING --- */
+    .thin-table {
+        border: 1px solid #000 !important;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
 
-        .thin-table td {
-            border: 1px solid #000 !important;
-            padding: 0 8px;
-            font-size: 0.95rem;
-            font-weight: 400;
-            height: 38px;
-            overflow: hidden;
-        }
+    .thin-table th {
+        border: 1px solid #000 !important;
+        padding: 8px;
+        background-color: #f3f4f6;
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
 
-        .table-container {
-            background: white;
-            border: 1px solid #000;
-        }
+    .thin-table td {
+        border: 1px solid #000 !important;
+        padding: 0 8px;
+        font-size: 0.95rem;
+        font-weight: 400;
+        height: 38px;
+        overflow: hidden;
+    }
 
-        /* TAB BUTTONS */
-        .tab-btn {
-            display: inline-block;
-            padding: 0.375rem 1rem;
-            border: 2px solid black;
-            font-weight: 900;
-            margin-right: 0.5rem;
-            margin-bottom: 0.25rem;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-            box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
-            text-transform: uppercase;
-        }
+    .table-container {
+        background: white;
+        border: 1px solid #000;
+    }
 
-        .tab-active { background-color: black; color: white; }
-        .tab-inactive { background-color: white; color: black; }
-        .tab-inactive:hover { background-color: #f3f4f6; }
+    /* TAB BUTTONS */
+    .tab-btn {
+        display: inline-block;
+        padding: 0.375rem 1rem;
+        border: 2px solid black;
+        font-weight: 900;
+        margin-right: 0.5rem;
+        margin-bottom: 0.25rem;
+        transition: all 0.2s;
+        font-size: 0.875rem;
+        box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+        text-transform: uppercase;
+    }
 
-        /* PAGINATION */
-        .page-num {
-            width: 32px;
-            height: 32px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid black;
-            font-weight: 700;
-            margin: 0 2px;
-            font-size: 0.875rem;
-            box-sizing: border-box;
-        }
-        .page-num-active { background-color: black; color: white; }
-        .page-num-inactive { background-color: white; color: black; }
-        .page-num-inactive:hover { background-color: #e5e7eb; }
-        .page-ellipsis {
-            width: 32px;
-            height: 32px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 0.875rem;
-            margin: 0 2px;
-        }
-        /* --- AUTO-FIT LAYOUT (fills the screen, no scroll, no bottom gap) --- */
-        .portal-card {
-            height: calc(100vh - 2rem);
-            display: flex;
-            flex-direction: column;
-        }
+    .tab-active { background-color: black; color: white; }
+    .tab-inactive { background-color: white; color: black; }
+    .tab-inactive:hover { background-color: #f3f4f6; }
 
-        .portal-header,
-        .portal-form {
-            flex-shrink: 0;
-        }
+    /* PAGINATION */
+    .page-num {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid black;
+        font-weight: 700;
+        margin: 0 2px;
+        font-size: 0.875rem;
+        box-sizing: border-box;
+    }
 
-        .portal-table-wrap {
-            flex: 1 1 auto;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            padding: 0.5rem;
-            padding-top: 0.5rem;
-        }
+    .page-num-active { background-color: black; color: white; }
+    .page-num-inactive { background-color: white; color: black; }
+    .page-num-inactive:hover { background-color: #e5e7eb; }
 
-        .table-container {
-            flex: 1 1 auto;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+    .page-ellipsis {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.875rem;
+        margin: 0 2px;
+    }
 
-        .portal-pagination {
-            flex-shrink: 0;
-        }
+    /* --- AUTO-FIT LAYOUT --- */
+    .portal-card {
+        height: calc(100vh - 2rem);
+        display: flex;
+        flex-direction: column;
+    }
 
-        /* --- WIFI QR SIDEBAR --- */
-        #wifiQrSidebar {
-            position: fixed;
-            z-index: 40;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            border: 3px solid black;
-            border-radius: 10px;
-            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
-            padding: 12px;
-            box-sizing: border-box;
-        }
+    .portal-header,
+    .portal-form {
+        flex-shrink: 0;
+    }
 
-        #wifiQrSidebar img {
-            width: 100%;
-            max-width: 190px;
-            height: auto;
-        }
+    .portal-table-wrap {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 0.5rem;
+        padding-top: 0.5rem;
+    }
 
-        #wifiQrSidebar span {
-            font-weight: 900;
-            text-transform: uppercase;
-            text-align: center;
-            color: black;
-            line-height: 1.2;
-            margin-top: 8px;
-            font-size: 0.95rem;
-        }
-    </style>
+    .table-container {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .portal-pagination {
+        flex-shrink: 0;
+    }
+</style>
+```
+
 </head>
 
 <body class="p-4 font-sans relative">
 
-    <div class="bg-overlay"></div>
+```
+<div class="bg-overlay"></div>
 
-    <div id="customAlert" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-white border-4 border-black p-8 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-            <h2 class="text-2xl font-black mb-2 uppercase text-red-600">Missing Info</h2>
-            <p class="text-lg font-bold mb-4">Please complete all required fields.</p>
-            <button onclick="closeAlert()" class="bg-black text-white font-black py-2 px-8 hover:bg-gray-800 transition-all uppercase">Got it</button>
-        </div>
+<div id="customAlert" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white border-4 border-black p-8 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+        <h2 class="text-2xl font-black mb-2 uppercase text-red-600">Missing Info</h2>
+        <p class="text-lg font-bold mb-4">Please complete all required fields.</p>
+        <button onclick="closeAlert()" class="bg-black text-white font-black py-2 px-8 hover:bg-gray-800 transition-all uppercase">Got it</button>
+    </div>
+</div>
+
+<div class="portal-card max-w-7xl mx-auto bg-white/95 shadow-2xl border-4 border-white overflow-hidden"
+    style="box-shadow: 0 0 0 2px rgba(0,0,0,0.6), 0 10px 40px rgba(0,0,0,0.5);">
+
+    <div class="portal-header bg-yellow-400 p-3 text-center border-b-2 border-black">
+        <h1 class="text-3xl font-black italic tracking-tight text-black uppercase">
+            CBSUA Client Support Entry Portal
+        </h1>
     </div>
 
-    <div id="wifiQrSidebar">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=WIFI%3AT%3AWPA%3BS%3AOnline%20Registration%3BP%3Aicto2024%3B%3B" alt="Wifi QR Code">
-        <span>Scan to connect<br>to wifi</span>
-        <div style="margin-top: 10px; padding-top: 8px; border-top: 2px dashed black; width: 100%; text-align: center;">
-            <span id="wifiDetailsText" style="font-family: 'Elms Sans', sans-serif; font-weight: 600; text-transform: none; font-size: 1.35rem; letter-spacing: 0.2px; display: block; white-space: nowrap;">WiFi: Online Registration<br>Password: icto2024</span>
+    <form id="entryForm" class="portal-form p-4" novalidate autocomplete="off">
+        <input type="hidden" id="editRowId" value="-1">
+
+        <div class="border-2 border-black mb-1 bg-white">
+
+            <div class="input-row">
+                <div class="label-cell">Full Name:</div>
+                <input type="text" id="fullName" class="input-cell" placeholder="Enter name">
+            </div>
+
+            <div class="input-row">
+                <div class="label-cell">Position:</div>
+                <div class="custom-select-container">
+                    <div id="posTrigger" class="select-trigger" onclick="toggleMenu('posMenu')">
+                        Select position
+                    </div>
+                    <input type="hidden" id="position" value="">
+                    <div id="posMenu" class="options-menu">
+                        <div class="option-item bg-student"
+                            onclick="selectOption('position', 'posTrigger', 'Student', 'bg-student', 'posMenu')">
+                            Student
+                        </div>
+                        <div class="option-item bg-teaching"
+                            onclick="selectOption('position', 'posTrigger', 'Teaching Personnel', 'bg-teaching', 'posMenu')">
+                            Teaching Personnel
+                        </div>
+                        <div class="option-item bg-non-teaching"
+                            onclick="selectOption('position', 'posTrigger', 'Non-Teaching Personnel', 'bg-non-teaching', 'posMenu')">
+                            Non-Teaching Personnel
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div id="idLabel" class="label-cell">Student ID:</div>
+                <input type="text" id="idInput" class="input-cell" placeholder="PIL-XX-XXXX">
+            </div>
+
+            <div class="input-row">
+                <div class="label-cell">Department:</div>
+                <div class="custom-select-container">
+                    <div id="deptTrigger" class="select-trigger" onclick="toggleMenu('deptMenu')">
+                        Select department
+                    </div>
+                    <input type="hidden" id="dept" value="">
+                    <div id="deptMenu" class="options-menu">
+                        <div class="option-item bg-canr"
+                            onclick="selectOption('dept', 'deptTrigger', 'CANR', 'bg-canr', 'deptMenu')">CANR</div>
+                        <div class="option-item bg-cde"
+                            onclick="selectOption('dept', 'deptTrigger', 'CDE', 'bg-cde', 'deptMenu')">CDE</div>
+                        <div class="option-item bg-cas"
+                            onclick="selectOption('dept', 'deptTrigger', 'CAS', 'bg-cas', 'deptMenu')">CAS</div>
+                        <div class="option-item bg-cem"
+                            onclick="selectOption('dept', 'deptTrigger', 'CEM', 'bg-cem', 'deptMenu')">CEM</div>
+                        <div class="option-item bg-cefs"
+                            onclick="selectOption('dept', 'deptTrigger', 'CEFS', 'bg-cefs', 'deptMenu')">CEFS</div>
+                        <div class="option-item bg-cvm"
+                            onclick="selectOption('dept', 'deptTrigger', 'CVM', 'bg-cvm', 'deptMenu')">CVM</div>
+                        <div class="option-item bg-gs"
+                            onclick="selectOption('dept', 'deptTrigger', 'GS', 'bg-gs', 'deptMenu')">GS</div>
+                        <div class="option-item bg-non"
+                            onclick="selectOption('dept', 'deptTrigger', 'Non-Teaching Personnel', 'bg-non', 'deptMenu')">
+                            Non-Teaching Personnel
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="label-cell border-b-0">Purpose:</div>
+                <div class="custom-select-container">
+                    <div id="purpTrigger" class="select-trigger border-b-0" onclick="toggleMenu('purpMenu')">
+                        Select purpose
+                    </div>
+                    <input type="hidden" id="purpose" value="">
+                    <div id="purpMenu" class="options-menu">
+                        <div class="option-item bg-purp-purple"
+                            onclick="selectOption('purpose', 'purpTrigger', 'IE & VLP Password Reset', 'bg-purp-purple', 'purpMenu')">
+                            IE & VLP Password Reset
+                        </div>
+                        <div class="option-item bg-purp-yellow"
+                            onclick="selectOption('purpose', 'purpTrigger', 'IE Password Reset', 'bg-purp-yellow', 'purpMenu')">
+                            IE Password Reset
+                        </div>
+                        <div class="option-item bg-purp-green"
+                            onclick="selectOption('purpose', 'purpTrigger', 'VLP Password Reset', 'bg-purp-green', 'purpMenu')">
+                            VLP Password Reset
+                        </div>
+                        <div class="option-item bg-purp-light-yellow"
+                            onclick="selectOption('purpose', 'purpTrigger', 'Update IE Account Details', 'bg-purp-light-yellow', 'purpMenu')">
+                            Update IE Account Details
+                        </div>
+                        <div class="option-item bg-purp-light-green"
+                            onclick="selectOption('purpose', 'purpTrigger', 'Update VLP Account Details', 'bg-purp-light-green', 'purpMenu')">
+                            Update VLP Account Details
+                        </div>
+                        <div class="option-item bg-purp-pink"
+                            onclick="selectOption('purpose', 'purpTrigger', 'Update IE & VLP Account Details', 'bg-purp-pink', 'purpMenu')">
+                            Update IE & VLP Account Details
+                        </div>
+                        <div class="option-item bg-purp-blue"
+                            onclick="selectOption('purpose', 'purpTrigger', 'Hotspot Password Reset', 'bg-purp-blue', 'purpMenu')">
+                            Hotspot Password Reset
+                        </div>
+                        <div class="option-item bg-purp-orange"
+                            onclick="selectOption('purpose', 'purpTrigger', 'IE & Hotspot Password Reset', 'bg-purp-orange', 'purpMenu')">
+                            IE & Hotspot Password Reset
+                        </div>
+                        <div class="option-item bg-purp-cream"
+                            onclick="selectOption('purpose', 'purpTrigger', 'VLP & Hotspot Password Reset', 'bg-purp-cream', 'purpMenu')">
+                            VLP & Hotspot Password Reset
+                        </div>
+                        <div class="option-item bg-purp-red"
+                            onclick="selectOption('purpose', 'purpTrigger', 'IE, VLP, Hotspot Reset', 'bg-purp-red', 'purpMenu')">
+                            IE, VLP, Hotspot Reset
+                        </div>
+                        <div class="option-item bg-purp-zoom"
+                            onclick="selectOption('purpose', 'purpTrigger', 'Zoom Account', 'bg-purp-zoom', 'purpMenu')">
+                            Zoom Account
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-1 pt-1 pb-1">
+            <button type="button" id="cancelEdit"
+                class="hidden bg-gray-400 text-white font-black py-2 px-6 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all uppercase text-sm">
+                Cancel
+            </button>
+
+            <button type="submit" id="submitBtn"
+                class="bg-[#00FF00] hover:bg-green-400 text-black font-black py-2 px-12 rounded-lg border-2 border-black text-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 transition-all">
+                SAVE ENTRY
+            </button>
+        </div>
+    </form>
+
+    <div class="portal-table-wrap">
+        <div class="table-container">
+            <table id="dataTable" class="w-full thin-table text-center">
+                <colgroup>
+                    <col style="width: 110px;">
+                    <col style="width: 240px;">
+                    <col style="width: 150px;">
+                    <col style="width: 140px;">
+                    <col style="width: 140px;">
+                    <col style="width: 250px;">
+                    <col style="width: 110px;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th class="text-left">Name</th>
+                        <th>Status</th>
+                        <th>ID Number</th>
+                        <th>Department</th>
+                        <th>Purpose</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="portal-pagination flex flex-wrap justify-between items-center gap-2 mt-1 pb-1">
+            <div class="flex flex-wrap items-center gap-2">
+                <label class="font-black text-xs uppercase">Month:</label>
+                <select id="monthSelect" class="border-2 border-black px-2 py-1 font-bold text-sm bg-white">
+                    <option value="">All</option>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+
+                <label class="font-black text-xs uppercase">Year:</label>
+                <select id="yearSelect" class="border-2 border-black px-2 py-1 font-bold text-sm bg-white">
+                    <option value="">All</option>
+                </select>
+
+                <button type="button" id="clearMonthFilter"
+                    class="hidden text-[11px] font-black uppercase underline text-red-600">
+                    Clear
+                </button>
+
+                <span id="totalClientsLabel"
+                    class="text-[11px] font-black uppercase bg-yellow-400 border-2 border-black px-2 py-1 rounded">
+                    Total: 0
+                </span>
+            </div>
+
+            <div id="paginationControls" class="flex flex-wrap justify-center items-center gap-1"></div>
         </div>
     </div>
+</div>
 
-    <script>
-        function positionWifiQrSidebar() {
-            const card = document.querySelector('.portal-card');
-            const header = document.querySelector('.portal-header');
-            const form = document.querySelector('.portal-form');
-            const box = document.getElementById('wifiQrSidebar');
-            if (!card || !header || !form || !box) return;
+<script>
+    const entryForm = document.getElementById('entryForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const editRowIdInput = document.getElementById('editRowId');
+    const cancelEditBtn = document.getElementById('cancelEdit');
+    const alertBox = document.getElementById('customAlert');
+    const tableBody = document.getElementById('tableBody');
+    const paginationControls = document.getElementById('paginationControls');
+    const monthSelect = document.getElementById('monthSelect');
+    const yearSelect = document.getElementById('yearSelect');
+    const clearMonthFilterBtn = document.getElementById('clearMonthFilter');
+    const totalClientsLabel = document.getElementById('totalClientsLabel');
 
-            const cardRect = card.getBoundingClientRect();
-            const gap = 16;
-            const left = cardRect.right + gap;
-            const availableWidth = window.innerWidth - left - gap;
+    const tableContainerEl = document.querySelector('.table-container');
+    const dataTableEl = document.getElementById('dataTable');
 
-            // Not enough room beside the card (small/narrow screens) — hide it
-            if (availableWidth < 100) {
-                box.style.display = 'none';
-                return;
+    let allData = [];
+    let currentPage = 1;
+    let selectedMonth = '';
+    let selectedYear = '';
+    let rowsPerPage = 10;
+
+    const ROW_HEIGHT_PX = 38;
+
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
+
+    function calculateRowsPerPage() {
+        const thead = dataTableEl.querySelector('thead');
+        const theadHeight = thead ? thead.offsetHeight : 0;
+        const available = tableContainerEl.clientHeight - theadHeight;
+        const rows = Math.floor(available / ROW_HEIGHT_PX);
+        return Math.max(3, rows);
+    }
+
+    let resizeDebounce = null;
+
+    function handleResize() {
+        clearTimeout(resizeDebounce);
+        resizeDebounce = setTimeout(() => {
+            const newRowsPerPage = calculateRowsPerPage();
+
+            if (newRowsPerPage !== rowsPerPage) {
+                rowsPerPage = newRowsPerPage;
+                currentPage = 1;
+                renderPortal();
             }
+        }, 150);
+    }
 
-            box.style.display = 'flex';
-            box.style.top = cardRect.top + 'px';
-            box.style.left = left + 'px';
-            box.style.minHeight = (header.offsetHeight + form.offsetHeight) + 'px';
-            box.style.height = 'auto';
-            box.style.width = Math.min(availableWidth, 340) + 'px';
+    window.addEventListener('resize', handleResize);
 
-            fitWifiDetailsText();
+    window.onload = () => {
+        rowsPerPage = calculateRowsPerPage();
+        loadCloudData(false);
+        setTimeout(handleResize, 300);
+    };
+
+    monthSelect.addEventListener('change', (e) => {
+        selectedMonth = e.target.value;
+        clearMonthFilterBtn.classList.toggle('hidden', !selectedMonth && !selectedYear);
+        currentPage = 1;
+        renderPortal();
+    });
+
+    yearSelect.addEventListener('change', (e) => {
+        selectedYear = e.target.value;
+        clearMonthFilterBtn.classList.toggle('hidden', !selectedMonth && !selectedYear);
+        currentPage = 1;
+        renderPortal();
+    });
+
+    clearMonthFilterBtn.addEventListener('click', () => {
+        selectedMonth = '';
+        selectedYear = '';
+        monthSelect.value = '';
+        yearSelect.value = '';
+        clearMonthFilterBtn.classList.add('hidden');
+        currentPage = 1;
+        renderPortal();
+    });
+
+    function populateYearOptions() {
+        const years = new Set();
+
+        allData.forEach(d => {
+            const dt = parseRecordDate(d.date);
+            if (dt) years.add(dt.getFullYear());
+        });
+
+        years.add(new Date().getFullYear());
+
+        const sortedYears = Array.from(years).sort((a, b) => b - a);
+        const currentValue = yearSelect.value;
+
+        yearSelect.innerHTML =
+            '<option value="">All</option>' +
+            sortedYears.map(y => `<option value="${y}">${y}</option>`).join('');
+
+        yearSelect.value = currentValue;
+    }
+
+    function closeAlert() {
+        alertBox.classList.add('hidden');
+    }
+
+    function toggleMenu(id) {
+        const menu = document.getElementById(id);
+        const isShowing = menu.classList.contains('show');
+
+        document.querySelectorAll('.options-menu').forEach(m =>
+            m.classList.remove('show')
+        );
+
+        if (!isShowing) menu.classList.add('show');
+    }
+
+    function selectOption(hiddenId, triggerId, value, bgColorClass, menuId) {
+        document.getElementById(hiddenId).value = value;
+
+        const trigger = document.getElementById(triggerId);
+        trigger.textContent = value;
+        trigger.className = 'select-trigger ' + bgColorClass;
+
+        if (triggerId === 'purpTrigger') {
+            trigger.classList.add('border-b-0');
         }
 
-        function fitWifiDetailsText() {
-            const box = document.getElementById('wifiQrSidebar');
-            const text = document.getElementById('wifiDetailsText');
-            if (!box || !text) return;
+        if (hiddenId === 'position') {
+            const isEmp =
+                value === "Teaching Personnel" ||
+                value === "Non-Teaching Personnel";
 
-            let fontSize = 22; // starting point in px (~1.35rem)
-            const minFontSize = 11;
-            const maxWidth = box.clientWidth - 24; // account for padding
+            document.getElementById('idLabel').textContent =
+                isEmp ? "Employee ID:" : "Student ID:";
 
-            text.style.fontSize = fontSize + 'px';
-            while (text.scrollWidth > maxWidth && fontSize > minFontSize) {
-                fontSize -= 1;
-                text.style.fontSize = fontSize + 'px';
-            }
+            document.getElementById('idInput').placeholder =
+                isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
         }
 
-        window.addEventListener('load', positionWifiQrSidebar);
-        window.addEventListener('resize', positionWifiQrSidebar);
-    </script>
+        document.getElementById(menuId).classList.remove('show');
+    }
 
-    <div class="portal-card max-w-7xl mx-auto bg-white/95 shadow-2xl border-4 border-white overflow-hidden" style="box-shadow: 0 0 0 2px rgba(0,0,0,0.6), 0 10px 40px rgba(0,0,0,0.5);">
-        <div class="portal-header bg-yellow-400 p-3 text-center border-b-2 border-black">
-            <h1 class="text-3xl font-black italic tracking-tight text-black uppercase">CBSUA Client Support Entry Portal</h1>
-        </div>
+    window.onclick = function (e) {
+        if (!e.target.matches('.select-trigger')) {
+            document.querySelectorAll('.options-menu')
+                .forEach(m => m.classList.remove('show'));
+        }
+    };
 
-        <form id="entryForm" class="portal-form p-4" novalidate autocomplete="off">
-            <input type="hidden" id="editRowId" value="-1">
-            <div class="border-2 border-black mb-1 bg-white">
-
-                <div class="input-row">
-                    <div class="label-cell">Full Name:</div>
-                    <input type="text" id="fullName" class="input-cell" placeholder="Enter name">
-                </div>
-
-                <div class="input-row">
-                    <div class="label-cell">Position:</div>
-                    <div class="custom-select-container">
-                        <div id="posTrigger" class="select-trigger" onclick="toggleMenu('posMenu')">Select position</div>
-                        <input type="hidden" id="position" value="">
-                        <div id="posMenu" class="options-menu">
-                            <div class="option-item bg-student" onclick="selectOption('position', 'posTrigger', 'Student', 'bg-student', 'posMenu')">Student</div>
-                            <div class="option-item bg-teaching" onclick="selectOption('position', 'posTrigger', 'Teaching Personnel', 'bg-teaching', 'posMenu')">Teaching Personnel</div>
-                            <div class="option-item bg-non-teaching" onclick="selectOption('position', 'posTrigger', 'Non-Teaching Personnel', 'bg-non-teaching', 'posMenu')">Non-Teaching Personnel</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="input-row">
-                    <div id="idLabel" class="label-cell">Student ID:</div>
-                    <input type="text" id="idInput" class="input-cell" placeholder="PIL-XX-XXXX">
-                </div>
-
-                <div class="input-row">
-                    <div class="label-cell">Department:</div>
-                    <div class="custom-select-container">
-                        <div id="deptTrigger" class="select-trigger" onclick="toggleMenu('deptMenu')">Select department</div>
-                        <input type="hidden" id="dept" value="">
-                        <div id="deptMenu" class="options-menu">
-                            <div class="option-item bg-canr" onclick="selectOption('dept', 'deptTrigger', 'CANR', 'bg-canr', 'deptMenu')">CANR</div>
-                            <div class="option-item bg-cde" onclick="selectOption('dept', 'deptTrigger', 'CDE', 'bg-cde', 'deptMenu')">CDE</div>
-                            <div class="option-item bg-cas" onclick="selectOption('dept', 'deptTrigger', 'CAS', 'bg-cas', 'deptMenu')">CAS</div>
-                            <div class="option-item bg-cem" onclick="selectOption('dept', 'deptTrigger', 'CEM', 'bg-cem', 'deptMenu')">CEM</div>
-                            <div class="option-item bg-cefs" onclick="selectOption('dept', 'deptTrigger', 'CEFS', 'bg-cefs', 'deptMenu')">CEFS</div>
-                            <div class="option-item bg-cvm" onclick="selectOption('dept', 'deptTrigger', 'CVM', 'bg-cvm', 'deptMenu')">CVM</div>
-                            <div class="option-item bg-gs" onclick="selectOption('dept', 'deptTrigger', 'GS', 'bg-gs', 'deptMenu')">GS</div>
-                            <div class="option-item bg-non" onclick="selectOption('dept', 'deptTrigger', 'Non-Teaching Personnel', 'bg-non', 'deptMenu')">Non-Teaching Personnel</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="input-row">
-                    <div class="label-cell border-b-0">Purpose:</div>
-                    <div class="custom-select-container">
-                        <div id="purpTrigger" class="select-trigger border-b-0" onclick="toggleMenu('purpMenu')">Select purpose</div>
-                        <input type="hidden" id="purpose" value="">
-                        <div id="purpMenu" class="options-menu">
-                            <div class="option-item bg-purp-purple" onclick="selectOption('purpose', 'purpTrigger', 'IE & VLP Password Reset', 'bg-purp-purple', 'purpMenu')">IE & VLP Password Reset</div>
-                            <div class="option-item bg-purp-yellow" onclick="selectOption('purpose', 'purpTrigger', 'IE Password Reset', 'bg-purp-yellow', 'purpMenu')">IE Password Reset</div>
-                            <div class="option-item bg-purp-green" onclick="selectOption('purpose', 'purpTrigger', 'VLP Password Reset', 'bg-purp-green', 'purpMenu')">VLP Password Reset</div>
-                            <div class="option-item bg-purp-light-yellow" onclick="selectOption('purpose', 'purpTrigger', 'Update IE Account Details', 'bg-purp-light-yellow', 'purpMenu')">Update IE Account Details</div>
-                            <div class="option-item bg-purp-light-green" onclick="selectOption('purpose', 'purpTrigger', 'Update VLP Account Details', 'bg-purp-light-green', 'purpMenu')">Update VLP Account Details</div>
-                            <div class="option-item bg-purp-pink" onclick="selectOption('purpose', 'purpTrigger', 'Update IE & VLP Account Details', 'bg-purp-pink', 'purpMenu')">Update IE & VLP Account Details</div>
-                            <div class="option-item bg-purp-blue" onclick="selectOption('purpose', 'purpTrigger', 'Hotspot Password Reset', 'bg-purp-blue', 'purpMenu')">Hotspot Password Reset</div>
-                            <div class="option-item bg-purp-orange" onclick="selectOption('purpose', 'purpTrigger', 'IE & Hotspot Password Reset', 'bg-purp-orange', 'purpMenu')">IE & Hotspot Password Reset</div>
-                            <div class="option-item bg-purp-cream" onclick="selectOption('purpose', 'purpTrigger', 'VLP & Hotspot Password Reset', 'bg-purp-cream', 'purpMenu')">VLP & Hotspot Password Reset</div>
-                            <div class="option-item bg-purp-red" onclick="selectOption('purpose', 'purpTrigger', 'IE, VLP, Hotspot Reset', 'bg-purp-red', 'purpMenu')">IE, VLP, Hotspot Reset</div>
-                            <div class="option-item bg-purp-zoom" onclick="selectOption('purpose', 'purpTrigger', 'Zoom Account', 'bg-purp-zoom', 'purpMenu')">Zoom Account</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-1 pt-1 pb-1">
-                <button type="button" id="cancelEdit" class="hidden bg-gray-400 text-white font-black py-2 px-6 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all uppercase text-sm">Cancel</button>
-                <button type="submit" id="submitBtn" class="bg-[#00FF00] hover:bg-green-400 text-black font-black py-2 px-12 rounded-lg border-2 border-black text-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 transition-all">SAVE ENTRY</button>
-            </div>
-        </form>
-
-        <div class="portal-table-wrap">
-            <div class="table-container">
-                <table id="dataTable" class="w-full thin-table text-center">
-                    <colgroup>
-                        <col style="width: 110px;">
-                        <col style="width: 240px;">
-                        <col style="width: 150px;">
-                        <col style="width: 140px;">
-                        <col style="width: 140px;">
-                        <col style="width: 250px;">
-                        <col style="width: 110px;">
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th class="text-left">Name</th>
-                            <th>Status</th>
-                            <th>ID Number</th>
-                            <th>Department</th>
-                            <th>Purpose</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
-            <div class="portal-pagination flex flex-wrap justify-between items-center gap-2 mt-1 pb-1">
-                <div class="flex flex-wrap items-center gap-2">
-                    <label class="font-black text-xs uppercase">Month:</label>
-                    <select id="monthSelect" class="border-2 border-black px-2 py-1 font-bold text-sm bg-white">
-                        <option value="">All</option>
-                        <option value="01">January</option>
-                        <option value="02">February</option>
-                        <option value="03">March</option>
-                        <option value="04">April</option>
-                        <option value="05">May</option>
-                        <option value="06">June</option>
-                        <option value="07">July</option>
-                        <option value="08">August</option>
-                        <option value="09">September</option>
-                        <option value="10">October</option>
-                        <option value="11">November</option>
-                        <option value="12">December</option>
-                    </select>
-                    <label class="font-black text-xs uppercase">Year:</label>
-                    <select id="yearSelect" class="border-2 border-black px-2 py-1 font-bold text-sm bg-white">
-                        <option value="">All</option>
-                    </select>
-                    <button type="button" id="clearMonthFilter" class="hidden text-[11px] font-black uppercase underline text-red-600">Clear</button>
-                    <span id="totalClientsLabel" class="text-[11px] font-black uppercase bg-yellow-400 border-2 border-black px-2 py-1 rounded">Total: 0</span>
-                </div>
-                <div id="paginationControls" class="flex flex-wrap justify-center items-center gap-1"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const entryForm = document.getElementById('entryForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const editRowIdInput = document.getElementById('editRowId');
-        const cancelEditBtn = document.getElementById('cancelEdit');
-        const alertBox = document.getElementById('customAlert');
-        const tableBody = document.getElementById('tableBody');
-        const paginationControls = document.getElementById('paginationControls');
-        const monthSelect = document.getElementById('monthSelect');
-        const yearSelect = document.getElementById('yearSelect');
-        const clearMonthFilterBtn = document.getElementById('clearMonthFilter');
-        const totalClientsLabel = document.getElementById('totalClientsLabel');
-
-        const tableContainerEl = document.querySelector('.table-container');
-        const dataTableEl = document.getElementById('dataTable');
-
-        let allData = [];
-        let currentPage = 1;
-        let selectedMonth = ''; // format: MM
-        let selectedYear = '';  // format: YYYY
-        let rowsPerPage = 10; // recalculated dynamically to fit the available screen height
-        const ROW_HEIGHT_PX = 38; // must match .thin-table td height in CSS
-
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
-
-        function calculateRowsPerPage() {
-            const thead = dataTableEl.querySelector('thead');
-            const theadHeight = thead ? thead.offsetHeight : 0;
-            const available = tableContainerEl.clientHeight - theadHeight;
-            const rows = Math.floor(available / ROW_HEIGHT_PX);
-            return Math.max(3, rows); // never go below 3 rows, even on tiny screens
+    async function loadCloudData(silent = false) {
+        if (!silent) {
+            tableBody.innerHTML =
+                '<tr><td colspan="7" class="text-blue-600 animate-pulse font-black text-lg py-10">SYNCING...</td></tr>';
         }
 
-        let resizeDebounce = null;
-        function handleResize() {
-            clearTimeout(resizeDebounce);
-            resizeDebounce = setTimeout(() => {
-                const newRowsPerPage = calculateRowsPerPage();
-                if (newRowsPerPage !== rowsPerPage) {
-                    rowsPerPage = newRowsPerPage;
-                    currentPage = 1;
-                    renderPortal();
-                }
-            }, 150);
-        }
-        window.addEventListener('resize', handleResize);
+        try {
+            const response = await fetch(GOOGLE_SCRIPT_URL);
+            allData = await response.json();
 
-        window.onload = () => {
-            rowsPerPage = calculateRowsPerPage();
-            loadCloudData(false);
-            // Recalculate shortly after in case late-loading styles/fonts shifted row heights
-            setTimeout(handleResize, 300);
+            populateYearOptions();
+            renderPortal();
+
+        } catch (error) {
+            tableBody.innerHTML =
+                '<tr><td colspan="7" class="p-4 text-red-500 font-bold">Error loading data.</td></tr>';
+        }
+    }
+
+    entryForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const name = document.getElementById('fullName').value.trim();
+        const pos = document.getElementById('position').value;
+        const idNum = document.getElementById('idInput').value.trim();
+        const dept = document.getElementById('dept').value;
+        const purp = document.getElementById('purpose').value;
+
+        if (!name || !pos || !idNum || !dept || !purp) {
+            alertBox.classList.remove('hidden');
+            return;
+        }
+
+        const rowId = editRowIdInput.value;
+        const action = rowId === "-1" ? "addRow" : "edit";
+        const now = new Date();
+
+        const monthLabel =
+            "Month of " +
+            now.toLocaleString('default', {
+                month: 'long',
+                year: 'numeric'
+            });
+
+        const formattedDate =
+            `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "...";
+
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({
+                    action,
+                    rowId,
+                    date: formattedDate,
+                    monthLabel,
+                    name,
+                    pos,
+                    idNum,
+                    dept,
+                    purp
+                })
+            });
+
+            resetForm();
+            loadCloudData(true);
+
+        } catch (error) {
+            submitBtn.disabled = false;
+        }
+    });
+
+    function resetForm() {
+        entryForm.reset();
+
+        document.getElementById('position').value = "";
+        document.getElementById('dept').value = "";
+        document.getElementById('purpose').value = "";
+
+        document.getElementById('posTrigger').textContent = "Select position";
+        document.getElementById('posTrigger').className = "select-trigger";
+
+        document.getElementById('deptTrigger').textContent = "Select department";
+        document.getElementById('deptTrigger').className = "select-trigger";
+
+        document.getElementById('purpTrigger').textContent = "Select purpose";
+        document.getElementById('purpTrigger').className =
+            "select-trigger border-b-0";
+
+        resetEditState();
+    }
+
+    function renderPortal() {
+        let filteredData = [...allData].reverse();
+
+        if (selectedMonth || selectedYear) {
+            filteredData = filteredData.filter(d => {
+                const dt = parseRecordDate(d.date);
+
+                if (!dt) return false;
+
+                const m = String(dt.getMonth() + 1).padStart(2, '0');
+                const y = String(dt.getFullYear());
+
+                if (selectedYear && y !== selectedYear) return false;
+                if (selectedMonth && m !== selectedMonth) return false;
+
+                return true;
+            });
+        }
+
+        totalClientsLabel.textContent = `Total: ${filteredData.length}`;
+
+        const totalPages =
+            Math.ceil(filteredData.length / rowsPerPage) || 1;
+
+        const pageData = filteredData.slice(
+            (currentPage - 1) * rowsPerPage,
+            currentPage * rowsPerPage
+        );
+
+        tableBody.innerHTML = '';
+
+        pageData.forEach(data => addTableRowUI(data));
+
+        for (let i = 0; i < (rowsPerPage - pageData.length); i++) {
+            const tr = document.createElement('tr');
+
+            tr.innerHTML = `
+                <td>&nbsp;</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            `;
+
+            tableBody.appendChild(tr);
+        }
+
+        renderPaginationControls(totalPages);
+    }
+
+    function parseRecordDate(dateStr) {
+        if (!dateStr) return null;
+
+        let d;
+
+        if (
+            typeof dateStr === 'string' &&
+            /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)
+        ) {
+            const [day, month, year] = dateStr.split('/');
+            d = new Date(`${year}-${month}-${day}T00:00:00`);
+
+        } else if (
+            typeof dateStr === 'string' &&
+            /^\d{4}-\d{2}-\d{2}$/.test(dateStr)
+        ) {
+            d = new Date(`${dateStr}T00:00:00`);
+
+        } else {
+            d = new Date(dateStr);
+        }
+
+        return isNaN(d.getTime()) ? null : d;
+    }
+
+    function formatDisplayDate(dateStr) {
+        const d = parseRecordDate(dateStr);
+
+        if (!d) return dateStr || '';
+
+        return d.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit'
+        });
+    }
+
+    function getRecordMonthKey(dateStr) {
+        const d = parseRecordDate(dateStr);
+
+        if (!d) return null;
+
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function addTableRowUI(data) {
+        const row = document.createElement('tr');
+        row.className = "bg-white border-b border-black";
+
+        const posColor =
+            data.pos === 'Non-Teaching Personnel'
+                ? '#7E22CE'
+                : (
+                    data.pos === 'Teaching Personnel'
+                        ? '#15803D'
+                        : '#93C5FD'
+                );
+
+        row.innerHTML = `
+            <td class="truncate">${formatDisplayDate(data.date)}</td>
+
+            <td class="text-left truncate px-2">${data.name}</td>
+
+            <td>
+                <span
+                    style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}"
+                    class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-block w-full truncate">
+                    ${data.pos}
+                </span>
+            </td>
+
+            <td class="truncate">${data.idNum}</td>
+
+            <td>
+                <span
+                    style="background-color: ${getDeptColor(data.dept)}; color: ${['CEM', 'CVM', 'GS'].includes(data.dept) ? 'black' : 'white'}"
+                    class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-block w-full truncate">
+                    ${data.dept}
+                </span>
+            </td>
+
+            <td>
+                <span
+                    style="background-color: ${getPurpColor(data.purp)}; color: ${getPurpTextColor(data.purp)}"
+                    class="px-2 py-0.5 rounded text-[10px] font-bold inline-block w-full truncate">
+                    ${data.purp}
+                </span>
+            </td>
+
+            <td class="whitespace-nowrap">
+                <button onclick="editRow('${data.rowId}')"
+                    class="text-blue-600 hover:underline text-[11px] font-black">
+                    EDIT
+                </button>
+
+                <button onclick="deleteRow('${data.rowId}')"
+                    class="text-red-600 hover:underline text-[11px] font-black ml-2">
+                    DEL
+                </button>
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+    }
+
+    function renderPaginationControls(totalPages) {
+        paginationControls.innerHTML = '';
+
+        const btnClass =
+            'px-3 py-1 bg-black text-white font-black disabled:opacity-30 uppercase text-[11px]';
+
+        function appendPageBtn(i) {
+            const pBtn = document.createElement('button');
+
+            pBtn.textContent = i;
+
+            pBtn.className =
+                `page-num ${i === currentPage ? 'page-num-active' : 'page-num-inactive'}`;
+
+            pBtn.onclick = () => {
+                currentPage = i;
+                renderPortal();
+            };
+
+            paginationControls.appendChild(pBtn);
+        }
+
+        function appendEllipsis() {
+            const span = document.createElement('span');
+
+            span.textContent = '...';
+            span.className = 'page-ellipsis';
+
+            paginationControls.appendChild(span);
+        }
+
+        const prevBtn = document.createElement('button');
+
+        prevBtn.textContent = 'PREV';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.className = btnClass;
+
+        prevBtn.onclick = () => {
+            currentPage = Math.max(1, currentPage - 2);
+            renderPortal();
         };
 
-        monthSelect.addEventListener('change', (e) => {
-            selectedMonth = e.target.value;
-            clearMonthFilterBtn.classList.toggle('hidden', !selectedMonth && !selectedYear);
-            currentPage = 1;
-            renderPortal();
-        });
+        paginationControls.appendChild(prevBtn);
 
-        yearSelect.addEventListener('change', (e) => {
-            selectedYear = e.target.value;
-            clearMonthFilterBtn.classList.toggle('hidden', !selectedMonth && !selectedYear);
-            currentPage = 1;
-            renderPortal();
-        });
+        const totalSlots = 12;
 
-        clearMonthFilterBtn.addEventListener('click', () => {
-            selectedMonth = '';
-            selectedYear = '';
-            monthSelect.value = '';
-            yearSelect.value = '';
-            clearMonthFilterBtn.classList.add('hidden');
-            currentPage = 1;
-            renderPortal();
-        });
+        let startPage =
+            Math.max(
+                1,
+                Math.min(currentPage - 4, totalPages - 9)
+            );
 
-        function populateYearOptions() {
-            const years = new Set();
-            allData.forEach(d => {
-                const dt = parseRecordDate(d.date);
-                if (dt) years.add(dt.getFullYear());
+        let endPage =
+            Math.min(startPage + 9, totalPages);
+
+        const showLeading = startPage > 1;
+        const showTrailing = endPage < totalPages;
+
+        let windowSize =
+            totalSlots -
+            (showLeading ? 2 : 0) -
+            (showTrailing ? 2 : 0);
+
+        endPage =
+            Math.min(startPage + windowSize - 1, totalPages);
+
+        startPage =
+            Math.max(
+                1,
+                Math.min(startPage, endPage - windowSize + 1)
+            );
+
+        if (showLeading) {
+            appendPageBtn(1);
+            appendEllipsis();
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            appendPageBtn(i);
+        }
+
+        if (showTrailing) {
+            appendEllipsis();
+            appendPageBtn(totalPages);
+        }
+
+        const nextBtn = document.createElement('button');
+
+        nextBtn.textContent = 'NEXT';
+        nextBtn.disabled =
+            currentPage === totalPages || totalPages === 0;
+
+        nextBtn.className = btnClass;
+
+        nextBtn.onclick = () => {
+            currentPage = Math.min(totalPages, currentPage + 2);
+            renderPortal();
+        };
+
+        paginationControls.appendChild(nextBtn);
+    }
+
+    function editRow(rowId) {
+        const record =
+            allData.find(d => d.rowId == rowId);
+
+        if (!record) return;
+
+        document.getElementById('fullName').value = record.name;
+        document.getElementById('idInput').value = record.idNum;
+
+        editRowIdInput.value = rowId;
+
+        selectOption(
+            'position',
+            'posTrigger',
+            record.pos,
+            getPosColorClass(record.pos),
+            'posMenu'
+        );
+
+        selectOption(
+            'dept',
+            'deptTrigger',
+            record.dept,
+            getDeptColorClass(record.dept),
+            'deptMenu'
+        );
+
+        selectOption(
+            'purpose',
+            'purpTrigger',
+            record.purp,
+            getPurpColorClass(record.purp),
+            'purpMenu'
+        );
+
+        submitBtn.textContent = "UPDATE";
+
+        submitBtn.classList.replace(
+            'bg-[#00FF00]',
+            'bg-blue-500'
+        );
+
+        submitBtn.classList.add('text-white');
+
+        cancelEditBtn.classList.remove('hidden');
+
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    async function deleteRow(rowId) {
+        if (!confirm("Delete record?")) return;
+
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({
+                    action: 'delete',
+                    rowId
+                })
             });
-            years.add(new Date().getFullYear());
-            const sortedYears = Array.from(years).sort((a, b) => b - a);
-            const currentValue = yearSelect.value;
-            yearSelect.innerHTML = '<option value="">All</option>' +
-                sortedYears.map(y => `<option value="${y}">${y}</option>`).join('');
-            yearSelect.value = currentValue;
+
+            loadCloudData(true);
+
+        } catch (e) {
+            console.error(e);
         }
+    }
 
-        function closeAlert() { alertBox.classList.add('hidden'); }
+    function resetEditState() {
+        editRowIdInput.value = "-1";
 
-        function toggleMenu(id) {
-            const menu = document.getElementById(id);
-            const isShowing = menu.classList.contains('show');
-            document.querySelectorAll('.options-menu').forEach(m => m.classList.remove('show'));
-            if (!isShowing) menu.classList.add('show');
-        }
+        submitBtn.disabled = false;
+        submitBtn.textContent = "SAVE";
 
-        function selectOption(hiddenId, triggerId, value, bgColorClass, menuId) {
-            document.getElementById(hiddenId).value = value;
-            const trigger = document.getElementById(triggerId);
-            trigger.textContent = value;
-            trigger.className = 'select-trigger ' + bgColorClass;
-            if (triggerId === 'purpTrigger') trigger.classList.add('border-b-0');
+        submitBtn.classList.replace(
+            'bg-blue-500',
+            'bg-[#00FF00]'
+        );
 
-            if (hiddenId === 'position') {
-                const isEmp = (value === "Teaching Personnel" || value === "Non-Teaching Personnel");
-                document.getElementById('idLabel').textContent = isEmp ? "Employee ID:" : "Student ID:";
-                document.getElementById('idInput').placeholder = isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
-            }
-            document.getElementById(menuId).classList.remove('show');
-        }
+        submitBtn.classList.remove('text-white');
 
-        window.onclick = function (e) {
-            if (!e.target.matches('.select-trigger')) {
-                document.querySelectorAll('.options-menu').forEach(m => m.classList.remove('show'));
-            }
-        }
+        cancelEditBtn.classList.add('hidden');
+    }
 
-        async function loadCloudData(silent = false) {
-            if (!silent) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="text-blue-600 animate-pulse font-black text-lg py-10">SYNCING...</td></tr>';
-            }
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL);
-                allData = await response.json();
-                populateYearOptions();
-                renderPortal();
-            } catch (error) {
-                tableBody.innerHTML = '<tr><td colspan="7" class="p-4 text-red-500 font-bold">Error loading data.</td></tr>';
-            }
-        }
+    cancelEditBtn.onclick = resetForm;
 
-        entryForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const name = document.getElementById('fullName').value.trim();
-            const pos = document.getElementById('position').value;
-            const idNum = document.getElementById('idInput').value.trim();
-            const dept = document.getElementById('dept').value;
-            const purp = document.getElementById('purpose').value;
+    function getDeptColor(dept) {
+        return {
+            'CANR': '#15803D',
+            'CDE': '#1D4ED8',
+            'CAS': '#EF4444',
+            'CEM': '#FACC15',
+            'CEFS': '#FB923C',
+            'CVM': '#93C5FD',
+            'GS': '#9CA3AF'
+        }[dept] || '#333';
+    }
 
-            if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
+    function getPurpColor(purp) {
+        const colors = {
+            'IE & VLP Password Reset': '#6D28D9',
+            'IE Password Reset': '#FACC15',
+            'VLP Password Reset': '#15803D',
+            'Update IE Account Details': '#FEF08A',
+            'Update VLP Account Details': '#86EFAC',
+            'Update IE & VLP Account Details': '#FCA5A5',
+            'Hotspot Password Reset': '#1D4ED8',
+            'IE & Hotspot Password Reset': '#F97316',
+            'VLP & Hotspot Password Reset': '#FFEDD5',
+            'IE, VLP, Hotspot Reset': '#B91C1C',
+            'Zoom Account': '#2563EB'
+        };
 
-            const rowId = editRowIdInput.value;
-            const action = rowId === "-1" ? "addRow" : "edit";
-            const now = new Date();
-            const monthLabel = "Month of " + now.toLocaleString('default', { month: 'long', year: 'numeric' });
-            const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        return colors[purp] || '#333';
+    }
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = "...";
+    function getPurpTextColor(purp) {
+        return [
+            'IE Password Reset',
+            'Update IE Account Details',
+            'Update VLP Account Details',
+            'Update IE & VLP Account Details',
+            'VLP & Hotspot Password Reset'
+        ].includes(purp)
+            ? 'black'
+            : 'white';
+    }
 
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ action, rowId, date: formattedDate, monthLabel, name, pos, idNum, dept, purp })
-                });
-                resetForm();
-                loadCloudData(true);
-            } catch (error) { submitBtn.disabled = false; }
-        });
+    function getPosColorClass(pos) {
+        return pos === 'Student'
+            ? 'bg-student'
+            : (
+                pos === 'Teaching Personnel'
+                    ? 'bg-teaching'
+                    : 'bg-non-teaching'
+            );
+    }
 
-        function resetForm() {
-            entryForm.reset();
-            document.getElementById('position').value = "";
-            document.getElementById('dept').value = "";
-            document.getElementById('purpose').value = "";
-            document.getElementById('posTrigger').textContent = "Select position";
-            document.getElementById('posTrigger').className = "select-trigger";
-            document.getElementById('deptTrigger').textContent = "Select department";
-            document.getElementById('deptTrigger').className = "select-trigger";
-            document.getElementById('purpTrigger').textContent = "Select purpose";
-            document.getElementById('purpTrigger').className = "select-trigger border-b-0";
-            resetEditState();
-        }
+    function getDeptColorClass(dept) {
+        return 'bg-' + dept.toLowerCase();
+    }
 
-        function renderPortal() {
-            let filteredData = [...allData].reverse();
-            if (selectedMonth || selectedYear) {
-                filteredData = filteredData.filter(d => {
-                    const dt = parseRecordDate(d.date);
-                    if (!dt) return false;
-                    const m = String(dt.getMonth() + 1).padStart(2, '0');
-                    const y = String(dt.getFullYear());
-                    if (selectedYear && y !== selectedYear) return false;
-                    if (selectedMonth && m !== selectedMonth) return false;
-                    return true;
-                });
-            }
-            totalClientsLabel.textContent = `Total: ${filteredData.length}`;
-            const totalPages = Math.ceil(filteredData.length / rowsPerPage) || 1;
-            const pageData = filteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+    function getPurpColorClass(purp) {
+        const mapping = {
+            'IE & VLP Password Reset': 'bg-purp-purple',
+            'IE Password Reset': 'bg-purp-yellow',
+            'VLP Password Reset': 'bg-purp-green',
+            'Update IE Account Details': 'bg-purp-light-yellow',
+            'Update VLP Account Details': 'bg-purp-light-green',
+            'Update IE & VLP Account Details': 'bg-purp-pink',
+            'Hotspot Password Reset': 'bg-purp-blue',
+            'IE & Hotspot Password Reset': 'bg-purp-orange',
+            'VLP & Hotspot Password Reset': 'bg-purp-cream',
+            'IE, VLP, Hotspot Reset': 'bg-purp-red',
+            'Zoom Account': 'bg-purp-zoom'
+        };
 
-            tableBody.innerHTML = '';
-            pageData.forEach(data => addTableRowUI(data));
+        return mapping[purp] || '';
+    }
+</script>
+```
 
-            // Create blank placeholders if rows are less than rowsPerPage
-            for (let i = 0; i < (rowsPerPage - pageData.length); i++) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td>`;
-                tableBody.appendChild(tr);
-            }
-            renderPaginationControls(totalPages);
-        }
-
-        function parseRecordDate(dateStr) {
-            if (!dateStr) return null;
-            let d;
-            if (typeof dateStr === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
-                // Stored as DD/MM/YYYY
-                const [day, month, year] = dateStr.split('/');
-                d = new Date(`${year}-${month}-${day}T00:00:00`);
-            } else if (typeof dateStr === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-                // Stored as plain ISO date (YYYY-MM-DD) — force local midnight so it never
-                // rolls into the previous/next day due to UTC timezone conversion
-                d = new Date(`${dateStr}T00:00:00`);
-            } else {
-                // Full ISO datetime string or anything else parseable directly
-                d = new Date(dateStr);
-            }
-            return isNaN(d.getTime()) ? null : d;
-        }
-
-        function formatDisplayDate(dateStr) {
-            const d = parseRecordDate(dateStr);
-            if (!d) return dateStr || ''; // fallback if unparseable
-            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
-        }
-
-        function getRecordMonthKey(dateStr) {
-            const d = parseRecordDate(dateStr);
-            if (!d) return null;
-            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        }
-
-        function addTableRowUI(data) {
-            const row = document.createElement('tr');
-            row.className = "bg-white border-b border-black";
-            const posColor = data.pos === 'Non-Teaching Personnel' ? '#7E22CE' : (data.pos === 'Teaching Personnel' ? '#15803D' : '#93C5FD');
-            row.innerHTML = `
-                <td class="truncate">${formatDisplayDate(data.date)}</td>
-                <td class="text-left truncate px-2">${data.name}</td>
-                <td><span style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-block w-full truncate">${data.pos}</span></td>
-                <td class="truncate">${data.idNum}</td>
-                <td><span style="background-color: ${getDeptColor(data.dept)}; color: ${['CEM', 'CVM', 'GS'].includes(data.dept) ? 'black' : 'white'}" class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-block w-full truncate">${data.dept}</span></td>
-                <td><span style="background-color: ${getPurpColor(data.purp)}; color: ${getPurpTextColor(data.purp)}" class="px-2 py-0.5 rounded text-[10px] font-bold inline-block w-full truncate">${data.purp}</span></td>
-                <td class="whitespace-nowrap">
-                    <button onclick="editRow('${data.rowId}')" class="text-blue-600 hover:underline text-[11px] font-black">EDIT</button>
-                    <button onclick="deleteRow('${data.rowId}')" class="text-red-600 hover:underline text-[11px] font-black ml-2">DEL</button>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        }
-
-        function renderPaginationControls(totalPages) {
-            paginationControls.innerHTML = '';
-            const btnClass = 'px-3 py-1 bg-black text-white font-black disabled:opacity-30 uppercase text-[11px]';
-
-            function appendPageBtn(i) {
-                const pBtn = document.createElement('button');
-                pBtn.textContent = i;
-                pBtn.className = `page-num ${i === currentPage ? 'page-num-active' : 'page-num-inactive'}`;
-                pBtn.onclick = () => { currentPage = i; renderPortal(); };
-                paginationControls.appendChild(pBtn);
-            }
-
-            function appendEllipsis() {
-                const span = document.createElement('span');
-                span.textContent = '...';
-                span.className = 'page-ellipsis';
-                paginationControls.appendChild(span);
-            }
-
-            const prevBtn = document.createElement('button');
-            prevBtn.textContent = 'PREV';
-            prevBtn.disabled = currentPage === 1;
-            prevBtn.className = btnClass;
-            prevBtn.onclick = () => { currentPage = Math.max(1, currentPage - 2); renderPortal(); };
-            paginationControls.appendChild(prevBtn);
-
-            // Reserve up to 12 slots total for [1 ...] + sliding numbers + [... last]
-            const totalSlots = 12;
-            let startPage = Math.max(1, Math.min(currentPage - 4, totalPages - 9));
-            let endPage = Math.min(startPage + 9, totalPages);
-
-            const showLeading = startPage > 1;
-            const showTrailing = endPage < totalPages;
-
-            // Shrink the sliding window when both leading and trailing markers are shown,
-            // so the total box count never exceeds totalSlots
-            let windowSize = totalSlots - (showLeading ? 2 : 0) - (showTrailing ? 2 : 0);
-            endPage = Math.min(startPage + windowSize - 1, totalPages);
-            startPage = Math.max(1, Math.min(startPage, endPage - windowSize + 1));
-            startPage = Math.max(startPage, 1);
-
-            if (showLeading) {
-                appendPageBtn(1);
-                appendEllipsis();
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                appendPageBtn(i);
-            }
-
-            if (showTrailing) {
-                appendEllipsis();
-                appendPageBtn(totalPages);
-            }
-
-            const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'NEXT';
-            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-            nextBtn.className = btnClass;
-            nextBtn.onclick = () => { currentPage = Math.min(totalPages, currentPage + 2); renderPortal(); };
-            paginationControls.appendChild(nextBtn);
-        }
-
-        function editRow(rowId) {
-            const record = allData.find(d => d.rowId == rowId);
-            if (!record) return;
-            document.getElementById('fullName').value = record.name;
-            document.getElementById('idInput').value = record.idNum;
-            editRowIdInput.value = rowId;
-            selectOption('position', 'posTrigger', record.pos, getPosColorClass(record.pos), 'posMenu');
-            selectOption('dept', 'deptTrigger', record.dept, getDeptColorClass(record.dept), 'deptMenu');
-            selectOption('purpose', 'purpTrigger', record.purp, getPurpColorClass(record.purp), 'purpMenu');
-            submitBtn.textContent = "UPDATE";
-            submitBtn.classList.replace('bg-[#00FF00]', 'bg-blue-500');
-            submitBtn.classList.add('text-white');
-            cancelEditBtn.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        async function deleteRow(rowId) {
-            if (!confirm("Delete record?")) return;
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', rowId }) });
-                loadCloudData(true);
-            } catch (e) { console.error(e); }
-        }
-
-        function resetEditState() {
-            editRowIdInput.value = "-1";
-            submitBtn.disabled = false;
-            submitBtn.textContent = "SAVE";
-            submitBtn.classList.replace('bg-blue-500', 'bg-[#00FF00]');
-            submitBtn.classList.remove('text-white');
-            cancelEditBtn.classList.add('hidden');
-        }
-
-        cancelEditBtn.onclick = resetForm;
-
-        function getDeptColor(dept) { return { 'CANR': '#15803D', 'CDE': '#1D4ED8', 'CAS': '#EF4444', 'CEM': '#FACC15', 'CEFS': '#FB923C', 'CVM': '#93C5FD', 'GS': '#9CA3AF' }[dept] || '#333'; }
-        function getPurpColor(purp) {
-            const colors = { 'IE & VLP Password Reset': '#6D28D9', 'IE Password Reset': '#FACC15', 'VLP Password Reset': '#15803D', 'Update IE Account Details': '#FEF08A', 'Update VLP Account Details': '#86EFAC', 'Update IE & VLP Account Details': '#FCA5A5', 'Hotspot Password Reset': '#1D4ED8', 'IE & Hotspot Password Reset': '#F97316', 'VLP & Hotspot Password Reset': '#FFEDD5', 'IE, VLP, Hotspot Reset': '#B91C1C', 'Zoom Account': '#2563EB' };
-            return colors[purp] || '#333';
-        }
-        function getPurpTextColor(purp) { return ['IE Password Reset', 'Update IE Account Details', 'Update VLP Account Details', 'Update IE & VLP Account Details', 'VLP & Hotspot Password Reset'].includes(purp) ? 'black' : 'white'; }
-        function getPosColorClass(pos) { return pos === 'Student' ? 'bg-student' : (pos === 'Teaching Personnel' ? 'bg-teaching' : 'bg-non-teaching'); }
-        function getDeptColorClass(dept) { return 'bg-' + dept.toLowerCase(); }
-        function getPurpColorClass(purp) {
-            const mapping = { 'IE & VLP Password Reset': 'bg-purp-purple', 'IE Password Reset': 'bg-purp-yellow', 'VLP Password Reset': 'bg-purp-green', 'Update IE Account Details': 'bg-purp-light-yellow', 'Update VLP Account Details': 'bg-purp-light-green', 'Update IE & VLP Account Details': 'bg-purp-pink', 'Hotspot Password Reset': 'bg-purp-blue', 'IE & Hotspot Password Reset': 'bg-purp-orange', 'VLP & Hotspot Password Reset': 'bg-purp-cream', 'IE, VLP, Hotspot Reset': 'bg-purp-red', 'Zoom Account': 'bg-purp-zoom' };
-            return mapping[purp] || '';
-        }
-    </script>
 </body>
-
 </html>
