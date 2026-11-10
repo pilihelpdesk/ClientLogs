@@ -1,1166 +1,404 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Logs Entry Form</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
-```
-<script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Logs Entry Form</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-    html, body {
-        height: 100%;
-    }
-
-    body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background: linear-gradient(135deg, #0b3d1f 0%, #145c2c 22%, #2d7a3d 45%, #b8901f 70%, #8a6a12 100%);
-        background-attachment: fixed;
-        background-repeat: no-repeat;
-        box-sizing: border-box;
-    }
-
-    .bg-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle at 20% 10%, rgba(255, 215, 0, 0.10), transparent 55%),
-                    radial-gradient(circle at 80% 90%, rgba(21, 128, 61, 0.25), transparent 55%),
-                    rgba(0, 0, 0, 0.25);
-        backdrop-filter: blur(3px);
-        z-index: -1;
-    }
-
-    /* --- FORM STYLING --- */
-    .input-row {
-        display: flex;
-        border-bottom: 1px solid black;
-        align-items: stretch;
-        width: 100%;
-    }
-
-    .input-row:last-child {
-        border-bottom: none;
-    }
-
-    .label-cell {
-        width: 30%;
-        background-color: white;
-        padding: 10px 14px;
-        font-weight: 400;
-        border-right: 2px solid black;
-        display: flex;
-        align-items: center;
-        font-size: 1.1rem;
-    }
-
-    .input-cell {
-        width: 70%;
-        padding: 10px;
-        outline: none;
-        background-color: #FFFFFF;
-        text-align: center;
-        font-style: italic;
-        font-size: 1.1rem;
-        color: black;
-        border: none;
-        font-weight: 400;
-    }
-
-    /* --- CUSTOM LISTBOX --- */
-    .custom-select-container {
-        position: relative;
-        width: 70%;
-    }
-
-    .select-trigger {
-        width: 100%;
-        padding: 10px;
-        background: white;
-        text-align: center;
-        font-style: italic;
-        font-size: 1.1rem;
-        cursor: pointer;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .options-menu {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        background: white;
-        border: 2px solid black;
-        z-index: 50;
-        display: none;
-        box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
-    }
-
-    .option-item {
-        padding: 10px;
-        cursor: pointer;
-        font-weight: bold;
-        color: white;
-        transition: background 0.1s;
-        text-align: center;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    .option-item:hover {
-        filter: brightness(1.1) contrast(1.1);
-    }
-
-    .show {
-        display: block !important;
-    }
-
-    /* Status & Dept Colors */
-    .bg-student { background-color: #93C5FD !important; color: black !important; }
-    .bg-teaching { background-color: #15803D !important; }
-    .bg-non-teaching { background-color: #7E22CE !important; }
-    .bg-canr { background-color: #15803D !important; }
-    .bg-cde { background-color: #1D4ED8 !important; }
-    .bg-cas { background-color: #EF4444 !important; }
-    .bg-cem { background-color: #FACC15 !important; color: black !important; }
-    .bg-cefs { background-color: #FB923C !important; }
-    .bg-cvm { background-color: #93C5FD !important; color: black !important; }
-    .bg-gs { background-color: #9CA3AF !important; }
-    .bg-non { background-color: #7E22CE !important; color: white !important; }
-
-    /* Purpose Colors */
-    .bg-purp-purple { background-color: #6D28D9 !important; }
-    .bg-purp-yellow { background-color: #FACC15 !important; color: black !important; }
-    .bg-purp-green { background-color: #15803D !important; }
-    .bg-purp-light-yellow { background-color: #FEF08A !important; color: black !important; }
-    .bg-purp-light-green { background-color: #86EFAC !important; color: black !important; }
-    .bg-purp-pink { background-color: #FCA5A5 !important; color: black !important; }
-    .bg-purp-blue { background-color: #1D4ED8 !important; }
-    .bg-purp-orange { background-color: #F97316 !important; }
-    .bg-purp-cream { background-color: #FFEDD5 !important; color: black !important; }
-    .bg-purp-red { background-color: #B91C1C !important; }
-    .bg-purp-zoom { background-color: #2563EB !important; }
-
-    /* --- TABLE STYLING --- */
-    .thin-table {
-        border: 1px solid #000 !important;
-        border-collapse: collapse;
-        table-layout: fixed;
-    }
-
-    .thin-table th {
-        border: 1px solid #000 !important;
-        padding: 8px;
-        background-color: #f3f4f6;
-        font-weight: 900;
-        text-transform: uppercase;
-        font-size: 0.9rem;
-    }
-
-    .thin-table td {
-        border: 1px solid #000 !important;
-        padding: 0 8px;
-        font-size: 0.95rem;
-        font-weight: 400;
-        height: 38px;
-        overflow: hidden;
-    }
-
-    .table-container {
-        background: white;
-        border: 1px solid #000;
-    }
-
-    /* TAB BUTTONS */
-    .tab-btn {
-        display: inline-block;
-        padding: 0.375rem 1rem;
-        border: 2px solid black;
-        font-weight: 900;
-        margin-right: 0.5rem;
-        margin-bottom: 0.25rem;
-        transition: all 0.2s;
-        font-size: 0.875rem;
-        box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
-        text-transform: uppercase;
-    }
-
-    .tab-active { background-color: black; color: white; }
-    .tab-inactive { background-color: white; color: black; }
-    .tab-inactive:hover { background-color: #f3f4f6; }
-
-    /* PAGINATION */
-    .page-num {
-        width: 32px;
-        height: 32px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid black;
-        font-weight: 700;
-        margin: 0 2px;
-        font-size: 0.875rem;
-        box-sizing: border-box;
-    }
-
-    .page-num-active { background-color: black; color: white; }
-    .page-num-inactive { background-color: white; color: black; }
-    .page-num-inactive:hover { background-color: #e5e7eb; }
-
-    .page-ellipsis {
-        width: 32px;
-        height: 32px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 900;
-        font-size: 0.875rem;
-        margin: 0 2px;
-    }
-
-    /* --- AUTO-FIT LAYOUT --- */
-    .portal-card {
-        height: calc(100vh - 2rem);
-        display: flex;
-        flex-direction: column;
-    }
-
-    .portal-header,
-    .portal-form {
-        flex-shrink: 0;
-    }
-
-    .portal-table-wrap {
-        flex: 1 1 auto;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-        padding: 0.5rem;
-        padding-top: 0.5rem;
-    }
-
-    .table-container {
-        flex: 1 1 auto;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-
-    .portal-pagination {
-        flex-shrink: 0;
-    }
+:root{--green:#2b5f47;--green-d:#1f4a37;--green-m:#3e7a58;--green-b:#167a3a;--gold:#d4a62a;--cream:#f6eee0;--head:#efe9d6;--ink:#1c2b24;--mute:#5b6b63}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{display:flex;flex-direction:column;background:var(--cream);color:var(--ink);font-family:Inter,system-ui,sans-serif;overflow:hidden}
+header{background:var(--green);border-bottom:6px solid var(--gold);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0}
+header img{width:72px;height:72px;border-radius:50%;background:var(--gold);object-fit:cover}
+header h1{margin:0;font:800 2.1rem Georgia,'Times New Roman',serif;letter-spacing:.2px;text-transform:uppercase}
+header p{margin:2px 0 0;font-weight:600;font-size:.85rem;text-transform:uppercase}
+.chip{margin-left:auto;background:var(--gold);color:var(--ink);font-weight:700;font-size:.72rem;padding:5px 12px;border-radius:999px}
+main{flex:1;min-height:0;padding:18px 20px}
+.card{height:100%;max-width:1280px;margin:0 auto;background:#fff;border-radius:24px;box-shadow:0 6px 24px rgba(43,95,71,.12);padding:18px 24px;display:flex;flex-direction:column}
+.card h2{margin:0;text-align:center;font-size:1.05rem;font-weight:800;text-transform:uppercase}
+.sub{margin:2px 0 12px;text-align:center;color:var(--mute);font-size:.82rem}
+form{flex-shrink:0}
+.fields{border:2px solid var(--ink);border-radius:12px;overflow:hidden}
+.row{display:flex;border-bottom:1px solid var(--ink)}
+.row:last-child{border-bottom:none}
+.lbl{width:30%;padding:9px 14px;font-weight:700;font-size:.85rem;text-transform:uppercase;background:var(--head);border-right:2px solid var(--ink);display:flex;align-items:center}
+.inp{width:70%;padding:9px;border:none;outline:none;text-align:center;font:italic 500 1rem Inter,sans-serif;background:#fff;color:var(--ink)}
+.inp:focus{background:#fffbea}
+.sel{position:relative;width:70%}
+.trig{height:100%;min-height:40px;padding:9px;display:flex;align-items:center;justify-content:center;text-align:center;font:italic 500 1rem Inter,sans-serif;cursor:pointer;background:#fff}
+.menu{display:none;position:absolute;top:100%;left:0;width:100%;z-index:50;background:#fff;border:2px solid var(--ink);border-radius:0 0 10px 10px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.2);max-height:46vh;overflow-y:auto}
+.menu.show{display:block}
+.opt{padding:9px;text-align:center;font-weight:700;font-size:.9rem;color:#fff;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.1)}
+.opt:hover{filter:brightness(1.1)}
+.actions{display:flex;justify-content:flex-end;gap:8px;padding:10px 0}
+.btn{font:800 .95rem Inter,sans-serif;text-transform:uppercase;letter-spacing:.5px;border:none;border-radius:12px;padding:12px 40px;cursor:pointer;background:var(--gold);color:var(--ink)}
+.btn:hover{filter:brightness(1.07)}
+.btn.upd{background:var(--green-m);color:#fff}
+.btn.cancel{background:#fff;color:var(--ink);border:2px solid var(--ink);padding:10px 22px}
+.btn:disabled{opacity:.6}
+.hidden{display:none!important}
+.tablewrap{flex:1;min-height:0;display:flex;flex-direction:column}
+.tbar{background:var(--green-b);color:#fff;padding:8px 12px;font-weight:800;font-size:.82rem;text-transform:uppercase;border:2px solid var(--ink);border-bottom:none;display:flex;justify-content:space-between}
+.tcont{flex:1;min-height:0;overflow:hidden;border:2px solid var(--ink);display:flex;flex-direction:column}
+table{width:100%;border-collapse:collapse;table-layout:fixed;text-align:center}
+th{background:var(--head);border:1px solid var(--ink);padding:8px;font-size:.78rem;font-weight:700;text-transform:uppercase}
+td{border:1px solid var(--ink);padding:0 8px;height:38px;font-size:.88rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+td.l,th.l{text-align:left}
+.tag{display:inline-block;width:100%;padding:2px 8px;border-radius:999px;font-size:.68rem;font-weight:700;overflow:hidden;text-overflow:ellipsis}
+.lk{background:none;border:none;font:800 .7rem Inter,sans-serif;cursor:pointer;color:var(--green-b)}
+.lk.del{color:#b91c1c;margin-left:8px}
+.lk:hover{text-decoration:underline}
+.foot{flex-shrink:0;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding-top:10px}
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-weight:700;font-size:.78rem;text-transform:uppercase}
+.filters select{border:1.5px solid var(--ink);border-radius:8px;padding:4px 8px;font:600 .85rem Inter,sans-serif;background:#fff}
+.total{background:var(--gold);padding:5px 12px;border-radius:999px}
+.clear{background:none;border:none;color:#b91c1c;font:800 .72rem Inter,sans-serif;text-decoration:underline;cursor:pointer;text-transform:uppercase}
+.pg{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.pn{min-width:32px;height:32px;border-radius:999px;border:1.5px solid var(--ink);background:#fff;font:700 .8rem Inter,sans-serif;cursor:pointer}
+.pn.on{background:var(--green-b);border-color:var(--green-b);color:#fff}
+.pn:hover:not(.on){background:var(--head)}
+.pn.nav{padding:0 14px;background:var(--green);border-color:var(--green);color:#fff;text-transform:uppercase;font-size:.7rem}
+.pn:disabled{opacity:.35;cursor:default}
+.dots{width:24px;text-align:center;font-weight:800}
+footer{flex-shrink:0;background:var(--green-d);border-top:5px solid var(--gold);color:#fff;text-align:center;padding:16px;font-weight:700;font-size:.8rem;text-transform:uppercase}
+#alert{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:99}
+#alert div{background:#fff;border-radius:20px;padding:28px;max-width:360px;text-align:center}
+#alert h3{margin:0 0 6px;color:#b91c1c;text-transform:uppercase}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+@media(max-width:700px){header h1{font-size:1.3rem}.lbl{width:38%}.inp,.sel{width:62%}}
 </style>
-```
-
 </head>
+<body>
+<header>
+  <img src="favicon.png" alt="" onerror="this.style.visibility='hidden'">
+  <div><h1>CBSUA Client Support</h1><p>Entry portal and client log monitoring</p></div>
+  <span class="chip">Live sync with Google Sheets</span>
+</header>
 
-<body class="p-4 font-sans relative">
+<main>
+<div class="card">
+  <h2>Client Log Entry</h2>
+  <p class="sub">Record a client request, then review the log below</p>
 
-```
-<div class="bg-overlay"></div>
-
-<div id="customAlert" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div class="bg-white border-4 border-black p-8 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-        <h2 class="text-2xl font-black mb-2 uppercase text-red-600">Missing Info</h2>
-        <p class="text-lg font-bold mb-4">Please complete all required fields.</p>
-        <button onclick="closeAlert()" class="bg-black text-white font-black py-2 px-8 hover:bg-gray-800 transition-all uppercase">Got it</button>
+  <form id="entryForm" novalidate autocomplete="off">
+    <input type="hidden" id="editRowId" value="-1">
+    <div class="fields">
+      <div class="row"><div class="lbl">Full name</div><input type="text" id="fullName" class="inp" placeholder="Enter name"></div>
+      <div class="row"><div class="lbl">Position</div><div class="sel"><div id="posTrigger" class="trig" data-ph="Select position" onclick="toggleMenu('posMenu')">Select position</div><input type="hidden" id="position"><div id="posMenu" class="menu"></div></div></div>
+      <div class="row"><div id="idLabel" class="lbl">Student ID</div><input type="text" id="idInput" class="inp" placeholder="PIL-XX-XXXX"></div>
+      <div class="row"><div class="lbl">Department</div><div class="sel"><div id="deptTrigger" class="trig" data-ph="Select department" onclick="toggleMenu('deptMenu')">Select department</div><input type="hidden" id="dept"><div id="deptMenu" class="menu"></div></div></div>
+      <div class="row"><div class="lbl">Purpose</div><div class="sel"><div id="purpTrigger" class="trig" data-ph="Select purpose" onclick="toggleMenu('purpMenu')">Select purpose</div><input type="hidden" id="purpose"><div id="purpMenu" class="menu"></div></div></div>
     </div>
+    <div class="actions">
+      <button type="button" id="cancelEdit" class="btn cancel hidden">Cancel</button>
+      <button type="submit" id="submitBtn" class="btn">Save entry</button>
+    </div>
+  </form>
+
+  <div class="tablewrap">
+    <div class="tbar"><span>Client logs</span><span id="totalBar">0 records</span></div>
+    <div class="tcont">
+      <table id="dataTable">
+        <colgroup><col style="width:110px"><col style="width:240px"><col style="width:150px"><col style="width:140px"><col style="width:140px"><col style="width:250px"><col style="width:110px"></colgroup>
+        <thead><tr><th>Date</th><th class="l">Name</th><th>Status</th><th>ID number</th><th>Department</th><th>Purpose</th><th>Actions</th></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div class="foot">
+      <div class="filters">
+        <label for="monthSelect">Month:</label>
+        <select id="monthSelect"><option value="">All</option><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+        <label for="yearSelect">Year:</label>
+        <select id="yearSelect"><option value="">All</option></select>
+        <button type="button" id="clearMonthFilter" class="clear hidden">Clear</button>
+        <span id="totalClientsLabel" class="total">Total: 0</span>
+      </div>
+      <div id="paginationControls" class="pg"></div>
+    </div>
+  </div>
 </div>
+</main>
 
-<div class="portal-card max-w-7xl mx-auto bg-white/95 shadow-2xl border-4 border-white overflow-hidden"
-    style="box-shadow: 0 0 0 2px rgba(0,0,0,0.6), 0 10px 40px rgba(0,0,0,0.5);">
+<footer>&copy; 2026 Information and Communications Technology Office</footer>
 
-    <div class="portal-header bg-yellow-400 p-3 text-center border-b-2 border-black">
-        <h1 class="text-3xl font-black italic tracking-tight text-black uppercase">
-            CBSUA Client Support Entry Portal
-        </h1>
-    </div>
-
-    <form id="entryForm" class="portal-form p-4" novalidate autocomplete="off">
-        <input type="hidden" id="editRowId" value="-1">
-
-        <div class="border-2 border-black mb-1 bg-white">
-
-            <div class="input-row">
-                <div class="label-cell">Full Name:</div>
-                <input type="text" id="fullName" class="input-cell" placeholder="Enter name">
-            </div>
-
-            <div class="input-row">
-                <div class="label-cell">Position:</div>
-                <div class="custom-select-container">
-                    <div id="posTrigger" class="select-trigger" onclick="toggleMenu('posMenu')">
-                        Select position
-                    </div>
-                    <input type="hidden" id="position" value="">
-                    <div id="posMenu" class="options-menu">
-                        <div class="option-item bg-student"
-                            onclick="selectOption('position', 'posTrigger', 'Student', 'bg-student', 'posMenu')">
-                            Student
-                        </div>
-                        <div class="option-item bg-teaching"
-                            onclick="selectOption('position', 'posTrigger', 'Teaching Personnel', 'bg-teaching', 'posMenu')">
-                            Teaching Personnel
-                        </div>
-                        <div class="option-item bg-non-teaching"
-                            onclick="selectOption('position', 'posTrigger', 'Non-Teaching Personnel', 'bg-non-teaching', 'posMenu')">
-                            Non-Teaching Personnel
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="input-row">
-                <div id="idLabel" class="label-cell">Student ID:</div>
-                <input type="text" id="idInput" class="input-cell" placeholder="PIL-XX-XXXX">
-            </div>
-
-            <div class="input-row">
-                <div class="label-cell">Department:</div>
-                <div class="custom-select-container">
-                    <div id="deptTrigger" class="select-trigger" onclick="toggleMenu('deptMenu')">
-                        Select department
-                    </div>
-                    <input type="hidden" id="dept" value="">
-                    <div id="deptMenu" class="options-menu">
-                        <div class="option-item bg-canr"
-                            onclick="selectOption('dept', 'deptTrigger', 'CANR', 'bg-canr', 'deptMenu')">CANR</div>
-                        <div class="option-item bg-cde"
-                            onclick="selectOption('dept', 'deptTrigger', 'CDE', 'bg-cde', 'deptMenu')">CDE</div>
-                        <div class="option-item bg-cas"
-                            onclick="selectOption('dept', 'deptTrigger', 'CAS', 'bg-cas', 'deptMenu')">CAS</div>
-                        <div class="option-item bg-cem"
-                            onclick="selectOption('dept', 'deptTrigger', 'CEM', 'bg-cem', 'deptMenu')">CEM</div>
-                        <div class="option-item bg-cefs"
-                            onclick="selectOption('dept', 'deptTrigger', 'CEFS', 'bg-cefs', 'deptMenu')">CEFS</div>
-                        <div class="option-item bg-cvm"
-                            onclick="selectOption('dept', 'deptTrigger', 'CVM', 'bg-cvm', 'deptMenu')">CVM</div>
-                        <div class="option-item bg-gs"
-                            onclick="selectOption('dept', 'deptTrigger', 'GS', 'bg-gs', 'deptMenu')">GS</div>
-                        <div class="option-item bg-non"
-                            onclick="selectOption('dept', 'deptTrigger', 'Non-Teaching Personnel', 'bg-non', 'deptMenu')">
-                            Non-Teaching Personnel
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="input-row">
-                <div class="label-cell border-b-0">Purpose:</div>
-                <div class="custom-select-container">
-                    <div id="purpTrigger" class="select-trigger border-b-0" onclick="toggleMenu('purpMenu')">
-                        Select purpose
-                    </div>
-                    <input type="hidden" id="purpose" value="">
-                    <div id="purpMenu" class="options-menu">
-                        <div class="option-item bg-purp-purple"
-                            onclick="selectOption('purpose', 'purpTrigger', 'IE & VLP Password Reset', 'bg-purp-purple', 'purpMenu')">
-                            IE & VLP Password Reset
-                        </div>
-                        <div class="option-item bg-purp-yellow"
-                            onclick="selectOption('purpose', 'purpTrigger', 'IE Password Reset', 'bg-purp-yellow', 'purpMenu')">
-                            IE Password Reset
-                        </div>
-                        <div class="option-item bg-purp-green"
-                            onclick="selectOption('purpose', 'purpTrigger', 'VLP Password Reset', 'bg-purp-green', 'purpMenu')">
-                            VLP Password Reset
-                        </div>
-                        <div class="option-item bg-purp-light-yellow"
-                            onclick="selectOption('purpose', 'purpTrigger', 'Update IE Account Details', 'bg-purp-light-yellow', 'purpMenu')">
-                            Update IE Account Details
-                        </div>
-                        <div class="option-item bg-purp-light-green"
-                            onclick="selectOption('purpose', 'purpTrigger', 'Update VLP Account Details', 'bg-purp-light-green', 'purpMenu')">
-                            Update VLP Account Details
-                        </div>
-                        <div class="option-item bg-purp-pink"
-                            onclick="selectOption('purpose', 'purpTrigger', 'Update IE & VLP Account Details', 'bg-purp-pink', 'purpMenu')">
-                            Update IE & VLP Account Details
-                        </div>
-                        <div class="option-item bg-purp-blue"
-                            onclick="selectOption('purpose', 'purpTrigger', 'Hotspot Password Reset', 'bg-purp-blue', 'purpMenu')">
-                            Hotspot Password Reset
-                        </div>
-                        <div class="option-item bg-purp-orange"
-                            onclick="selectOption('purpose', 'purpTrigger', 'IE & Hotspot Password Reset', 'bg-purp-orange', 'purpMenu')">
-                            IE & Hotspot Password Reset
-                        </div>
-                        <div class="option-item bg-purp-cream"
-                            onclick="selectOption('purpose', 'purpTrigger', 'VLP & Hotspot Password Reset', 'bg-purp-cream', 'purpMenu')">
-                            VLP & Hotspot Password Reset
-                        </div>
-                        <div class="option-item bg-purp-red"
-                            onclick="selectOption('purpose', 'purpTrigger', 'IE, VLP, Hotspot Reset', 'bg-purp-red', 'purpMenu')">
-                            IE, VLP, Hotspot Reset
-                        </div>
-                        <div class="option-item bg-purp-zoom"
-                            onclick="selectOption('purpose', 'purpTrigger', 'Zoom Account', 'bg-purp-zoom', 'purpMenu')">
-                            Zoom Account
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex justify-end gap-1 pt-1 pb-1">
-            <button type="button" id="cancelEdit"
-                class="hidden bg-gray-400 text-white font-black py-2 px-6 rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all uppercase text-sm">
-                Cancel
-            </button>
-
-            <button type="submit" id="submitBtn"
-                class="bg-[#00FF00] hover:bg-green-400 text-black font-black py-2 px-12 rounded-lg border-2 border-black text-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 transition-all">
-                SAVE ENTRY
-            </button>
-        </div>
-    </form>
-
-    <div class="portal-table-wrap">
-        <div class="table-container">
-            <table id="dataTable" class="w-full thin-table text-center">
-                <colgroup>
-                    <col style="width: 110px;">
-                    <col style="width: 240px;">
-                    <col style="width: 150px;">
-                    <col style="width: 140px;">
-                    <col style="width: 140px;">
-                    <col style="width: 250px;">
-                    <col style="width: 110px;">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th class="text-left">Name</th>
-                        <th>Status</th>
-                        <th>ID Number</th>
-                        <th>Department</th>
-                        <th>Purpose</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
-        </div>
-
-        <div class="portal-pagination flex flex-wrap justify-between items-center gap-2 mt-1 pb-1">
-            <div class="flex flex-wrap items-center gap-2">
-                <label class="font-black text-xs uppercase">Month:</label>
-                <select id="monthSelect" class="border-2 border-black px-2 py-1 font-bold text-sm bg-white">
-                    <option value="">All</option>
-                    <option value="01">January</option>
-                    <option value="02">February</option>
-                    <option value="03">March</option>
-                    <option value="04">April</option>
-                    <option value="05">May</option>
-                    <option value="06">June</option>
-                    <option value="07">July</option>
-                    <option value="08">August</option>
-                    <option value="09">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </select>
-
-                <label class="font-black text-xs uppercase">Year:</label>
-                <select id="yearSelect" class="border-2 border-black px-2 py-1 font-bold text-sm bg-white">
-                    <option value="">All</option>
-                </select>
-
-                <button type="button" id="clearMonthFilter"
-                    class="hidden text-[11px] font-black uppercase underline text-red-600">
-                    Clear
-                </button>
-
-                <span id="totalClientsLabel"
-                    class="text-[11px] font-black uppercase bg-yellow-400 border-2 border-black px-2 py-1 rounded">
-                    Total: 0
-                </span>
-            </div>
-
-            <div id="paginationControls" class="flex flex-wrap justify-center items-center gap-1"></div>
-        </div>
-    </div>
-</div>
+<div id="alert" class="hidden"><div><h3>Missing info</h3><p style="font-weight:600">Please complete all required fields.</p><button class="btn" onclick="closeAlert()">Got it</button></div></div>
 
 <script>
-    const entryForm = document.getElementById('entryForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const editRowIdInput = document.getElementById('editRowId');
-    const cancelEditBtn = document.getElementById('cancelEdit');
-    const alertBox = document.getElementById('customAlert');
-    const tableBody = document.getElementById('tableBody');
-    const paginationControls = document.getElementById('paginationControls');
-    const monthSelect = document.getElementById('monthSelect');
-    const yearSelect = document.getElementById('yearSelect');
-    const clearMonthFilterBtn = document.getElementById('clearMonthFilter');
-    const totalClientsLabel = document.getElementById('totalClientsLabel');
+const $ = id => document.getElementById(id);
+const entryForm=$('entryForm'), submitBtn=$('submitBtn'), editRowIdInput=$('editRowId'), cancelEditBtn=$('cancelEdit'),
+  alertBox=$('alert'), tableBody=$('tableBody'), paginationControls=$('paginationControls'),
+  monthSelect=$('monthSelect'), yearSelect=$('yearSelect'), clearBtn=$('clearMonthFilter'),
+  totalLabel=$('totalClientsLabel'), tableContainerEl=document.querySelector('.tcont'), dataTableEl=$('dataTable');
 
-    const tableContainerEl = document.querySelector('.table-container');
-    const dataTableEl = document.getElementById('dataTable');
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
+const ROW_HEIGHT_PX = 38;
 
-    let allData = [];
-    let currentPage = 1;
-    let selectedMonth = '';
-    let selectedYear = '';
-    let rowsPerPage = 10;
+// [label, background, text color]
+const POSITIONS = [['Student','#93C5FD','#000'],['Teaching Personnel','#15803D','#fff'],['Non-Teaching Personnel','#7E22CE','#fff']];
+const DEPTS = [['CANR','#15803D','#fff'],['CDE','#1D4ED8','#fff'],['CAS','#EF4444','#fff'],['CEM','#FACC15','#000'],['CEFS','#FB923C','#fff'],['CVM','#93C5FD','#000'],['GS','#9CA3AF','#fff'],['Non-Teaching Personnel','#7E22CE','#fff']];
+const PURPS = [['IE & VLP Password Reset','#6D28D9','#fff'],['IE Password Reset','#FACC15','#000'],['VLP Password Reset','#15803D','#fff'],['Update IE Account Details','#FEF08A','#000'],['Update VLP Account Details','#86EFAC','#000'],['Update IE & VLP Account Details','#FCA5A5','#000'],['Hotspot Password Reset','#1D4ED8','#fff'],['IE & Hotspot Password Reset','#F97316','#fff'],['VLP & Hotspot Password Reset','#FFEDD5','#000'],['IE, VLP, Hotspot Reset','#B91C1C','#fff'],['Zoom Account','#2563EB','#fff']];
+const CONFIG = {
+  position:{list:POSITIONS,trigger:'posTrigger',menu:'posMenu'},
+  dept:{list:DEPTS,trigger:'deptTrigger',menu:'deptMenu'},
+  purpose:{list:PURPS,trigger:'purpTrigger',menu:'purpMenu'}
+};
+const look = (list, v) => list.find(x => x[0] === v) || [v, '#333', '#fff'];
 
-    const ROW_HEIGHT_PX = 38;
+let allData = [], currentPage = 1, selectedMonth = '', selectedYear = '', rowsPerPage = 10;
 
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZfS9AV6BzTscvOrI6UNAHw7V2lxD23vgCI0n7_hDRaXD2Rd73ZA3cPsUQSdoqMTEU/exec';
+Object.entries(CONFIG).forEach(([key, c]) => {
+  $(c.menu).innerHTML = c.list.map(([label, bg, fg]) =>
+    `<div class="opt" style="background:${bg};color:${fg}" data-v="${label}">${label}</div>`).join('');
+  $(c.menu).addEventListener('click', e => {
+    const o = e.target.closest('.opt');
+    if (o) selectOption(key, o.dataset.v);
+  });
+});
 
-    function calculateRowsPerPage() {
-        const thead = dataTableEl.querySelector('thead');
-        const theadHeight = thead ? thead.offsetHeight : 0;
-        const available = tableContainerEl.clientHeight - theadHeight;
-        const rows = Math.floor(available / ROW_HEIGHT_PX);
-        return Math.max(3, rows);
-    }
+function calculateRowsPerPage() {
+  const thead = dataTableEl.querySelector('thead');
+  const available = tableContainerEl.clientHeight - (thead ? thead.offsetHeight : 0);
+  return Math.max(3, Math.floor(available / ROW_HEIGHT_PX));
+}
 
-    let resizeDebounce = null;
+let resizeDebounce;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeDebounce);
+  resizeDebounce = setTimeout(() => {
+    const n = calculateRowsPerPage();
+    if (n !== rowsPerPage) { rowsPerPage = n; currentPage = 1; renderPortal(); }
+  }, 150);
+});
 
-    function handleResize() {
-        clearTimeout(resizeDebounce);
-        resizeDebounce = setTimeout(() => {
-            const newRowsPerPage = calculateRowsPerPage();
+window.onload = () => {
+  rowsPerPage = calculateRowsPerPage();
+  loadCloudData(false);
+  setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
+};
 
-            if (newRowsPerPage !== rowsPerPage) {
-                rowsPerPage = newRowsPerPage;
-                currentPage = 1;
-                renderPortal();
-            }
-        }, 150);
-    }
+function syncFilters() {
+  clearBtn.classList.toggle('hidden', !selectedMonth && !selectedYear);
+  currentPage = 1;
+  renderPortal();
+}
+monthSelect.addEventListener('change', e => { selectedMonth = e.target.value; syncFilters(); });
+yearSelect.addEventListener('change', e => { selectedYear = e.target.value; syncFilters(); });
+clearBtn.addEventListener('click', () => {
+  selectedMonth = selectedYear = '';
+  monthSelect.value = yearSelect.value = '';
+  syncFilters();
+});
 
-    window.addEventListener('resize', handleResize);
+function populateYearOptions() {
+  const years = new Set([new Date().getFullYear()]);
+  allData.forEach(d => { const dt = parseRecordDate(d.date); if (dt) years.add(dt.getFullYear()); });
+  const cur = yearSelect.value;
+  yearSelect.innerHTML = '<option value="">All</option>' +
+    [...years].sort((a, b) => b - a).map(y => `<option value="${y}">${y}</option>`).join('');
+  yearSelect.value = cur;
+}
 
-    window.onload = () => {
-        rowsPerPage = calculateRowsPerPage();
-        loadCloudData(false);
-        setTimeout(handleResize, 300);
-    };
+function closeAlert() { alertBox.classList.add('hidden'); }
 
-    monthSelect.addEventListener('change', (e) => {
-        selectedMonth = e.target.value;
-        clearMonthFilterBtn.classList.toggle('hidden', !selectedMonth && !selectedYear);
-        currentPage = 1;
-        renderPortal();
+function toggleMenu(id) {
+  const menu = $(id), showing = menu.classList.contains('show');
+  document.querySelectorAll('.menu').forEach(m => m.classList.remove('show'));
+  if (!showing) menu.classList.add('show');
+}
+
+function selectOption(key, value) {
+  const c = CONFIG[key], [, bg, fg] = look(c.list, value);
+  $(key).value = value;
+  const t = $(c.trigger);
+  t.textContent = value;
+  t.style.background = bg;
+  t.style.color = fg;
+  t.style.fontStyle = 'normal';
+  t.style.fontWeight = '700';
+  if (key === 'position') {
+    const emp = value !== 'Student';
+    $('idLabel').textContent = emp ? 'Employee ID' : 'Student ID';
+    $('idInput').placeholder = emp ? 'E01-XX-XXXX' : 'PIL-XX-XXXX';
+  }
+  $(c.menu).classList.remove('show');
+}
+
+window.onclick = e => {
+  if (!e.target.matches('.trig')) document.querySelectorAll('.menu').forEach(m => m.classList.remove('show'));
+};
+
+async function loadCloudData(silent = false) {
+  if (!silent) tableBody.innerHTML = '<tr><td colspan="7" style="height:80px;color:var(--green-b);font-weight:800">SYNCING...</td></tr>';
+  try {
+    const response = await fetch(GOOGLE_SCRIPT_URL);
+    allData = await response.json();
+    populateYearOptions();
+    renderPortal();
+  } catch (error) {
+    tableBody.innerHTML = '<tr><td colspan="7" style="height:80px;color:#b91c1c;font-weight:700">Error loading data. Check your connection and refresh.</td></tr>';
+  }
+}
+
+entryForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = $('fullName').value.trim(), pos = $('position').value, idNum = $('idInput').value.trim(),
+    dept = $('dept').value, purp = $('purpose').value;
+  if (!name || !pos || !idNum || !dept || !purp) { alertBox.classList.remove('hidden'); return; }
+
+  const rowId = editRowIdInput.value, action = rowId === '-1' ? 'addRow' : 'edit', now = new Date();
+  const monthLabel = 'Month of ' + now.toLocaleString('default', { month: 'long', year: 'numeric' });
+  const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = '...';
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors',
+      body: JSON.stringify({ action, rowId, date, monthLabel, name, pos, idNum, dept, purp }) });
+    resetForm();
+    loadCloudData(true);
+  } catch (err) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Save entry';
+  }
+});
+
+function resetForm() {
+  entryForm.reset();
+  Object.entries(CONFIG).forEach(([key, c]) => {
+    $(key).value = '';
+    const t = $(c.trigger);
+    t.textContent = t.dataset.ph;
+    t.removeAttribute('style');
+  });
+  $('idLabel').textContent = 'Student ID';
+  $('idInput').placeholder = 'PIL-XX-XXXX';
+  resetEditState();
+}
+
+function renderPortal() {
+  let rows = [...allData].reverse();
+  if (selectedMonth || selectedYear) {
+    rows = rows.filter(d => {
+      const dt = parseRecordDate(d.date);
+      if (!dt) return false;
+      if (selectedYear && String(dt.getFullYear()) !== selectedYear) return false;
+      if (selectedMonth && String(dt.getMonth() + 1).padStart(2, '0') !== selectedMonth) return false;
+      return true;
     });
-
-    yearSelect.addEventListener('change', (e) => {
-        selectedYear = e.target.value;
-        clearMonthFilterBtn.classList.toggle('hidden', !selectedMonth && !selectedYear);
-        currentPage = 1;
-        renderPortal();
-    });
-
-    clearMonthFilterBtn.addEventListener('click', () => {
-        selectedMonth = '';
-        selectedYear = '';
-        monthSelect.value = '';
-        yearSelect.value = '';
-        clearMonthFilterBtn.classList.add('hidden');
-        currentPage = 1;
-        renderPortal();
-    });
-
-    function populateYearOptions() {
-        const years = new Set();
-
-        allData.forEach(d => {
-            const dt = parseRecordDate(d.date);
-            if (dt) years.add(dt.getFullYear());
-        });
-
-        years.add(new Date().getFullYear());
-
-        const sortedYears = Array.from(years).sort((a, b) => b - a);
-        const currentValue = yearSelect.value;
-
-        yearSelect.innerHTML =
-            '<option value="">All</option>' +
-            sortedYears.map(y => `<option value="${y}">${y}</option>`).join('');
-
-        yearSelect.value = currentValue;
-    }
-
-    function closeAlert() {
-        alertBox.classList.add('hidden');
-    }
-
-    function toggleMenu(id) {
-        const menu = document.getElementById(id);
-        const isShowing = menu.classList.contains('show');
-
-        document.querySelectorAll('.options-menu').forEach(m =>
-            m.classList.remove('show')
-        );
-
-        if (!isShowing) menu.classList.add('show');
-    }
-
-    function selectOption(hiddenId, triggerId, value, bgColorClass, menuId) {
-        document.getElementById(hiddenId).value = value;
-
-        const trigger = document.getElementById(triggerId);
-        trigger.textContent = value;
-        trigger.className = 'select-trigger ' + bgColorClass;
-
-        if (triggerId === 'purpTrigger') {
-            trigger.classList.add('border-b-0');
-        }
-
-        if (hiddenId === 'position') {
-            const isEmp =
-                value === "Teaching Personnel" ||
-                value === "Non-Teaching Personnel";
-
-            document.getElementById('idLabel').textContent =
-                isEmp ? "Employee ID:" : "Student ID:";
-
-            document.getElementById('idInput').placeholder =
-                isEmp ? "E01-XX-XXXX" : "PIL-XX-XXXX";
-        }
-
-        document.getElementById(menuId).classList.remove('show');
-    }
-
-    window.onclick = function (e) {
-        if (!e.target.matches('.select-trigger')) {
-            document.querySelectorAll('.options-menu')
-                .forEach(m => m.classList.remove('show'));
-        }
-    };
-
-    async function loadCloudData(silent = false) {
-        if (!silent) {
-            tableBody.innerHTML =
-                '<tr><td colspan="7" class="text-blue-600 animate-pulse font-black text-lg py-10">SYNCING...</td></tr>';
-        }
-
-        try {
-            const response = await fetch(GOOGLE_SCRIPT_URL);
-            allData = await response.json();
-
-            populateYearOptions();
-            renderPortal();
-
-        } catch (error) {
-            tableBody.innerHTML =
-                '<tr><td colspan="7" class="p-4 text-red-500 font-bold">Error loading data.</td></tr>';
-        }
-    }
-
-    entryForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const name = document.getElementById('fullName').value.trim();
-        const pos = document.getElementById('position').value;
-        const idNum = document.getElementById('idInput').value.trim();
-        const dept = document.getElementById('dept').value;
-        const purp = document.getElementById('purpose').value;
-
-        if (!name || !pos || !idNum || !dept || !purp) {
-            alertBox.classList.remove('hidden');
-            return;
-        }
-
-        const rowId = editRowIdInput.value;
-        const action = rowId === "-1" ? "addRow" : "edit";
-        const now = new Date();
-
-        const monthLabel =
-            "Month of " +
-            now.toLocaleString('default', {
-                month: 'long',
-                year: 'numeric'
-            });
-
-        const formattedDate =
-            `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = "...";
-
-        try {
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify({
-                    action,
-                    rowId,
-                    date: formattedDate,
-                    monthLabel,
-                    name,
-                    pos,
-                    idNum,
-                    dept,
-                    purp
-                })
-            });
-
-            resetForm();
-            loadCloudData(true);
-
-        } catch (error) {
-            submitBtn.disabled = false;
-        }
-    });
-
-    function resetForm() {
-        entryForm.reset();
-
-        document.getElementById('position').value = "";
-        document.getElementById('dept').value = "";
-        document.getElementById('purpose').value = "";
-
-        document.getElementById('posTrigger').textContent = "Select position";
-        document.getElementById('posTrigger').className = "select-trigger";
-
-        document.getElementById('deptTrigger').textContent = "Select department";
-        document.getElementById('deptTrigger').className = "select-trigger";
-
-        document.getElementById('purpTrigger').textContent = "Select purpose";
-        document.getElementById('purpTrigger').className =
-            "select-trigger border-b-0";
-
-        resetEditState();
-    }
-
-    function renderPortal() {
-        let filteredData = [...allData].reverse();
-
-        if (selectedMonth || selectedYear) {
-            filteredData = filteredData.filter(d => {
-                const dt = parseRecordDate(d.date);
-
-                if (!dt) return false;
-
-                const m = String(dt.getMonth() + 1).padStart(2, '0');
-                const y = String(dt.getFullYear());
-
-                if (selectedYear && y !== selectedYear) return false;
-                if (selectedMonth && m !== selectedMonth) return false;
-
-                return true;
-            });
-        }
-
-        totalClientsLabel.textContent = `Total: ${filteredData.length}`;
-
-        const totalPages =
-            Math.ceil(filteredData.length / rowsPerPage) || 1;
-
-        const pageData = filteredData.slice(
-            (currentPage - 1) * rowsPerPage,
-            currentPage * rowsPerPage
-        );
-
-        tableBody.innerHTML = '';
-
-        pageData.forEach(data => addTableRowUI(data));
-
-        for (let i = 0; i < (rowsPerPage - pageData.length); i++) {
-            const tr = document.createElement('tr');
-
-            tr.innerHTML = `
-                <td>&nbsp;</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            `;
-
-            tableBody.appendChild(tr);
-        }
-
-        renderPaginationControls(totalPages);
-    }
-
-    function parseRecordDate(dateStr) {
-        if (!dateStr) return null;
-
-        let d;
-
-        if (
-            typeof dateStr === 'string' &&
-            /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)
-        ) {
-            const [day, month, year] = dateStr.split('/');
-            d = new Date(`${year}-${month}-${day}T00:00:00`);
-
-        } else if (
-            typeof dateStr === 'string' &&
-            /^\d{4}-\d{2}-\d{2}$/.test(dateStr)
-        ) {
-            d = new Date(`${dateStr}T00:00:00`);
-
-        } else {
-            d = new Date(dateStr);
-        }
-
-        return isNaN(d.getTime()) ? null : d;
-    }
-
-    function formatDisplayDate(dateStr) {
-        const d = parseRecordDate(dateStr);
-
-        if (!d) return dateStr || '';
-
-        return d.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: '2-digit'
-        });
-    }
-
-    function getRecordMonthKey(dateStr) {
-        const d = parseRecordDate(dateStr);
-
-        if (!d) return null;
-
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-    }
-
-    function addTableRowUI(data) {
-        const row = document.createElement('tr');
-        row.className = "bg-white border-b border-black";
-
-        const posColor =
-            data.pos === 'Non-Teaching Personnel'
-                ? '#7E22CE'
-                : (
-                    data.pos === 'Teaching Personnel'
-                        ? '#15803D'
-                        : '#93C5FD'
-                );
-
-        row.innerHTML = `
-            <td class="truncate">${formatDisplayDate(data.date)}</td>
-
-            <td class="text-left truncate px-2">${data.name}</td>
-
-            <td>
-                <span
-                    style="background-color: ${posColor}; color: ${data.pos === 'Student' ? 'black' : 'white'}"
-                    class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-block w-full truncate">
-                    ${data.pos}
-                </span>
-            </td>
-
-            <td class="truncate">${data.idNum}</td>
-
-            <td>
-                <span
-                    style="background-color: ${getDeptColor(data.dept)}; color: ${['CEM', 'CVM', 'GS'].includes(data.dept) ? 'black' : 'white'}"
-                    class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-block w-full truncate">
-                    ${data.dept}
-                </span>
-            </td>
-
-            <td>
-                <span
-                    style="background-color: ${getPurpColor(data.purp)}; color: ${getPurpTextColor(data.purp)}"
-                    class="px-2 py-0.5 rounded text-[10px] font-bold inline-block w-full truncate">
-                    ${data.purp}
-                </span>
-            </td>
-
-            <td class="whitespace-nowrap">
-                <button onclick="editRow('${data.rowId}')"
-                    class="text-blue-600 hover:underline text-[11px] font-black">
-                    EDIT
-                </button>
-
-                <button onclick="deleteRow('${data.rowId}')"
-                    class="text-red-600 hover:underline text-[11px] font-black ml-2">
-                    DEL
-                </button>
-            </td>
-        `;
-
-        tableBody.appendChild(row);
-    }
-
-    function renderPaginationControls(totalPages) {
-        paginationControls.innerHTML = '';
-
-        const btnClass =
-            'px-3 py-1 bg-black text-white font-black disabled:opacity-30 uppercase text-[11px]';
-
-        function appendPageBtn(i) {
-            const pBtn = document.createElement('button');
-
-            pBtn.textContent = i;
-
-            pBtn.className =
-                `page-num ${i === currentPage ? 'page-num-active' : 'page-num-inactive'}`;
-
-            pBtn.onclick = () => {
-                currentPage = i;
-                renderPortal();
-            };
-
-            paginationControls.appendChild(pBtn);
-        }
-
-        function appendEllipsis() {
-            const span = document.createElement('span');
-
-            span.textContent = '...';
-            span.className = 'page-ellipsis';
-
-            paginationControls.appendChild(span);
-        }
-
-        const prevBtn = document.createElement('button');
-
-        prevBtn.textContent = 'PREV';
-        prevBtn.disabled = currentPage === 1;
-        prevBtn.className = btnClass;
-
-        prevBtn.onclick = () => {
-            currentPage = Math.max(1, currentPage - 2);
-            renderPortal();
-        };
-
-        paginationControls.appendChild(prevBtn);
-
-        const totalSlots = 12;
-
-        let startPage =
-            Math.max(
-                1,
-                Math.min(currentPage - 4, totalPages - 9)
-            );
-
-        let endPage =
-            Math.min(startPage + 9, totalPages);
-
-        const showLeading = startPage > 1;
-        const showTrailing = endPage < totalPages;
-
-        let windowSize =
-            totalSlots -
-            (showLeading ? 2 : 0) -
-            (showTrailing ? 2 : 0);
-
-        endPage =
-            Math.min(startPage + windowSize - 1, totalPages);
-
-        startPage =
-            Math.max(
-                1,
-                Math.min(startPage, endPage - windowSize + 1)
-            );
-
-        if (showLeading) {
-            appendPageBtn(1);
-            appendEllipsis();
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-            appendPageBtn(i);
-        }
-
-        if (showTrailing) {
-            appendEllipsis();
-            appendPageBtn(totalPages);
-        }
-
-        const nextBtn = document.createElement('button');
-
-        nextBtn.textContent = 'NEXT';
-        nextBtn.disabled =
-            currentPage === totalPages || totalPages === 0;
-
-        nextBtn.className = btnClass;
-
-        nextBtn.onclick = () => {
-            currentPage = Math.min(totalPages, currentPage + 2);
-            renderPortal();
-        };
-
-        paginationControls.appendChild(nextBtn);
-    }
-
-    function editRow(rowId) {
-        const record =
-            allData.find(d => d.rowId == rowId);
-
-        if (!record) return;
-
-        document.getElementById('fullName').value = record.name;
-        document.getElementById('idInput').value = record.idNum;
-
-        editRowIdInput.value = rowId;
-
-        selectOption(
-            'position',
-            'posTrigger',
-            record.pos,
-            getPosColorClass(record.pos),
-            'posMenu'
-        );
-
-        selectOption(
-            'dept',
-            'deptTrigger',
-            record.dept,
-            getDeptColorClass(record.dept),
-            'deptMenu'
-        );
-
-        selectOption(
-            'purpose',
-            'purpTrigger',
-            record.purp,
-            getPurpColorClass(record.purp),
-            'purpMenu'
-        );
-
-        submitBtn.textContent = "UPDATE";
-
-        submitBtn.classList.replace(
-            'bg-[#00FF00]',
-            'bg-blue-500'
-        );
-
-        submitBtn.classList.add('text-white');
-
-        cancelEditBtn.classList.remove('hidden');
-
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    }
-
-    async function deleteRow(rowId) {
-        if (!confirm("Delete record?")) return;
-
-        try {
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify({
-                    action: 'delete',
-                    rowId
-                })
-            });
-
-            loadCloudData(true);
-
-        } catch (e) {
-            console.error(e);
-        }
-    }
-
-    function resetEditState() {
-        editRowIdInput.value = "-1";
-
-        submitBtn.disabled = false;
-        submitBtn.textContent = "SAVE";
-
-        submitBtn.classList.replace(
-            'bg-blue-500',
-            'bg-[#00FF00]'
-        );
-
-        submitBtn.classList.remove('text-white');
-
-        cancelEditBtn.classList.add('hidden');
-    }
-
-    cancelEditBtn.onclick = resetForm;
-
-    function getDeptColor(dept) {
-        return {
-            'CANR': '#15803D',
-            'CDE': '#1D4ED8',
-            'CAS': '#EF4444',
-            'CEM': '#FACC15',
-            'CEFS': '#FB923C',
-            'CVM': '#93C5FD',
-            'GS': '#9CA3AF'
-        }[dept] || '#333';
-    }
-
-    function getPurpColor(purp) {
-        const colors = {
-            'IE & VLP Password Reset': '#6D28D9',
-            'IE Password Reset': '#FACC15',
-            'VLP Password Reset': '#15803D',
-            'Update IE Account Details': '#FEF08A',
-            'Update VLP Account Details': '#86EFAC',
-            'Update IE & VLP Account Details': '#FCA5A5',
-            'Hotspot Password Reset': '#1D4ED8',
-            'IE & Hotspot Password Reset': '#F97316',
-            'VLP & Hotspot Password Reset': '#FFEDD5',
-            'IE, VLP, Hotspot Reset': '#B91C1C',
-            'Zoom Account': '#2563EB'
-        };
-
-        return colors[purp] || '#333';
-    }
-
-    function getPurpTextColor(purp) {
-        return [
-            'IE Password Reset',
-            'Update IE Account Details',
-            'Update VLP Account Details',
-            'Update IE & VLP Account Details',
-            'VLP & Hotspot Password Reset'
-        ].includes(purp)
-            ? 'black'
-            : 'white';
-    }
-
-    function getPosColorClass(pos) {
-        return pos === 'Student'
-            ? 'bg-student'
-            : (
-                pos === 'Teaching Personnel'
-                    ? 'bg-teaching'
-                    : 'bg-non-teaching'
-            );
-    }
-
-    function getDeptColorClass(dept) {
-        return 'bg-' + dept.toLowerCase();
-    }
-
-    function getPurpColorClass(purp) {
-        const mapping = {
-            'IE & VLP Password Reset': 'bg-purp-purple',
-            'IE Password Reset': 'bg-purp-yellow',
-            'VLP Password Reset': 'bg-purp-green',
-            'Update IE Account Details': 'bg-purp-light-yellow',
-            'Update VLP Account Details': 'bg-purp-light-green',
-            'Update IE & VLP Account Details': 'bg-purp-pink',
-            'Hotspot Password Reset': 'bg-purp-blue',
-            'IE & Hotspot Password Reset': 'bg-purp-orange',
-            'VLP & Hotspot Password Reset': 'bg-purp-cream',
-            'IE, VLP, Hotspot Reset': 'bg-purp-red',
-            'Zoom Account': 'bg-purp-zoom'
-        };
-
-        return mapping[purp] || '';
-    }
+  }
+  totalLabel.textContent = `Total: ${rows.length}`;
+  $('totalBar').textContent = `${rows.length} records`;
+
+  const totalPages = Math.ceil(rows.length / rowsPerPage) || 1;
+  const pageData = rows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
+  tableBody.innerHTML = '';
+  pageData.forEach(addTableRowUI);
+  for (let i = 0; i < rowsPerPage - pageData.length; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td>';
+    tableBody.appendChild(tr);
+  }
+  renderPaginationControls(totalPages);
+}
+
+function parseRecordDate(s) {
+  if (!s) return null;
+  let d;
+  if (typeof s === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(s)) {
+    const [day, month, year] = s.split('/');
+    d = new Date(`${year}-${month}-${day}T00:00:00`);
+  } else if (typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    d = new Date(`${s}T00:00:00`);
+  } else d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function formatDisplayDate(s) {
+  const d = parseRecordDate(s);
+  return d ? d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }) : (s || '');
+}
+
+function tag(list, v) {
+  const [, bg, fg] = look(list, v);
+  return `<span class="tag" style="background:${bg};color:${fg}">${v}</span>`;
+}
+
+function addTableRowUI(data) {
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td>${formatDisplayDate(data.date)}</td>
+    <td class="l">${data.name}</td>
+    <td>${tag(POSITIONS, data.pos)}</td>
+    <td>${data.idNum}</td>
+    <td>${tag(DEPTS, data.dept)}</td>
+    <td>${tag(PURPS, data.purp)}</td>
+    <td><button class="lk" onclick="editRow('${data.rowId}')">EDIT</button><button class="lk del" onclick="deleteRow('${data.rowId}')">DEL</button></td>`;
+  tableBody.appendChild(row);
+}
+
+function renderPaginationControls(totalPages) {
+  paginationControls.innerHTML = '';
+  const add = (text, cls, onclick, disabled) => {
+    const b = document.createElement('button');
+    b.textContent = text; b.className = 'pn ' + cls; b.disabled = !!disabled; b.onclick = onclick;
+    paginationControls.appendChild(b);
+  };
+  const page = i => add(i, i === currentPage ? 'on' : '', () => { currentPage = i; renderPortal(); });
+  const dots = () => { const s = document.createElement('span'); s.textContent = '...'; s.className = 'dots'; paginationControls.appendChild(s); };
+
+  add('Prev', 'nav', () => { currentPage = Math.max(1, currentPage - 2); renderPortal(); }, currentPage === 1);
+
+  const totalSlots = 12;
+  let start = Math.max(1, Math.min(currentPage - 4, totalPages - 9));
+  let end = Math.min(start + 9, totalPages);
+  const lead = start > 1, trail = end < totalPages;
+  const size = totalSlots - (lead ? 2 : 0) - (trail ? 2 : 0);
+  end = Math.min(start + size - 1, totalPages);
+  start = Math.max(1, Math.min(start, end - size + 1));
+
+  if (lead) { page(1); dots(); }
+  for (let i = start; i <= end; i++) page(i);
+  if (trail) { dots(); page(totalPages); }
+
+  add('Next', 'nav', () => { currentPage = Math.min(totalPages, currentPage + 2); renderPortal(); }, currentPage === totalPages);
+}
+
+function editRow(rowId) {
+  const r = allData.find(d => d.rowId == rowId);
+  if (!r) return;
+  $('fullName').value = r.name;
+  $('idInput').value = r.idNum;
+  editRowIdInput.value = rowId;
+  selectOption('position', r.pos);
+  selectOption('dept', r.dept);
+  selectOption('purpose', r.purp);
+  submitBtn.textContent = 'Update';
+  submitBtn.classList.add('upd');
+  cancelEditBtn.classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function deleteRow(rowId) {
+  if (!confirm('Delete record?')) return;
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', rowId }) });
+    loadCloudData(true);
+  } catch (e) { console.error(e); }
+}
+
+function resetEditState() {
+  editRowIdInput.value = '-1';
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Save entry';
+  submitBtn.classList.remove('upd');
+  cancelEditBtn.classList.add('hidden');
+}
+
+cancelEditBtn.onclick = resetForm;
 </script>
-```
-
 </body>
 </html>
