@@ -21,7 +21,11 @@ main{flex:1;min-height:0;padding:18px 20px}
 .card h2{margin:0;text-align:center;font-size:1.05rem;font-weight:800;text-transform:uppercase}
 .sub{margin:2px 0 12px;text-align:center;color:var(--mute);font-size:.82rem}
 form{flex-shrink:0}
-.fields{border:2px solid var(--ink);border-radius:12px;overflow:hidden}
+.fields{border:2px solid var(--ink);border-radius:12px}
+.row:first-child .lbl{border-top-left-radius:10px}
+.row:first-child .inp,.row:first-child .sel,.row:first-child .trig{border-top-right-radius:10px}
+.row:last-child .lbl{border-bottom-left-radius:10px}
+.row:last-child .sel,.row:last-child .trig{border-bottom-right-radius:10px}
 .row{display:flex;border-bottom:1px solid var(--ink)}
 .row:last-child{border-bottom:none}
 .lbl{width:30%;padding:9px 14px;font-weight:700;font-size:.85rem;text-transform:uppercase;background:var(--head);border-right:2px solid var(--ink);display:flex;align-items:center}
